@@ -441,14 +441,58 @@ textarea {
   gap: 10px;
 }
 
+.history-record__header {
+  align-items: flex-start;
+}
+
 .history-record__header strong {
   color: #8a2f25;
 }
 
-.history-record__header > div {
+.history-record__details {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.history-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.history-summary__date {
+  color: #6f655d;
+  font-weight: 500;
+}
+
+.history-summary__review {
+  flex-basis: 100%;
+  color: #302a25;
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+
+.history-metrics,
+.restore-summary {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+}
+
+.history-metrics {
+  margin-top: 10px;
+}
+
+.history-metrics span,
+.restore-summary span {
+  border: 1px solid #d9cabe;
+  border-radius: 999px;
+  padding: 4px 9px;
+  background: #fffaf4;
+  color: #5e534a;
+  font-size: 0.84rem;
 }
 
 .history-intent {
