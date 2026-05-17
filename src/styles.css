@@ -34,6 +34,11 @@ textarea {
   resize: vertical;
 }
 
+input,
+select {
+  color: #241f1b;
+}
+
 .app-shell {
   width: min(1180px, calc(100vw - 32px));
   margin: 0 auto;
@@ -568,23 +573,33 @@ textarea {
   display: none;
 }
 
-.history-notice {
-  margin: 0 0 14px;
-  border-radius: 8px;
-  padding: 10px 12px;
+.history-filter-bar {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) minmax(140px, auto) minmax(140px, auto);
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.history-search,
+.history-filter {
+  display: grid;
+  gap: 6px;
+}
+
+.history-search span,
+.history-filter span {
+  color: #5e534a;
+  font-size: 0.86rem;
   font-weight: 700;
 }
 
-.history-notice--success {
-  border: 1px solid #c5d7c0;
-  background: #f1f7ef;
-  color: #31592b;
-}
-
-.history-notice--error {
-  border: 1px solid #dfb8b4;
-  background: #fff1ef;
-  color: #8a2f25;
+.history-search input,
+.history-filter select {
+  min-height: 38px;
+  border: 1px solid #cdbfb1;
+  border-radius: 6px;
+  padding: 0 10px;
+  background: #fff;
 }
 
 .history-record__header {
@@ -658,6 +673,58 @@ textarea {
   padding-left: 20px;
 }
 
+.toast-host {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 20;
+  display: grid;
+  gap: 10px;
+  width: min(360px, calc(100vw - 36px));
+}
+
+.toast {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  border: 1px solid #d9cabe;
+  border-radius: 8px;
+  padding: 12px;
+  background: #fffaf4;
+  box-shadow: 0 16px 36px rgb(55 43 32 / 14%);
+  font-weight: 700;
+}
+
+.toast--success {
+  border-color: #c5d7c0;
+  background: #f1f7ef;
+  color: #31592b;
+}
+
+.toast--error {
+  border-color: #dfb8b4;
+  background: #fff1ef;
+  color: #8a2f25;
+}
+
+.toast--info {
+  border-color: #c8d0d8;
+  background: #f3f6f8;
+  color: #33475b;
+}
+
+.toast button {
+  flex: 0 0 auto;
+  min-height: auto;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font-weight: 800;
+}
+
 @media (max-width: 720px) {
   .app-shell {
     width: min(100vw - 20px, 680px);
@@ -686,5 +753,15 @@ textarea {
 
   .settings-segmented {
     width: 100%;
+  }
+
+  .history-filter-bar {
+    grid-template-columns: 1fr;
+  }
+
+  .toast-host {
+    right: 10px;
+    bottom: 10px;
+    width: calc(100vw - 20px);
   }
 }

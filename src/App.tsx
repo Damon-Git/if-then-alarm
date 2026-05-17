@@ -8,6 +8,7 @@ import RestoreSessionModal from "./components/RestoreSessionModal";
 import RitualStage from "./components/RitualStage";
 import SettingsPanel from "./components/SettingsPanel";
 import SetupForm from "./components/SetupForm";
+import ToastHost from "./components/ToastHost";
 import { clearPersistedSession, loadPersistedSession, savePersistedSession } from "./lib/sessionStorage";
 import { formatDurationLabel } from "./lib/timer";
 import { loadAppSettings, saveAppSettings } from "./lib/settingsStorage";
@@ -19,7 +20,17 @@ import {
   loadHistoryRecords,
   saveHistoryRecord,
 } from "./lib/storage";
-import type { ActiveModal, AppPhase, AppSettings, HistoryRecord, IntentSet, PersistedSession, ReviewInput, TimerMode } from "./types";
+import type {
+  ActiveModal,
+  AppPhase,
+  AppSettings,
+  HistoryRecord,
+  IntentSet,
+  PersistedSession,
+  ReviewInput,
+  TimerMode,
+  ToastMessage,
+} from "./types";
 
 const createId = () => {
   if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
@@ -37,10 +48,7 @@ const App = () => {
   const [isAbandonConfirmOpen, setIsAbandonConfirmOpen] = useState(false);
   const [settings, setSettings] = useState<AppSettings>(() => loadAppSettings());
   const [historyRecords, setHistoryRecords] = useState<HistoryRecord[]>(() => loadHistoryRecords());
-  const [historyImportStatus, setHistoryImportStatus] = useState<{
-    type: "success" | "error";
-    message: string;
-  } | null>(null);
+  const [toasts, setToasts] = useState<ToastMessage[]>([]);
   const [pendingSession, setPendingSession] = useState<PersistedSession | null>(() => loadPersistedSession());
 
   const activeIntentSet = useMemo(
@@ -58,6 +66,19 @@ const App = () => {
 
   const hasUnsavedSession = phase === "ritual" || phase === "review";
   const timerConfig = TIMER_MODE_CONFIG[settings.timerMode];
+
+  const showToast = (type: ToastMessage["type"], message: string) => {
+    const id = createId();
+
+    setToasts((currentToasts) => [...currentToasts, { id, message, type }]);
+    window.setTimeout(() => {
+      setToasts((currentToasts) => currentToasts.filter((toast) => toast.id !== id));
+    }, 4200);
+  };
+
+  const dismissToast = (toastId: string) => {
+    setToasts((currentToasts) => currentToasts.filter((toast) => toast.id !== toastId));
+  };
 
   useEffect(() => {
     if (!activeIntentSet || activeModal || isAbandonConfirmOpen || timerRemaining <= 0) {
@@ -244,6 +265,7 @@ const App = () => {
 
     const nextRecords = saveHistoryRecord(record);
     setHistoryRecords(nextRecords);
+    showToast("success", "复盘已保存。");
     setIntentSets([]);
     setTimerRemaining(0);
     setActiveModal(null);
@@ -260,7 +282,7 @@ const App = () => {
     }
 
     setHistoryRecords(deleteHistoryRecord(recordId));
-    setHistoryImportStatus(null);
+    showToast("success", "已删除 1 条历史记录。");
   };
 
   const clearRecords = () => {
@@ -271,7 +293,7 @@ const App = () => {
     }
 
     setHistoryRecords(clearHistoryRecords());
-    setHistoryImportStatus(null);
+    showToast("success", "已清空全部历史记录。");
   };
 
   const exportRecords = () => {
@@ -289,10 +311,7 @@ const App = () => {
     link.remove();
     window.URL.revokeObjectURL(url);
 
-    setHistoryImportStatus({
-      type: "success",
-      message: `已导出 ${historyRecords.length} 条历史记录。`,
-    });
+    showToast("success", `已导出 ${historyRecords.length} 条历史记录。`);
   };
 
   const importRecords = async (file: File) => {
@@ -301,15 +320,9 @@ const App = () => {
       const result = importHistoryExportPayload(rawValue);
 
       setHistoryRecords(result.records);
-      setHistoryImportStatus({
-        type: "success",
-        message: `导入完成：新增 ${result.importedCount} 条，跳过 ${result.skippedCount} 条重复记录。`,
-      });
+      showToast("success", `导入完成：新增 ${result.importedCount} 条，跳过 ${result.skippedCount} 条重复记录。`);
     } catch {
-      setHistoryImportStatus({
-        type: "error",
-        message: "导入失败：请选择由本应用导出的 JSON 历史文件。",
-      });
+      showToast("error", "导入失败：请选择由本应用导出的 JSON 历史文件。");
     }
   };
 
@@ -361,7 +374,6 @@ const App = () => {
         ) : null}
 
         <HistoryPanel
-          importStatus={historyImportStatus}
           records={historyRecords}
           onClearRecords={clearRecords}
           onDeleteRecord={deleteRecord}
@@ -369,6 +381,8 @@ const App = () => {
           onImportRecords={importRecords}
         />
       </main>
+
+      <ToastHost toasts={toasts} onDismiss={dismissToast} />
 
       {activeModal && modalIntentSet ? (
         <BreakModal

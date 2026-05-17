@@ -17,6 +17,12 @@ export type AppSettings = {
   timerMode: TimerMode;
 };
 
+export type ToastMessage = {
+  id: string;
+  message: string;
+  type: "success" | "error" | "info";
+};
+
 export type ReviewResult = "completed" | "partial" | "failed";
 
 export type ReviewInput = {
