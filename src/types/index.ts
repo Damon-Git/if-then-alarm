@@ -34,6 +34,18 @@ export type HistoryRecord = {
   nextAdjustmentText?: string;
 };
 
+export type HistoryExportPayload = {
+  version: 1;
+  exportedAt: string;
+  records: HistoryRecord[];
+};
+
+export type HistoryImportResult = {
+  records: HistoryRecord[];
+  importedCount: number;
+  skippedCount: number;
+};
+
 export type PersistedSession = {
   version: 1;
   phase: Exclude<AppPhase, "setup">;

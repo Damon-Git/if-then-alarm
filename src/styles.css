@@ -525,6 +525,36 @@ textarea {
   gap: 10px;
 }
 
+.history-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.hidden-file-input {
+  display: none;
+}
+
+.history-notice {
+  margin: 0 0 14px;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-weight: 700;
+}
+
+.history-notice--success {
+  border: 1px solid #c5d7c0;
+  background: #f1f7ef;
+  color: #31592b;
+}
+
+.history-notice--error {
+  border: 1px solid #dfb8b4;
+  background: #fff1ef;
+  color: #8a2f25;
+}
+
 .history-record__header {
   align-items: flex-start;
 }

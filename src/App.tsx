@@ -8,7 +8,14 @@ import RestoreSessionModal from "./components/RestoreSessionModal";
 import RitualStage from "./components/RitualStage";
 import SetupForm from "./components/SetupForm";
 import { clearPersistedSession, loadPersistedSession, savePersistedSession } from "./lib/sessionStorage";
-import { clearHistoryRecords, deleteHistoryRecord, loadHistoryRecords, saveHistoryRecord } from "./lib/storage";
+import {
+  clearHistoryRecords,
+  createHistoryExportPayload,
+  deleteHistoryRecord,
+  importHistoryExportPayload,
+  loadHistoryRecords,
+  saveHistoryRecord,
+} from "./lib/storage";
 import type { ActiveModal, AppPhase, HistoryRecord, IntentSet, PersistedSession, ReviewInput } from "./types";
 
 const createId = () => {
@@ -26,6 +33,10 @@ const App = () => {
   const [activeModal, setActiveModal] = useState<ActiveModal | null>(null);
   const [isAbandonConfirmOpen, setIsAbandonConfirmOpen] = useState(false);
   const [historyRecords, setHistoryRecords] = useState<HistoryRecord[]>(() => loadHistoryRecords());
+  const [historyImportStatus, setHistoryImportStatus] = useState<{
+    type: "success" | "error";
+    message: string;
+  } | null>(null);
   const [pendingSession, setPendingSession] = useState<PersistedSession | null>(() => loadPersistedSession());
 
   const activeIntentSet = useMemo(
@@ -241,6 +252,7 @@ const App = () => {
     }
 
     setHistoryRecords(deleteHistoryRecord(recordId));
+    setHistoryImportStatus(null);
   };
 
   const clearRecords = () => {
@@ -251,6 +263,46 @@ const App = () => {
     }
 
     setHistoryRecords(clearHistoryRecords());
+    setHistoryImportStatus(null);
+  };
+
+  const exportRecords = () => {
+    const payload = createHistoryExportPayload(historyRecords);
+    const jsonValue = JSON.stringify(payload, null, 2);
+    const blob = new Blob([jsonValue], { type: "application/json" });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    const dateSegment = new Date().toISOString().slice(0, 10).replace(/-/g, "");
+
+    link.href = url;
+    link.download = `jiji-rululing-history-${dateSegment}.json`;
+    document.body.append(link);
+    link.click();
+    link.remove();
+    window.URL.revokeObjectURL(url);
+
+    setHistoryImportStatus({
+      type: "success",
+      message: `已导出 ${historyRecords.length} 条历史记录。`,
+    });
+  };
+
+  const importRecords = async (file: File) => {
+    try {
+      const rawValue = await file.text();
+      const result = importHistoryExportPayload(rawValue);
+
+      setHistoryRecords(result.records);
+      setHistoryImportStatus({
+        type: "success",
+        message: `导入完成：新增 ${result.importedCount} 条，跳过 ${result.skippedCount} 条重复记录。`,
+      });
+    } catch {
+      setHistoryImportStatus({
+        type: "error",
+        message: "导入失败：请选择由本应用导出的 JSON 历史文件。",
+      });
+    }
   };
 
   const hasBlockingAction = Boolean(activeIntentSet || activeModal);
@@ -282,7 +334,14 @@ const App = () => {
           <ReviewPanel intentSets={intentSets} onRequestAbandon={requestAbandonSession} onSave={saveReview} />
         ) : null}
 
-        <HistoryPanel records={historyRecords} onClearRecords={clearRecords} onDeleteRecord={deleteRecord} />
+        <HistoryPanel
+          importStatus={historyImportStatus}
+          records={historyRecords}
+          onClearRecords={clearRecords}
+          onDeleteRecord={deleteRecord}
+          onExportRecords={exportRecords}
+          onImportRecords={importRecords}
+        />
       </main>
 
       {activeModal && modalIntentSet ? (

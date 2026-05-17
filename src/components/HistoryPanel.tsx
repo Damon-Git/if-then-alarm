@@ -1,11 +1,18 @@
+import { useRef, type ChangeEvent } from "react";
 import { FOCUS_MINUTES_PER_INCENSE } from "../constants";
 import type { HistoryRecord } from "../types";
 import HistoryAnalysisPanel from "./HistoryAnalysisPanel";
 
 type HistoryPanelProps = {
+  importStatus: {
+    type: "success" | "error";
+    message: string;
+  } | null;
   records: HistoryRecord[];
   onClearRecords: () => void;
   onDeleteRecord: (recordId: string) => void;
+  onExportRecords: () => void;
+  onImportRecords: (file: File) => void;
 };
 
 const resultLabels: Record<HistoryRecord["result"], string> = {
@@ -41,7 +48,30 @@ const getHistorySummary = (record: HistoryRecord) => {
   };
 };
 
-const HistoryPanel = ({ records, onClearRecords, onDeleteRecord }: HistoryPanelProps) => {
+const HistoryPanel = ({
+  importStatus,
+  records,
+  onClearRecords,
+  onDeleteRecord,
+  onExportRecords,
+  onImportRecords,
+}: HistoryPanelProps) => {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const selectImportFile = () => {
+    fileInputRef.current?.click();
+  };
+
+  const importFile = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+
+    if (file) {
+      onImportRecords(file);
+    }
+
+    event.target.value = "";
+  };
+
   return (
     <section className="panel history-panel" aria-labelledby="history-title">
       <div className="section-heading">
@@ -49,12 +79,33 @@ const HistoryPanel = ({ records, onClearRecords, onDeleteRecord }: HistoryPanelP
           <p className="eyebrow">History</p>
           <h2 id="history-title">历史记录</h2>
         </div>
-        {records.length > 0 ? (
-          <button className="ghost-button" type="button" onClick={onClearRecords}>
-            清空历史
+        <div className="history-actions">
+          <button className="ghost-button" type="button" onClick={selectImportFile}>
+            导入历史
           </button>
-        ) : null}
+          <input
+            accept="application/json,.json"
+            className="hidden-file-input"
+            onChange={importFile}
+            ref={fileInputRef}
+            type="file"
+          />
+          {records.length > 0 ? (
+            <>
+              <button className="ghost-button" type="button" onClick={onExportRecords}>
+                导出历史
+              </button>
+              <button className="ghost-button" type="button" onClick={onClearRecords}>
+                清空历史
+              </button>
+            </>
+          ) : null}
+        </div>
       </div>
+
+      {importStatus ? (
+        <p className={`history-notice history-notice--${importStatus.type}`}>{importStatus.message}</p>
+      ) : null}
 
       {records.length === 0 ? (
         <p className="muted-text">暂无历史记录。完成一次复盘后，这里会显示本轮行动承诺、总香数和复盘结论。</p>
