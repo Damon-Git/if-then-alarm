@@ -445,6 +445,12 @@ textarea {
   color: #8a2f25;
 }
 
+.history-record__header > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
 .history-intent {
   display: grid;
   gap: 6px;

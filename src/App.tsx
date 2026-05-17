@@ -6,7 +6,7 @@ import HistoryPanel from "./components/HistoryPanel";
 import ReviewPanel from "./components/ReviewPanel";
 import RitualStage from "./components/RitualStage";
 import SetupForm from "./components/SetupForm";
-import { loadHistoryRecords, saveHistoryRecord } from "./lib/storage";
+import { clearHistoryRecords, deleteHistoryRecord, loadHistoryRecords, saveHistoryRecord } from "./lib/storage";
 import type { ActiveModal, AppPhase, HistoryRecord, IntentSet, ReviewResult } from "./types";
 
 const createId = () => {
@@ -195,6 +195,26 @@ const App = () => {
     setPhase("setup");
   };
 
+  const deleteRecord = (recordId: string) => {
+    const shouldDelete = window.confirm("确定要删除这条历史记录吗？");
+
+    if (!shouldDelete) {
+      return;
+    }
+
+    setHistoryRecords(deleteHistoryRecord(recordId));
+  };
+
+  const clearRecords = () => {
+    const shouldClear = window.confirm("确定要清空全部历史记录吗？此操作不会影响当前正在进行的轮次。");
+
+    if (!shouldClear) {
+      return;
+    }
+
+    setHistoryRecords(clearHistoryRecords());
+  };
+
   const hasBlockingAction = Boolean(activeIntentSet || activeModal);
 
   return (
@@ -224,7 +244,7 @@ const App = () => {
           <ReviewPanel intentSets={intentSets} onRequestAbandon={requestAbandonSession} onSave={saveReview} />
         ) : null}
 
-        <HistoryPanel records={historyRecords} />
+        <HistoryPanel records={historyRecords} onClearRecords={clearRecords} onDeleteRecord={deleteRecord} />
       </main>
 
       {activeModal && modalIntentSet ? (

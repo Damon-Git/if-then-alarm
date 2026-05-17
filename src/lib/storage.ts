@@ -28,3 +28,14 @@ export const saveHistoryRecord = (record: HistoryRecord) => {
   window.localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(nextRecords));
   return nextRecords;
 };
+
+export const deleteHistoryRecord = (recordId: string) => {
+  const nextRecords = loadHistoryRecords().filter((record) => record.id !== recordId);
+  window.localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(nextRecords));
+  return nextRecords;
+};
+
+export const clearHistoryRecords = () => {
+  window.localStorage.removeItem(HISTORY_STORAGE_KEY);
+  return [];
+};

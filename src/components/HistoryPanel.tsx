@@ -2,6 +2,8 @@ import type { HistoryRecord } from "../types";
 
 type HistoryPanelProps = {
   records: HistoryRecord[];
+  onClearRecords: () => void;
+  onDeleteRecord: (recordId: string) => void;
 };
 
 const resultLabels: Record<HistoryRecord["result"], string> = {
@@ -19,7 +21,7 @@ const formatDateTime = (value: string) => {
   });
 };
 
-const HistoryPanel = ({ records }: HistoryPanelProps) => {
+const HistoryPanel = ({ records, onClearRecords, onDeleteRecord }: HistoryPanelProps) => {
   return (
     <section className="panel history-panel" aria-labelledby="history-title">
       <div className="section-heading">
@@ -27,6 +29,11 @@ const HistoryPanel = ({ records }: HistoryPanelProps) => {
           <p className="eyebrow">History</p>
           <h2 id="history-title">历史记录</h2>
         </div>
+        {records.length > 0 ? (
+          <button className="ghost-button" type="button" onClick={onClearRecords}>
+            清空历史
+          </button>
+        ) : null}
       </div>
 
       {records.length === 0 ? (
@@ -36,8 +43,13 @@ const HistoryPanel = ({ records }: HistoryPanelProps) => {
           {records.map((record) => (
             <article className="history-record" key={record.id}>
               <div className="history-record__header">
-                <span>{formatDateTime(record.createdAt)}</span>
-                <strong>{resultLabels[record.result]}</strong>
+                <div>
+                  <span>{formatDateTime(record.createdAt)}</span>
+                  <strong>{resultLabels[record.result]}</strong>
+                </div>
+                <button className="icon-text-button" type="button" onClick={() => onDeleteRecord(record.id)}>
+                  删除
+                </button>
               </div>
               <p>{record.reviewText}</p>
               <div className="history-record__intents">
