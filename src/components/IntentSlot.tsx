@@ -1,0 +1,68 @@
+import type { IntentSet } from "../types";
+import TimerPanel from "./TimerPanel";
+
+type IntentSlotProps = {
+  intentSet: IntentSet;
+  actionDisabled: boolean;
+  timerRemaining: number;
+  onStart: (intentSetId: string) => void;
+};
+
+const statusLabels: Record<IntentSet["status"], string> = {
+  idle: "未开始",
+  burning: "进行中",
+  resting: "休息中",
+  completed: "已完成",
+};
+
+const IntentSlot = ({ intentSet, actionDisabled, timerRemaining, onStart }: IntentSlotProps) => {
+  const canStart = intentSet.status === "idle" && !actionDisabled;
+  return (
+    <article className={`intent-slot intent-slot--${intentSet.status}`}>
+      <div className="intent-slot__topline">
+        <span className="status-pill">{statusLabels[intentSet.status]}</span>
+        <span>{intentSet.incenseCount} 炷香</span>
+      </div>
+
+      <button
+        className="talisman-card talisman-card--primary"
+        disabled={!canStart}
+        type="button"
+        onClick={() => onStart(intentSet.id)}
+      >
+        <span className="talisman-card__label">情境性符箓</span>
+        <strong>{intentSet.situationIntent}</strong>
+      </button>
+
+      <div className="censer-placeholder" aria-label="香炉占位">
+        <span>香炉占位</span>
+        <strong>第 {intentSet.currentIncenseIndex} / {intentSet.incenseCount} 炷</strong>
+      </div>
+
+      {intentSet.status === "burning" || intentSet.status === "resting" ? (
+        <TimerPanel
+          currentIncenseIndex={intentSet.currentIncenseIndex}
+          incenseCount={intentSet.incenseCount}
+          secondsRemaining={timerRemaining}
+          status={intentSet.status}
+        />
+      ) : null}
+
+      <div className="prevention-list">
+        <span className="prevention-list__title">预防性符箓</span>
+        {intentSet.preventionIntents.length === 0 ? (
+          <p className="muted-text">暂无预防性符箓</p>
+        ) : (
+          intentSet.preventionIntents.map((preventionIntent, index) => (
+            <div className="talisman-card talisman-card--secondary" key={`${intentSet.id}-${index}`}>
+              <span className="talisman-card__label">第 {index + 1} 条</span>
+              <p>{preventionIntent}</p>
+            </div>
+          ))
+        )}
+      </div>
+    </article>
+  );
+};
+
+export default IntentSlot;
