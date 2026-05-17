@@ -76,7 +76,13 @@ export type IntentSetDraft = {
   incenseCount: number;
 };
 
-export type SetupValidationErrors = Record<string, string[]>;
+export type SetupValidationError = {
+  field?: "situationIntent" | "preventionIntent" | "incenseCount";
+  message: string;
+  preventionIndex?: number;
+};
+
+export type SetupValidationErrors = Record<string, SetupValidationError[]>;
 
 export type ActiveModal =
   | {

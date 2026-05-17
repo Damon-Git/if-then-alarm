@@ -1,6 +1,6 @@
-import { useState, type FormEvent } from "react";
+import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { MAX_INTENT_SETS } from "../constants";
-import { hasValidationErrors, validateIntentDrafts } from "../lib/validation";
+import { hasValidationErrors, normalizeIntentText, validateIntentDrafts } from "../lib/validation";
 import type { IntentSet, IntentSetDraft, SetupValidationErrors } from "../types";
 import IntentSetForm from "./IntentSetForm";
 
@@ -26,6 +26,33 @@ const createEmptyDraft = (): IntentSetDraft => ({
 const SetupForm = ({ onSubmit }: SetupFormProps) => {
   const [drafts, setDrafts] = useState<IntentSetDraft[]>(() => [createEmptyDraft()]);
   const [errors, setErrors] = useState<SetupValidationErrors>({});
+
+  const hasUnsavedDraft = useMemo(
+    () =>
+      drafts.length > 1 ||
+      drafts.some(
+        (draft) =>
+          normalizeIntentText(draft.situationIntent) ||
+          draft.preventionIntents.length > 0 ||
+          draft.incenseCount !== 1,
+      ),
+    [drafts],
+  );
+
+  useEffect(() => {
+    if (!hasUnsavedDraft) {
+      return;
+    }
+
+    const warnBeforeUnload = (event: BeforeUnloadEvent) => {
+      event.preventDefault();
+      event.returnValue = "";
+    };
+
+    window.addEventListener("beforeunload", warnBeforeUnload);
+
+    return () => window.removeEventListener("beforeunload", warnBeforeUnload);
+  }, [hasUnsavedDraft]);
 
   const updateDraft = (updatedDraft: IntentSetDraft) => {
     setDrafts((currentDrafts) =>
@@ -63,8 +90,8 @@ const SetupForm = ({ onSubmit }: SetupFormProps) => {
 
     const intentSets: IntentSet[] = drafts.map((draft) => ({
       id: draft.id,
-      situationIntent: draft.situationIntent.trim(),
-      preventionIntents: draft.preventionIntents.map((intent) => intent.trim()).filter(Boolean),
+      situationIntent: normalizeIntentText(draft.situationIntent),
+      preventionIntents: draft.preventionIntents.map(normalizeIntentText).filter(Boolean),
       incenseCount: draft.incenseCount,
       currentIncenseIndex: 1,
       status: "idle",
@@ -91,7 +118,7 @@ const SetupForm = ({ onSubmit }: SetupFormProps) => {
         {errors.form ? (
           <ul className="error-list">
             {errors.form.map((error) => (
-              <li key={error}>{error}</li>
+              <li key={error.message}>{error.message}</li>
             ))}
           </ul>
         ) : null}

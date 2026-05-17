@@ -171,6 +171,12 @@ select {
   font-weight: 700;
 }
 
+.field-help {
+  margin: -2px 0 0;
+  color: #746a61;
+  font-size: 0.84rem;
+}
+
 .field textarea {
   min-height: 76px;
   border: 1px solid #cdbfb1;
@@ -183,6 +189,11 @@ select {
 .field textarea:focus {
   border-color: #9b3a2f;
   outline: 2px solid rgb(155 58 47 / 16%);
+}
+
+.field textarea[aria-invalid="true"] {
+  border-color: #a0271f;
+  background: #fff7f5;
 }
 
 .field--inline {
@@ -384,6 +395,7 @@ select {
 }
 
 .error-list,
+.field-error-list,
 .error-text {
   color: #a0271f;
 }
@@ -393,6 +405,15 @@ select {
   gap: 4px;
   margin: 0;
   padding-left: 20px;
+}
+
+.field-error-list {
+  display: grid;
+  gap: 4px;
+  margin: -2px 0 0;
+  padding-left: 20px;
+  font-size: 0.88rem;
+  font-weight: 700;
 }
 
 .error-text {
