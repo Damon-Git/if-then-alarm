@@ -4,10 +4,12 @@ import AbandonSessionModal from "./components/AbandonSessionModal";
 import BreakModal from "./components/BreakModal";
 import HistoryPanel from "./components/HistoryPanel";
 import ReviewPanel from "./components/ReviewPanel";
+import RestoreSessionModal from "./components/RestoreSessionModal";
 import RitualStage from "./components/RitualStage";
 import SetupForm from "./components/SetupForm";
+import { clearPersistedSession, loadPersistedSession, savePersistedSession } from "./lib/sessionStorage";
 import { clearHistoryRecords, deleteHistoryRecord, loadHistoryRecords, saveHistoryRecord } from "./lib/storage";
-import type { ActiveModal, AppPhase, HistoryRecord, IntentSet, ReviewResult } from "./types";
+import type { ActiveModal, AppPhase, HistoryRecord, IntentSet, PersistedSession, ReviewResult } from "./types";
 
 const createId = () => {
   if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
@@ -24,6 +26,7 @@ const App = () => {
   const [activeModal, setActiveModal] = useState<ActiveModal | null>(null);
   const [isAbandonConfirmOpen, setIsAbandonConfirmOpen] = useState(false);
   const [historyRecords, setHistoryRecords] = useState<HistoryRecord[]>(() => loadHistoryRecords());
+  const [pendingSession, setPendingSession] = useState<PersistedSession | null>(() => loadPersistedSession());
 
   const activeIntentSet = useMemo(
     () => intentSets.find((intentSet) => intentSet.status === "burning" || intentSet.status === "resting") ?? null,
@@ -102,6 +105,19 @@ const App = () => {
     return () => window.removeEventListener("beforeunload", warnBeforeUnload);
   }, [hasUnsavedSession]);
 
+  useEffect(() => {
+    if (!hasUnsavedSession || intentSets.length === 0) {
+      return;
+    }
+
+    savePersistedSession({
+      phase: phase as Exclude<AppPhase, "setup">,
+      intentSets,
+      timerRemaining,
+      activeModal,
+    });
+  }, [activeModal, hasUnsavedSession, intentSets, phase, timerRemaining]);
+
   const startRitual = (nextIntentSets: IntentSet[]) => {
     setIntentSets(nextIntentSets);
     setTimerRemaining(0);
@@ -171,6 +187,25 @@ const App = () => {
     setActiveModal(null);
     setIsAbandonConfirmOpen(false);
     setPhase("setup");
+    clearPersistedSession();
+  };
+
+  const restorePendingSession = () => {
+    if (!pendingSession) {
+      return;
+    }
+
+    setIntentSets(pendingSession.intentSets);
+    setTimerRemaining(pendingSession.timerRemaining);
+    setActiveModal(pendingSession.activeModal);
+    setIsAbandonConfirmOpen(false);
+    setPhase(pendingSession.phase);
+    setPendingSession(null);
+  };
+
+  const discardPendingSession = () => {
+    clearPersistedSession();
+    setPendingSession(null);
   };
 
   const saveReview = (result: ReviewResult, reviewText: string) => {
@@ -193,6 +228,7 @@ const App = () => {
     setActiveModal(null);
     setIsAbandonConfirmOpen(false);
     setPhase("setup");
+    clearPersistedSession();
   };
 
   const deleteRecord = (recordId: string) => {
@@ -258,6 +294,14 @@ const App = () => {
 
       {isAbandonConfirmOpen ? (
         <AbandonSessionModal onCancel={cancelAbandonSession} onConfirm={confirmAbandonSession} />
+      ) : null}
+
+      {pendingSession ? (
+        <RestoreSessionModal
+          onDiscard={discardPendingSession}
+          onRestore={restorePendingSession}
+          session={pendingSession}
+        />
       ) : null}
     </div>
   );

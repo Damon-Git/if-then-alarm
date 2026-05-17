@@ -1,0 +1,54 @@
+import type { PersistedSession } from "../types";
+
+const SESSION_STORAGE_KEY = "jiji-rululing.current-session";
+
+const isPersistedSession = (value: unknown): value is PersistedSession => {
+  if (!value || typeof value !== "object") {
+    return false;
+  }
+
+  const session = value as Partial<PersistedSession>;
+
+  return (
+    session.version === 1 &&
+    (session.phase === "ritual" || session.phase === "review") &&
+    Array.isArray(session.intentSets) &&
+    typeof session.timerRemaining === "number" &&
+    typeof session.updatedAt === "string"
+  );
+};
+
+export const loadPersistedSession = (): PersistedSession | null => {
+  try {
+    const rawValue = window.localStorage.getItem(SESSION_STORAGE_KEY);
+
+    if (!rawValue) {
+      return null;
+    }
+
+    const parsedValue = JSON.parse(rawValue);
+
+    if (!isPersistedSession(parsedValue)) {
+      return null;
+    }
+
+    return parsedValue;
+  } catch {
+    return null;
+  }
+};
+
+export const savePersistedSession = (session: Omit<PersistedSession, "version" | "updatedAt">) => {
+  const nextSession: PersistedSession = {
+    ...session,
+    version: 1,
+    updatedAt: new Date().toISOString(),
+  };
+
+  window.localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(nextSession));
+  return nextSession;
+};
+
+export const clearPersistedSession = () => {
+  window.localStorage.removeItem(SESSION_STORAGE_KEY);
+};

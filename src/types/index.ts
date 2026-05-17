@@ -25,6 +25,15 @@ export type HistoryRecord = {
   reviewText: string;
 };
 
+export type PersistedSession = {
+  version: 1;
+  phase: Exclude<AppPhase, "setup">;
+  intentSets: IntentSet[];
+  timerRemaining: number;
+  activeModal: ActiveModal | null;
+  updatedAt: string;
+};
+
 export type IntentSetDraft = {
   id: string;
   situationIntent: string;
