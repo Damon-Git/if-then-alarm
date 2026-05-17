@@ -9,3 +9,4 @@ export const BREAK_SECONDS = DEV_BREAK_SECONDS;
 
 export const MAX_INTENT_SETS = 3;
 export const MAX_PREVENTION_INTENTS = 3;
+export const FOCUS_MINUTES_PER_INCENSE = 25;

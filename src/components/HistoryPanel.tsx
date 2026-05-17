@@ -1,4 +1,6 @@
+import { FOCUS_MINUTES_PER_INCENSE } from "../constants";
 import type { HistoryRecord } from "../types";
+import HistoryAnalysisPanel from "./HistoryAnalysisPanel";
 
 type HistoryPanelProps = {
   records: HistoryRecord[];
@@ -25,7 +27,7 @@ const formatDateTime = (value: string) => {
 const getHistorySummary = (record: HistoryRecord) => {
   const intentSetCount = record.intentSets.length;
   const totalIncenseCount = record.intentSets.reduce((total, intentSet) => total + intentSet.incenseCount, 0);
-  const totalFocusMinutes = totalIncenseCount * 25;
+  const totalFocusMinutes = totalIncenseCount * FOCUS_MINUTES_PER_INCENSE;
   const preventionIntentCount = record.intentSets.reduce(
     (total, intentSet) => total + intentSet.preventionIntents.length,
     0,
@@ -57,61 +59,65 @@ const HistoryPanel = ({ records, onClearRecords, onDeleteRecord }: HistoryPanelP
       {records.length === 0 ? (
         <p className="muted-text">暂无历史记录。完成一次复盘后，这里会显示本轮行动承诺、总香数和复盘结论。</p>
       ) : (
-        <div className="history-list">
-          {records.map((record) => {
-            const summary = getHistorySummary(record);
+        <>
+          <HistoryAnalysisPanel records={records} />
 
-            return (
-              <article className="history-record" key={record.id}>
-                <div className="history-record__header">
-                  <details className="history-record__details">
-                    <summary className="history-summary">
-                      <span className="history-summary__date">{formatDateTime(record.createdAt)}</span>
-                      <strong>{resultLabels[record.result]}</strong>
-                      <span>{summary.intentSetCount} 套</span>
-                      <span>{summary.totalIncenseCount} 炷香</span>
-                      <span>约 {summary.totalFocusMinutes} 分钟</span>
-                      <span className="history-summary__review">复盘：{record.reviewText}</span>
-                      {record.obstacleText ? (
-                        <span className="history-summary__review">阻碍：{record.obstacleText}</span>
-                      ) : null}
-                      {record.nextAdjustmentText ? (
-                        <span className="history-summary__review">下次：{record.nextAdjustmentText}</span>
-                      ) : null}
-                    </summary>
+          <div className="history-list">
+            {records.map((record) => {
+              const summary = getHistorySummary(record);
 
-                    <div className="history-metrics" aria-label="历史记录摘要">
-                      <span>情境性符箓 {summary.intentSetCount} 张</span>
-                      <span>预防性符箓 {summary.preventionIntentCount} 张</span>
-                    </div>
+              return (
+                <article className="history-record" key={record.id}>
+                  <div className="history-record__header">
+                    <details className="history-record__details">
+                      <summary className="history-summary">
+                        <span className="history-summary__date">{formatDateTime(record.createdAt)}</span>
+                        <strong>{resultLabels[record.result]}</strong>
+                        <span>{summary.intentSetCount} 套</span>
+                        <span>{summary.totalIncenseCount} 炷香</span>
+                        <span>约 {summary.totalFocusMinutes} 分钟</span>
+                        <span className="history-summary__review">复盘：{record.reviewText}</span>
+                        {record.obstacleText ? (
+                          <span className="history-summary__review">阻碍：{record.obstacleText}</span>
+                        ) : null}
+                        {record.nextAdjustmentText ? (
+                          <span className="history-summary__review">下次：{record.nextAdjustmentText}</span>
+                        ) : null}
+                      </summary>
 
-                    <div className="history-record__intents">
-                      {record.intentSets.map((intentSet, index) => (
-                        <div className="history-intent" key={`${record.id}-${index}`}>
-                          <span>第 {index + 1} 套 · {intentSet.incenseCount} 炷</span>
-                          <strong>{intentSet.situationIntent}</strong>
-                          {intentSet.preventionIntents.length > 0 ? (
-                            <ul>
-                              {intentSet.preventionIntents.map((preventionIntent, preventionIndex) => (
-                                <li key={`${record.id}-${index}-${preventionIndex}`}>{preventionIntent}</li>
-                              ))}
-                            </ul>
-                          ) : (
-                            <p className="muted-text">暂无预防性符箓</p>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </details>
+                      <div className="history-metrics" aria-label="历史记录摘要">
+                        <span>情境性符箓 {summary.intentSetCount} 张</span>
+                        <span>预防性符箓 {summary.preventionIntentCount} 张</span>
+                      </div>
 
-                  <button className="icon-text-button" type="button" onClick={() => onDeleteRecord(record.id)}>
-                    删除
-                  </button>
-                </div>
-              </article>
-            );
-          })}
-        </div>
+                      <div className="history-record__intents">
+                        {record.intentSets.map((intentSet, index) => (
+                          <div className="history-intent" key={`${record.id}-${index}`}>
+                            <span>第 {index + 1} 套 · {intentSet.incenseCount} 炷</span>
+                            <strong>{intentSet.situationIntent}</strong>
+                            {intentSet.preventionIntents.length > 0 ? (
+                              <ul>
+                                {intentSet.preventionIntents.map((preventionIntent, preventionIndex) => (
+                                  <li key={`${record.id}-${index}-${preventionIndex}`}>{preventionIntent}</li>
+                                ))}
+                              </ul>
+                            ) : (
+                              <p className="muted-text">暂无预防性符箓</p>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </details>
+
+                    <button className="icon-text-button" type="button" onClick={() => onDeleteRecord(record.id)}>
+                      删除
+                    </button>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        </>
       )}
     </section>
   );
