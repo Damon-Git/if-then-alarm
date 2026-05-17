@@ -33,6 +33,8 @@ import type {
   ToastMessage,
 } from "./types";
 
+type UtilityPanel = "history" | "settings";
+
 const createId = () => {
   if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
     return crypto.randomUUID();
@@ -52,6 +54,7 @@ const App = () => {
   const [historyRecords, setHistoryRecords] = useState<HistoryRecord[]>(() => loadHistoryRecords());
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
   const [pendingSession, setPendingSession] = useState<PersistedSession | null>(() => loadPersistedSession());
+  const [activeUtilityPanel, setActiveUtilityPanel] = useState<UtilityPanel | null>(null);
 
   const activeIntentSet = useMemo(
     () => intentSets.find((intentSet) => intentSet.status === "burning" || intentSet.status === "resting") ?? null,
@@ -167,6 +170,7 @@ const App = () => {
     setActiveModal(null);
     setPendingStartIntentId(null);
     setIsAbandonConfirmOpen(false);
+    setActiveUtilityPanel(null);
     setPhase("ritual");
   };
 
@@ -244,6 +248,7 @@ const App = () => {
     setActiveModal(null);
     setPendingStartIntentId(null);
     setIsAbandonConfirmOpen(false);
+    setActiveUtilityPanel(null);
     setPhase("setup");
     clearPersistedSession();
   };
@@ -259,6 +264,7 @@ const App = () => {
     setPendingStartIntentId(null);
     setIsAbandonConfirmOpen(false);
     setSettings(saveAppSettings({ timerMode: pendingSession.timerMode }));
+    setActiveUtilityPanel(null);
     setPhase(pendingSession.phase);
     setPendingSession(null);
   };
@@ -292,6 +298,7 @@ const App = () => {
     setActiveModal(null);
     setPendingStartIntentId(null);
     setIsAbandonConfirmOpen(false);
+    setActiveUtilityPanel(null);
     setPhase("setup");
     clearPersistedSession();
   };
@@ -359,6 +366,10 @@ const App = () => {
   const hasBlockingAction = Boolean(activeIntentSet || activeModal || pendingStartIntentId);
   const isSettingsDisabled = hasUnsavedSession || Boolean(pendingSession);
 
+  const toggleUtilityPanel = (panel: UtilityPanel) => {
+    setActiveUtilityPanel((currentPanel) => (currentPanel === panel ? null : panel));
+  };
+
   return (
     <div className="app-shell">
       <header className="app-header">
@@ -370,15 +381,27 @@ const App = () => {
           {timerConfig.label}：专注 {formatDurationLabel(timerConfig.focusSeconds)} / 休息{" "}
           {formatDurationLabel(timerConfig.breakSeconds)}
         </span>
+        <nav className="utility-nav" aria-label="辅助面板">
+          <button
+            aria-pressed={activeUtilityPanel === "history"}
+            className={activeUtilityPanel === "history" ? "ghost-button is-active" : "ghost-button"}
+            type="button"
+            onClick={() => toggleUtilityPanel("history")}
+          >
+            历史
+          </button>
+          <button
+            aria-pressed={activeUtilityPanel === "settings"}
+            className={activeUtilityPanel === "settings" ? "ghost-button is-active" : "ghost-button"}
+            type="button"
+            onClick={() => toggleUtilityPanel("settings")}
+          >
+            设置
+          </button>
+        </nav>
       </header>
 
       <main className="app-main">
-        <SettingsPanel
-          disabled={isSettingsDisabled}
-          timerMode={settings.timerMode}
-          onTimerModeChange={updateTimerMode}
-        />
-
         {phase === "setup" ? <SetupForm onSubmit={startRitual} /> : null}
 
         {phase === "ritual" ? (
@@ -400,13 +423,23 @@ const App = () => {
           />
         ) : null}
 
-        <HistoryPanel
-          records={historyRecords}
-          onClearRecords={clearRecords}
-          onDeleteRecord={deleteRecord}
-          onExportRecords={exportRecords}
-          onImportRecords={importRecords}
-        />
+        {activeUtilityPanel === "settings" ? (
+          <SettingsPanel
+            disabled={isSettingsDisabled}
+            timerMode={settings.timerMode}
+            onTimerModeChange={updateTimerMode}
+          />
+        ) : null}
+
+        {activeUtilityPanel === "history" ? (
+          <HistoryPanel
+            records={historyRecords}
+            onClearRecords={clearRecords}
+            onDeleteRecord={deleteRecord}
+            onExportRecords={exportRecords}
+            onImportRecords={importRecords}
+          />
+        ) : null}
       </main>
 
       <ToastHost toasts={toasts} onDismiss={dismissToast} />

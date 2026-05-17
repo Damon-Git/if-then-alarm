@@ -84,6 +84,22 @@ select {
   font-size: 0.92rem;
 }
 
+.utility-nav {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 8px;
+}
+
+.utility-nav .ghost-button {
+  min-height: 34px;
+  padding: 0 12px;
+}
+
+.ghost-button.is-active {
+  background: #8a2f25;
+  color: #fffaf4;
+}
+
 .panel {
   background: #fffaf4;
   border: 1px solid #ded1c5;
@@ -292,6 +308,10 @@ select {
   gap: 16px;
 }
 
+.compact-stage {
+  display: none;
+}
+
 .intent-slot {
   display: grid;
   gap: 14px;
@@ -362,6 +382,109 @@ select {
   border-radius: 8px;
   background: #efebe5;
   color: #4e4740;
+}
+
+.compact-censer {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+
+.compact-censer__button {
+  display: grid;
+  place-items: center;
+  gap: 8px;
+  min-height: 148px;
+  border: 1px solid #d6c6b7;
+  border-radius: 8px;
+  padding: 12px;
+  background: #fffdf9;
+  color: #302a25;
+  cursor: pointer;
+}
+
+.compact-censer__button:disabled {
+  cursor: default;
+}
+
+.compact-censer--idle .compact-censer__button:not(:disabled):hover {
+  border-color: #9b3a2f;
+  background: #fff8f2;
+}
+
+.compact-censer--burning .compact-censer__button {
+  border-color: #b95d4c;
+  background: #fff6f0;
+}
+
+.compact-censer--resting .compact-censer__button {
+  border-color: #b8c4bc;
+  background: #f4f8f4;
+}
+
+.compact-censer--completed .compact-censer__button {
+  border-color: #c6d5bf;
+  background: #f2f7ef;
+}
+
+.compact-censer__bowl {
+  position: relative;
+  display: block;
+  width: 82px;
+  height: 62px;
+}
+
+.compact-censer__rim,
+.compact-censer__body,
+.compact-censer__feet {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.compact-censer__rim {
+  top: 11px;
+  width: 78px;
+  height: 18px;
+  border: 2px solid #8a5f4b;
+  border-radius: 999px;
+  background: #f8e6d8;
+}
+
+.compact-censer__body {
+  top: 21px;
+  width: 66px;
+  height: 32px;
+  border: 2px solid #8a5f4b;
+  border-top: 0;
+  border-radius: 0 0 24px 24px;
+  background: #d89c7a;
+}
+
+.compact-censer__feet {
+  top: 50px;
+  width: 50px;
+  height: 8px;
+  border-radius: 999px;
+  background: #8a5f4b;
+}
+
+.compact-censer__status {
+  color: #8a2f25;
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+
+.compact-censer strong {
+  font-size: 1.35rem;
+  line-height: 1;
+}
+
+.compact-censer p {
+  margin: 0;
+  color: #5e534a;
+  font-size: 0.86rem;
+  overflow-wrap: anywhere;
 }
 
 .timer-panel {
@@ -853,5 +976,67 @@ select {
     right: 10px;
     bottom: 10px;
     width: calc(100vw - 20px);
+  }
+}
+
+@media (max-width: 560px) {
+  .app-shell {
+    width: min(100vw - 16px, 420px);
+    padding-top: 10px;
+  }
+
+  .app-header {
+    align-items: stretch;
+    gap: 10px;
+    padding: 10px 0 14px;
+  }
+
+  .app-header h1 {
+    font-size: 1.65rem;
+  }
+
+  .timer-mode {
+    font-size: 0.84rem;
+  }
+
+  .utility-nav {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .panel {
+    padding: 12px;
+  }
+
+  .stage-grid--full {
+    display: none;
+  }
+
+  .compact-stage {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(108px, 1fr));
+    gap: 10px;
+  }
+
+  .compact-censer__button {
+    min-height: 136px;
+    padding: 10px 8px;
+  }
+
+  .compact-censer__bowl {
+    width: 74px;
+    height: 58px;
+  }
+
+  .compact-censer__rim {
+    width: 70px;
+  }
+
+  .compact-censer__body {
+    width: 60px;
+  }
+
+  .compact-censer strong {
+    font-size: 1.18rem;
   }
 }

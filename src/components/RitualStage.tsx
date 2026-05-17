@@ -1,4 +1,5 @@
 import type { IntentSet } from "../types";
+import CompactCenserSlot from "./CompactCenserSlot";
 import IntentSlot from "./IntentSlot";
 
 type RitualStageProps = {
@@ -28,12 +29,28 @@ const RitualStage = ({
         </button>
       </div>
 
-      <div className="stage-grid">
+      <div className="stage-grid stage-grid--full">
         {intentSets.map((intentSet) => {
           const isActive = intentSet.status === "burning" || intentSet.status === "resting";
 
           return (
             <IntentSlot
+              actionDisabled={hasBlockingAction && !isActive}
+              intentSet={intentSet}
+              key={intentSet.id}
+              onStart={onStartIntent}
+              timerRemaining={isActive ? timerRemaining : 0}
+            />
+          );
+        })}
+      </div>
+
+      <div className="compact-stage" aria-label="小窗香炉舞台">
+        {intentSets.map((intentSet) => {
+          const isActive = intentSet.status === "burning" || intentSet.status === "resting";
+
+          return (
+            <CompactCenserSlot
               actionDisabled={hasBlockingAction && !isActive}
               intentSet={intentSet}
               key={intentSet.id}
