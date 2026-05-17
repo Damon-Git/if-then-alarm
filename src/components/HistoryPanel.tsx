@@ -8,6 +8,7 @@ type HistoryPanelProps = {
 
 const resultLabels: Record<HistoryRecord["result"], string> = {
   completed: "完成",
+  partial: "部分完成",
   failed: "未完成",
 };
 
@@ -71,6 +72,12 @@ const HistoryPanel = ({ records, onClearRecords, onDeleteRecord }: HistoryPanelP
                       <span>{summary.totalIncenseCount} 炷香</span>
                       <span>约 {summary.totalFocusMinutes} 分钟</span>
                       <span className="history-summary__review">复盘：{record.reviewText}</span>
+                      {record.obstacleText ? (
+                        <span className="history-summary__review">阻碍：{record.obstacleText}</span>
+                      ) : null}
+                      {record.nextAdjustmentText ? (
+                        <span className="history-summary__review">下次：{record.nextAdjustmentText}</span>
+                      ) : null}
                     </summary>
 
                     <div className="history-metrics" aria-label="历史记录摘要">

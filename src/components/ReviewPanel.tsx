@@ -1,15 +1,17 @@
 import { useState, type FormEvent } from "react";
-import type { IntentSet, ReviewResult } from "../types";
+import type { IntentSet, ReviewInput, ReviewResult } from "../types";
 
 type ReviewPanelProps = {
   intentSets: IntentSet[];
-  onSave: (result: ReviewResult, reviewText: string) => void;
+  onSave: (review: ReviewInput) => void;
   onRequestAbandon: () => void;
 };
 
 const ReviewPanel = ({ intentSets, onSave, onRequestAbandon }: ReviewPanelProps) => {
   const [result, setResult] = useState<ReviewResult>("completed");
   const [reviewText, setReviewText] = useState("");
+  const [obstacleText, setObstacleText] = useState("");
+  const [nextAdjustmentText, setNextAdjustmentText] = useState("");
   const [error, setError] = useState("");
 
   const saveReview = (event: FormEvent<HTMLFormElement>) => {
@@ -21,7 +23,12 @@ const ReviewPanel = ({ intentSets, onSave, onRequestAbandon }: ReviewPanelProps)
     }
 
     setError("");
-    onSave(result, reviewText.trim());
+    onSave({
+      result,
+      reviewText: reviewText.trim(),
+      obstacleText: obstacleText.trim() || undefined,
+      nextAdjustmentText: nextAdjustmentText.trim() || undefined,
+    });
   };
 
   return (
@@ -47,7 +54,7 @@ const ReviewPanel = ({ intentSets, onSave, onRequestAbandon }: ReviewPanelProps)
 
       <form className="review-form" onSubmit={saveReview}>
         <fieldset className="result-options">
-          <legend>本次是否完成</legend>
+          <legend>本次完成度</legend>
           <label>
             <input
               checked={result === "completed"}
@@ -56,6 +63,15 @@ const ReviewPanel = ({ intentSets, onSave, onRequestAbandon }: ReviewPanelProps)
               type="radio"
             />
             完成
+          </label>
+          <label>
+            <input
+              checked={result === "partial"}
+              name="review-result"
+              onChange={() => setResult("partial")}
+              type="radio"
+            />
+            部分完成
           </label>
           <label>
             <input
@@ -75,6 +91,26 @@ const ReviewPanel = ({ intentSets, onSave, onRequestAbandon }: ReviewPanelProps)
             onChange={(event) => setReviewText(event.target.value)}
             placeholder="写下这轮行动里最值得记住的一句话。"
             rows={3}
+          />
+        </label>
+
+        <label className="field">
+          <span>主要阻碍</span>
+          <textarea
+            value={obstacleText}
+            onChange={(event) => setObstacleText(event.target.value)}
+            placeholder="例如：启动太晚、被消息打断、任务定义不清。"
+            rows={2}
+          />
+        </label>
+
+        <label className="field">
+          <span>下次调整</span>
+          <textarea
+            value={nextAdjustmentText}
+            onChange={(event) => setNextAdjustmentText(event.target.value)}
+            placeholder="例如：开始前先关通知，把第一步缩小到 5 分钟内。"
+            rows={2}
           />
         </label>
 

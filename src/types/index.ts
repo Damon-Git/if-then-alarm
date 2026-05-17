@@ -11,7 +11,14 @@ export type IntentSet = {
 
 export type AppPhase = "setup" | "ritual" | "review";
 
-export type ReviewResult = "completed" | "failed";
+export type ReviewResult = "completed" | "partial" | "failed";
+
+export type ReviewInput = {
+  result: ReviewResult;
+  reviewText: string;
+  obstacleText?: string;
+  nextAdjustmentText?: string;
+};
 
 export type HistoryRecord = {
   id: string;
@@ -23,6 +30,8 @@ export type HistoryRecord = {
   }[];
   result: ReviewResult;
   reviewText: string;
+  obstacleText?: string;
+  nextAdjustmentText?: string;
 };
 
 export type PersistedSession = {

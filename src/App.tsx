@@ -9,7 +9,7 @@ import RitualStage from "./components/RitualStage";
 import SetupForm from "./components/SetupForm";
 import { clearPersistedSession, loadPersistedSession, savePersistedSession } from "./lib/sessionStorage";
 import { clearHistoryRecords, deleteHistoryRecord, loadHistoryRecords, saveHistoryRecord } from "./lib/storage";
-import type { ActiveModal, AppPhase, HistoryRecord, IntentSet, PersistedSession, ReviewResult } from "./types";
+import type { ActiveModal, AppPhase, HistoryRecord, IntentSet, PersistedSession, ReviewInput } from "./types";
 
 const createId = () => {
   if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
@@ -208,7 +208,7 @@ const App = () => {
     setPendingSession(null);
   };
 
-  const saveReview = (result: ReviewResult, reviewText: string) => {
+  const saveReview = (review: ReviewInput) => {
     const record: HistoryRecord = {
       id: createId(),
       createdAt: new Date().toISOString(),
@@ -217,8 +217,10 @@ const App = () => {
         preventionIntents: intentSet.preventionIntents,
         incenseCount: intentSet.incenseCount,
       })),
-      result,
-      reviewText,
+      result: review.result,
+      reviewText: review.reviewText,
+      obstacleText: review.obstacleText,
+      nextAdjustmentText: review.nextAdjustmentText,
     };
 
     const nextRecords = saveHistoryRecord(record);
