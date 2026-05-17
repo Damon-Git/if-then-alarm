@@ -1,3 +1,4 @@
+import { isTimerMode } from "./settingsStorage";
 import type { HistoryExportPayload, HistoryImportResult, HistoryRecord, ReviewResult } from "../types";
 
 const HISTORY_STORAGE_KEY = "jiji-rululing.history";
@@ -28,7 +29,8 @@ const isHistoryRecord = (value: unknown): value is HistoryRecord => {
     isReviewResult(record.result) &&
     typeof record.reviewText === "string" &&
     (record.obstacleText === undefined || typeof record.obstacleText === "string") &&
-    (record.nextAdjustmentText === undefined || typeof record.nextAdjustmentText === "string")
+    (record.nextAdjustmentText === undefined || typeof record.nextAdjustmentText === "string") &&
+    (record.timerMode === undefined || isTimerMode(record.timerMode))
   );
 };
 

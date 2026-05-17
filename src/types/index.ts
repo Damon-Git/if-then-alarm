@@ -11,6 +11,12 @@ export type IntentSet = {
 
 export type AppPhase = "setup" | "ritual" | "review";
 
+export type TimerMode = "dev" | "prod";
+
+export type AppSettings = {
+  timerMode: TimerMode;
+};
+
 export type ReviewResult = "completed" | "partial" | "failed";
 
 export type ReviewInput = {
@@ -32,6 +38,7 @@ export type HistoryRecord = {
   reviewText: string;
   obstacleText?: string;
   nextAdjustmentText?: string;
+  timerMode?: TimerMode;
 };
 
 export type HistoryExportPayload = {
@@ -52,6 +59,7 @@ export type PersistedSession = {
   intentSets: IntentSet[];
   timerRemaining: number;
   activeModal: ActiveModal | null;
+  timerMode: TimerMode;
   updatedAt: string;
 };
 

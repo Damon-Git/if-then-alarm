@@ -1,6 +1,6 @@
 import { useRef, type ChangeEvent } from "react";
 import { FOCUS_MINUTES_PER_INCENSE } from "../constants";
-import type { HistoryRecord } from "../types";
+import type { HistoryRecord, TimerMode } from "../types";
 import HistoryAnalysisPanel from "./HistoryAnalysisPanel";
 
 type HistoryPanelProps = {
@@ -19,6 +19,11 @@ const resultLabels: Record<HistoryRecord["result"], string> = {
   completed: "完成",
   partial: "部分完成",
   failed: "未完成",
+};
+
+const timerModeLabels: Record<TimerMode, string> = {
+  dev: "开发模式",
+  prod: "正式模式",
 };
 
 const formatDateTime = (value: string) => {
@@ -127,6 +132,7 @@ const HistoryPanel = ({
                         <span>{summary.intentSetCount} 套</span>
                         <span>{summary.totalIncenseCount} 炷香</span>
                         <span>约 {summary.totalFocusMinutes} 分钟</span>
+                        {record.timerMode ? <span>{timerModeLabels[record.timerMode]}</span> : null}
                         <span className="history-summary__review">复盘：{record.reviewText}</span>
                         {record.obstacleText ? (
                           <span className="history-summary__review">阻碍：{record.obstacleText}</span>

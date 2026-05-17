@@ -1,13 +1,16 @@
 import { useEffect, useMemo, useState } from "react";
-import { BREAK_SECONDS, TIMER_SECONDS } from "./constants";
+import { TIMER_MODE_CONFIG } from "./constants";
 import AbandonSessionModal from "./components/AbandonSessionModal";
 import BreakModal from "./components/BreakModal";
 import HistoryPanel from "./components/HistoryPanel";
 import ReviewPanel from "./components/ReviewPanel";
 import RestoreSessionModal from "./components/RestoreSessionModal";
 import RitualStage from "./components/RitualStage";
+import SettingsPanel from "./components/SettingsPanel";
 import SetupForm from "./components/SetupForm";
 import { clearPersistedSession, loadPersistedSession, savePersistedSession } from "./lib/sessionStorage";
+import { formatDurationLabel } from "./lib/timer";
+import { loadAppSettings, saveAppSettings } from "./lib/settingsStorage";
 import {
   clearHistoryRecords,
   createHistoryExportPayload,
@@ -16,7 +19,7 @@ import {
   loadHistoryRecords,
   saveHistoryRecord,
 } from "./lib/storage";
-import type { ActiveModal, AppPhase, HistoryRecord, IntentSet, PersistedSession, ReviewInput } from "./types";
+import type { ActiveModal, AppPhase, AppSettings, HistoryRecord, IntentSet, PersistedSession, ReviewInput, TimerMode } from "./types";
 
 const createId = () => {
   if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
@@ -32,6 +35,7 @@ const App = () => {
   const [timerRemaining, setTimerRemaining] = useState(0);
   const [activeModal, setActiveModal] = useState<ActiveModal | null>(null);
   const [isAbandonConfirmOpen, setIsAbandonConfirmOpen] = useState(false);
+  const [settings, setSettings] = useState<AppSettings>(() => loadAppSettings());
   const [historyRecords, setHistoryRecords] = useState<HistoryRecord[]>(() => loadHistoryRecords());
   const [historyImportStatus, setHistoryImportStatus] = useState<{
     type: "success" | "error";
@@ -53,6 +57,7 @@ const App = () => {
     : null;
 
   const hasUnsavedSession = phase === "ritual" || phase === "review";
+  const timerConfig = TIMER_MODE_CONFIG[settings.timerMode];
 
   useEffect(() => {
     if (!activeIntentSet || activeModal || isAbandonConfirmOpen || timerRemaining <= 0) {
@@ -126,8 +131,9 @@ const App = () => {
       intentSets,
       timerRemaining,
       activeModal,
+      timerMode: settings.timerMode,
     });
-  }, [activeModal, hasUnsavedSession, intentSets, phase, timerRemaining]);
+  }, [activeModal, hasUnsavedSession, intentSets, phase, settings.timerMode, timerRemaining]);
 
   const startRitual = (nextIntentSets: IntentSet[]) => {
     setIntentSets(nextIntentSets);
@@ -149,7 +155,7 @@ const App = () => {
           : intentSet,
       ),
     );
-    setTimerRemaining(TIMER_SECONDS);
+    setTimerRemaining(timerConfig.focusSeconds);
   };
 
   const startBreak = (intentSetId: string) => {
@@ -158,7 +164,7 @@ const App = () => {
         intentSet.id === intentSetId ? { ...intentSet, status: "resting" } : intentSet,
       ),
     );
-    setTimerRemaining(BREAK_SECONDS);
+    setTimerRemaining(timerConfig.breakSeconds);
     setActiveModal(null);
   };
 
@@ -180,7 +186,7 @@ const App = () => {
         };
       }),
     );
-    setTimerRemaining(TIMER_SECONDS);
+    setTimerRemaining(timerConfig.focusSeconds);
     setActiveModal(null);
   };
 
@@ -210,6 +216,7 @@ const App = () => {
     setTimerRemaining(pendingSession.timerRemaining);
     setActiveModal(pendingSession.activeModal);
     setIsAbandonConfirmOpen(false);
+    setSettings(saveAppSettings({ timerMode: pendingSession.timerMode }));
     setPhase(pendingSession.phase);
     setPendingSession(null);
   };
@@ -232,6 +239,7 @@ const App = () => {
       reviewText: review.reviewText,
       obstacleText: review.obstacleText,
       nextAdjustmentText: review.nextAdjustmentText,
+      timerMode: settings.timerMode,
     };
 
     const nextRecords = saveHistoryRecord(record);
@@ -305,7 +313,16 @@ const App = () => {
     }
   };
 
+  const updateTimerMode = (timerMode: TimerMode) => {
+    if (hasUnsavedSession || pendingSession) {
+      return;
+    }
+
+    setSettings(saveAppSettings({ timerMode }));
+  };
+
   const hasBlockingAction = Boolean(activeIntentSet || activeModal);
+  const isSettingsDisabled = hasUnsavedSession || Boolean(pendingSession);
 
   return (
     <div className="app-shell">
@@ -314,10 +331,19 @@ const App = () => {
           <p className="eyebrow">Intent Timer MVP</p>
           <h1>急急如律令</h1>
         </div>
-        <span className="timer-mode">开发计时：{TIMER_SECONDS} 秒 / 休息 {BREAK_SECONDS} 秒</span>
+        <span className="timer-mode">
+          {timerConfig.label}：专注 {formatDurationLabel(timerConfig.focusSeconds)} / 休息{" "}
+          {formatDurationLabel(timerConfig.breakSeconds)}
+        </span>
       </header>
 
       <main className="app-main">
+        <SettingsPanel
+          disabled={isSettingsDisabled}
+          timerMode={settings.timerMode}
+          onTimerModeChange={updateTimerMode}
+        />
+
         {phase === "setup" ? <SetupForm onSubmit={startRitual} /> : null}
 
         {phase === "ritual" ? (

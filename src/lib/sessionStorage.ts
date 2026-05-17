@@ -1,3 +1,5 @@
+import { DEFAULT_TIMER_MODE } from "../constants";
+import { isTimerMode } from "./settingsStorage";
 import type { PersistedSession } from "../types";
 
 const SESSION_STORAGE_KEY = "jiji-rululing.current-session";
@@ -14,6 +16,7 @@ const isPersistedSession = (value: unknown): value is PersistedSession => {
     (session.phase === "ritual" || session.phase === "review") &&
     Array.isArray(session.intentSets) &&
     typeof session.timerRemaining === "number" &&
+    (session.timerMode === undefined || isTimerMode(session.timerMode)) &&
     typeof session.updatedAt === "string"
   );
 };
@@ -32,7 +35,10 @@ export const loadPersistedSession = (): PersistedSession | null => {
       return null;
     }
 
-    return parsedValue;
+    return {
+      ...parsedValue,
+      timerMode: parsedValue.timerMode ?? DEFAULT_TIMER_MODE,
+    };
   } catch {
     return null;
   }

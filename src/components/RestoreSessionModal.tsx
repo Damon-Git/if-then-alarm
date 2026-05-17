@@ -1,3 +1,4 @@
+import { TIMER_MODE_CONFIG } from "../constants";
 import type { PersistedSession } from "../types";
 import { formatSeconds } from "../lib/timer";
 
@@ -55,6 +56,7 @@ const RestoreSessionModal = ({ session, onDiscard, onRestore }: RestoreSessionMo
 
         <div className="restore-summary" aria-label="未完成轮次摘要">
           <span>阶段：{phaseLabels[session.phase]}</span>
+          <span>模式：{TIMER_MODE_CONFIG[session.timerMode].label}</span>
           <span>进度：{completedIntentSetCount} / {session.intentSets.length} 套完成</span>
           <span>总香数：{totalIncenseCount} 炷</span>
           {activeIntentSet ? (
