@@ -419,6 +419,10 @@ select {
   box-shadow: 0 24px 64px rgb(0 0 0 / 22%);
 }
 
+.modal-panel--wide {
+  width: min(560px, 100%);
+}
+
 .modal-panel h2 {
   margin: 0;
 }
@@ -426,6 +430,50 @@ select {
 .modal-copy {
   margin: 0;
   color: #5e534a;
+}
+
+.confirm-intent-summary,
+.review-session-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.confirm-intent-summary span,
+.review-session-meta span {
+  border: 1px solid #d9cabe;
+  border-radius: 999px;
+  padding: 4px 9px;
+  background: #fffdf9;
+  color: #5e534a;
+  font-size: 0.84rem;
+  font-weight: 700;
+}
+
+.confirm-intent-body,
+.review-intent-body {
+  display: grid;
+  gap: 12px;
+}
+
+.confirm-intent-body p,
+.review-intent-body p {
+  margin: 4px 0 0;
+  overflow-wrap: anywhere;
+}
+
+.confirm-intent-body ul,
+.review-intent-body ul {
+  display: grid;
+  gap: 6px;
+  margin: 6px 0 0;
+  padding-left: 20px;
+}
+
+.detail-label {
+  color: #8a2f25;
+  font-size: 0.8rem;
+  font-weight: 800;
 }
 
 .modal-actions {
@@ -439,6 +487,27 @@ select {
 .history-record__intents {
   display: grid;
   gap: 10px;
+}
+
+.review-session-detail {
+  display: grid;
+  gap: 12px;
+}
+
+.review-intent-detail {
+  border: 1px solid #ded1c5;
+  border-radius: 8px;
+  background: #fffdf9;
+}
+
+.review-intent-detail .summary-row {
+  border: 0;
+  cursor: pointer;
+}
+
+.review-intent-body {
+  border-top: 1px solid #ded1c5;
+  padding: 12px;
 }
 
 .history-analysis {

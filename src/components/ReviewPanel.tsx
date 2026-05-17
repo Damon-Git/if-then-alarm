@@ -1,13 +1,17 @@
 import { useState, type FormEvent } from "react";
-import type { IntentSet, ReviewInput, ReviewResult } from "../types";
+import { TIMER_MODE_CONFIG } from "../constants";
+import { formatDurationLabel } from "../lib/timer";
+import type { IntentSet, ReviewInput, ReviewResult, TimerMode } from "../types";
 
 type ReviewPanelProps = {
   intentSets: IntentSet[];
+  timerMode: TimerMode;
   onSave: (review: ReviewInput) => void;
   onRequestAbandon: () => void;
 };
 
-const ReviewPanel = ({ intentSets, onSave, onRequestAbandon }: ReviewPanelProps) => {
+const ReviewPanel = ({ intentSets, timerMode, onSave, onRequestAbandon }: ReviewPanelProps) => {
+  const timerConfig = TIMER_MODE_CONFIG[timerMode];
   const [result, setResult] = useState<ReviewResult>("completed");
   const [reviewText, setReviewText] = useState("");
   const [obstacleText, setObstacleText] = useState("");
@@ -43,13 +47,42 @@ const ReviewPanel = ({ intentSets, onSave, onRequestAbandon }: ReviewPanelProps)
         </button>
       </div>
 
-      <div className="review-summary">
-        {intentSets.map((intentSet) => (
-          <div className="summary-row" key={intentSet.id}>
-            <span>{intentSet.situationIntent}</span>
-            <strong>{intentSet.incenseCount} 炷</strong>
-          </div>
-        ))}
+      <div className="review-session-detail">
+        <div className="review-session-meta">
+          <span>{timerConfig.label}</span>
+          <span>专注 {formatDurationLabel(timerConfig.focusSeconds)}</span>
+          <span>休息 {formatDurationLabel(timerConfig.breakSeconds)}</span>
+        </div>
+
+        <div className="review-summary">
+          {intentSets.map((intentSet, index) => (
+            <details className="review-intent-detail" key={intentSet.id}>
+              <summary className="summary-row">
+                <span>第 {index + 1} 套：{intentSet.situationIntent}</span>
+                <strong>{intentSet.incenseCount} 炷</strong>
+              </summary>
+
+              <div className="review-intent-body">
+                <div>
+                  <span className="detail-label">情境性执行意图</span>
+                  <p>{intentSet.situationIntent}</p>
+                </div>
+                <div>
+                  <span className="detail-label">预防性执行意图</span>
+                  {intentSet.preventionIntents.length > 0 ? (
+                    <ul>
+                      {intentSet.preventionIntents.map((preventionIntent, preventionIndex) => (
+                        <li key={`${intentSet.id}-${preventionIndex}`}>{preventionIntent}</li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="muted-text">暂无预防性符箓</p>
+                  )}
+                </div>
+              </div>
+            </details>
+          ))}
+        </div>
       </div>
 
       <form className="review-form" onSubmit={saveReview}>

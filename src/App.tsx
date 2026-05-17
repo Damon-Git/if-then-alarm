@@ -7,6 +7,7 @@ import ReviewPanel from "./components/ReviewPanel";
 import RestoreSessionModal from "./components/RestoreSessionModal";
 import RitualStage from "./components/RitualStage";
 import SettingsPanel from "./components/SettingsPanel";
+import StartIntentConfirmModal from "./components/StartIntentConfirmModal";
 import SetupForm from "./components/SetupForm";
 import ToastHost from "./components/ToastHost";
 import { clearPersistedSession, loadPersistedSession, savePersistedSession } from "./lib/sessionStorage";
@@ -45,6 +46,7 @@ const App = () => {
   const [intentSets, setIntentSets] = useState<IntentSet[]>([]);
   const [timerRemaining, setTimerRemaining] = useState(0);
   const [activeModal, setActiveModal] = useState<ActiveModal | null>(null);
+  const [pendingStartIntentId, setPendingStartIntentId] = useState<string | null>(null);
   const [isAbandonConfirmOpen, setIsAbandonConfirmOpen] = useState(false);
   const [settings, setSettings] = useState<AppSettings>(() => loadAppSettings());
   const [historyRecords, setHistoryRecords] = useState<HistoryRecord[]>(() => loadHistoryRecords());
@@ -62,6 +64,9 @@ const App = () => {
 
   const modalIntentSet = activeModal
     ? intentSets.find((intentSet) => intentSet.id === activeModal.intentSetId) ?? null
+    : null;
+  const pendingStartIntentSet = pendingStartIntentId
+    ? intentSets.find((intentSet) => intentSet.id === pendingStartIntentId) ?? null
     : null;
 
   const hasUnsavedSession = phase === "ritual" || phase === "review";
@@ -81,7 +86,7 @@ const App = () => {
   };
 
   useEffect(() => {
-    if (!activeIntentSet || activeModal || isAbandonConfirmOpen || timerRemaining <= 0) {
+    if (!activeIntentSet || activeModal || pendingStartIntentId || isAbandonConfirmOpen || timerRemaining <= 0) {
       return;
     }
 
@@ -90,10 +95,10 @@ const App = () => {
     }, 1000);
 
     return () => window.clearTimeout(timeoutId);
-  }, [activeIntentSetKey, activeIntentSet, activeModal, isAbandonConfirmOpen, timerRemaining]);
+  }, [activeIntentSetKey, activeIntentSet, activeModal, pendingStartIntentId, isAbandonConfirmOpen, timerRemaining]);
 
   useEffect(() => {
-    if (!activeIntentSet || activeModal || isAbandonConfirmOpen || timerRemaining !== 0) {
+    if (!activeIntentSet || activeModal || pendingStartIntentId || isAbandonConfirmOpen || timerRemaining !== 0) {
       return;
     }
 
@@ -119,7 +124,7 @@ const App = () => {
         intentSetId: activeIntentSet.id,
       });
     }
-  }, [activeIntentSet, activeIntentSetKey, activeModal, isAbandonConfirmOpen, timerRemaining]);
+  }, [activeIntentSet, activeIntentSetKey, activeModal, pendingStartIntentId, isAbandonConfirmOpen, timerRemaining]);
 
   useEffect(() => {
     if (phase === "ritual" && intentSets.length > 0 && intentSets.every((intentSet) => intentSet.status === "completed")) {
@@ -160,23 +165,37 @@ const App = () => {
     setIntentSets(nextIntentSets);
     setTimerRemaining(0);
     setActiveModal(null);
+    setPendingStartIntentId(null);
     setIsAbandonConfirmOpen(false);
     setPhase("ritual");
   };
 
-  const startIntent = (intentSetId: string) => {
-    if (activeIntentSet || activeModal) {
+  const requestStartIntent = (intentSetId: string) => {
+    if (activeIntentSet || activeModal || pendingStartIntentId || isAbandonConfirmOpen) {
+      return;
+    }
+
+    setPendingStartIntentId(intentSetId);
+  };
+
+  const cancelStartIntent = () => {
+    setPendingStartIntentId(null);
+  };
+
+  const confirmStartIntent = () => {
+    if (!pendingStartIntentId || activeIntentSet || activeModal) {
       return;
     }
 
     setIntentSets((currentIntentSets) =>
       currentIntentSets.map((intentSet) =>
-        intentSet.id === intentSetId && intentSet.status === "idle"
+        intentSet.id === pendingStartIntentId && intentSet.status === "idle"
           ? { ...intentSet, currentIncenseIndex: 1, status: "burning" }
           : intentSet,
       ),
     );
     setTimerRemaining(timerConfig.focusSeconds);
+    setPendingStartIntentId(null);
   };
 
   const startBreak = (intentSetId: string) => {
@@ -223,6 +242,7 @@ const App = () => {
     setIntentSets([]);
     setTimerRemaining(0);
     setActiveModal(null);
+    setPendingStartIntentId(null);
     setIsAbandonConfirmOpen(false);
     setPhase("setup");
     clearPersistedSession();
@@ -236,6 +256,7 @@ const App = () => {
     setIntentSets(pendingSession.intentSets);
     setTimerRemaining(pendingSession.timerRemaining);
     setActiveModal(pendingSession.activeModal);
+    setPendingStartIntentId(null);
     setIsAbandonConfirmOpen(false);
     setSettings(saveAppSettings({ timerMode: pendingSession.timerMode }));
     setPhase(pendingSession.phase);
@@ -269,6 +290,7 @@ const App = () => {
     setIntentSets([]);
     setTimerRemaining(0);
     setActiveModal(null);
+    setPendingStartIntentId(null);
     setIsAbandonConfirmOpen(false);
     setPhase("setup");
     clearPersistedSession();
@@ -334,7 +356,7 @@ const App = () => {
     setSettings(saveAppSettings({ timerMode }));
   };
 
-  const hasBlockingAction = Boolean(activeIntentSet || activeModal);
+  const hasBlockingAction = Boolean(activeIntentSet || activeModal || pendingStartIntentId);
   const isSettingsDisabled = hasUnsavedSession || Boolean(pendingSession);
 
   return (
@@ -364,13 +386,18 @@ const App = () => {
             hasBlockingAction={hasBlockingAction}
             intentSets={intentSets}
             onRequestAbandon={requestAbandonSession}
-            onStartIntent={startIntent}
+            onStartIntent={requestStartIntent}
             timerRemaining={timerRemaining}
           />
         ) : null}
 
         {phase === "review" ? (
-          <ReviewPanel intentSets={intentSets} onRequestAbandon={requestAbandonSession} onSave={saveReview} />
+          <ReviewPanel
+            intentSets={intentSets}
+            timerMode={settings.timerMode}
+            onRequestAbandon={requestAbandonSession}
+            onSave={saveReview}
+          />
         ) : null}
 
         <HistoryPanel
@@ -395,6 +422,15 @@ const App = () => {
 
       {isAbandonConfirmOpen ? (
         <AbandonSessionModal onCancel={cancelAbandonSession} onConfirm={confirmAbandonSession} />
+      ) : null}
+
+      {pendingStartIntentSet ? (
+        <StartIntentConfirmModal
+          intentSet={pendingStartIntentSet}
+          timerMode={settings.timerMode}
+          onCancel={cancelStartIntent}
+          onConfirm={confirmStartIntent}
+        />
       ) : null}
 
       {pendingSession ? (
