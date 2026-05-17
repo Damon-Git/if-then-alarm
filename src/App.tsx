@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { BREAK_SECONDS, TIMER_SECONDS } from "./constants";
+import AbandonSessionModal from "./components/AbandonSessionModal";
 import BreakModal from "./components/BreakModal";
 import HistoryPanel from "./components/HistoryPanel";
 import ReviewPanel from "./components/ReviewPanel";
@@ -21,6 +22,7 @@ const App = () => {
   const [intentSets, setIntentSets] = useState<IntentSet[]>([]);
   const [timerRemaining, setTimerRemaining] = useState(0);
   const [activeModal, setActiveModal] = useState<ActiveModal | null>(null);
+  const [isAbandonConfirmOpen, setIsAbandonConfirmOpen] = useState(false);
   const [historyRecords, setHistoryRecords] = useState<HistoryRecord[]>(() => loadHistoryRecords());
 
   const activeIntentSet = useMemo(
@@ -36,8 +38,10 @@ const App = () => {
     ? intentSets.find((intentSet) => intentSet.id === activeModal.intentSetId) ?? null
     : null;
 
+  const hasUnsavedSession = phase === "ritual" || phase === "review";
+
   useEffect(() => {
-    if (!activeIntentSet || activeModal || timerRemaining <= 0) {
+    if (!activeIntentSet || activeModal || isAbandonConfirmOpen || timerRemaining <= 0) {
       return;
     }
 
@@ -46,10 +50,10 @@ const App = () => {
     }, 1000);
 
     return () => window.clearTimeout(timeoutId);
-  }, [activeIntentSetKey, activeIntentSet, activeModal, timerRemaining]);
+  }, [activeIntentSetKey, activeIntentSet, activeModal, isAbandonConfirmOpen, timerRemaining]);
 
   useEffect(() => {
-    if (!activeIntentSet || activeModal || timerRemaining !== 0) {
+    if (!activeIntentSet || activeModal || isAbandonConfirmOpen || timerRemaining !== 0) {
       return;
     }
 
@@ -75,7 +79,7 @@ const App = () => {
         intentSetId: activeIntentSet.id,
       });
     }
-  }, [activeIntentSet, activeIntentSetKey, activeModal, timerRemaining]);
+  }, [activeIntentSet, activeIntentSetKey, activeModal, isAbandonConfirmOpen, timerRemaining]);
 
   useEffect(() => {
     if (phase === "ritual" && intentSets.length > 0 && intentSets.every((intentSet) => intentSet.status === "completed")) {
@@ -83,10 +87,26 @@ const App = () => {
     }
   }, [intentSets, phase]);
 
+  useEffect(() => {
+    if (!hasUnsavedSession) {
+      return;
+    }
+
+    const warnBeforeUnload = (event: BeforeUnloadEvent) => {
+      event.preventDefault();
+      event.returnValue = "";
+    };
+
+    window.addEventListener("beforeunload", warnBeforeUnload);
+
+    return () => window.removeEventListener("beforeunload", warnBeforeUnload);
+  }, [hasUnsavedSession]);
+
   const startRitual = (nextIntentSets: IntentSet[]) => {
     setIntentSets(nextIntentSets);
     setTimerRemaining(0);
     setActiveModal(null);
+    setIsAbandonConfirmOpen(false);
     setPhase("ritual");
   };
 
@@ -137,6 +157,22 @@ const App = () => {
     setActiveModal(null);
   };
 
+  const requestAbandonSession = () => {
+    setIsAbandonConfirmOpen(true);
+  };
+
+  const cancelAbandonSession = () => {
+    setIsAbandonConfirmOpen(false);
+  };
+
+  const confirmAbandonSession = () => {
+    setIntentSets([]);
+    setTimerRemaining(0);
+    setActiveModal(null);
+    setIsAbandonConfirmOpen(false);
+    setPhase("setup");
+  };
+
   const saveReview = (result: ReviewResult, reviewText: string) => {
     const record: HistoryRecord = {
       id: createId(),
@@ -155,6 +191,7 @@ const App = () => {
     setIntentSets([]);
     setTimerRemaining(0);
     setActiveModal(null);
+    setIsAbandonConfirmOpen(false);
     setPhase("setup");
   };
 
@@ -177,12 +214,15 @@ const App = () => {
           <RitualStage
             hasBlockingAction={hasBlockingAction}
             intentSets={intentSets}
+            onRequestAbandon={requestAbandonSession}
             onStartIntent={startIntent}
             timerRemaining={timerRemaining}
           />
         ) : null}
 
-        {phase === "review" ? <ReviewPanel intentSets={intentSets} onSave={saveReview} /> : null}
+        {phase === "review" ? (
+          <ReviewPanel intentSets={intentSets} onRequestAbandon={requestAbandonSession} onSave={saveReview} />
+        ) : null}
 
         <HistoryPanel records={historyRecords} />
       </main>
@@ -194,6 +234,10 @@ const App = () => {
           onContinueNow={continueNextIncense}
           onStartBreak={startBreak}
         />
+      ) : null}
+
+      {isAbandonConfirmOpen ? (
+        <AbandonSessionModal onCancel={cancelAbandonSession} onConfirm={confirmAbandonSession} />
       ) : null}
     </div>
   );

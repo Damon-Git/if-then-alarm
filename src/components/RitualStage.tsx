@@ -6,9 +6,16 @@ type RitualStageProps = {
   timerRemaining: number;
   hasBlockingAction: boolean;
   onStartIntent: (intentSetId: string) => void;
+  onRequestAbandon: () => void;
 };
 
-const RitualStage = ({ intentSets, timerRemaining, hasBlockingAction, onStartIntent }: RitualStageProps) => {
+const RitualStage = ({
+  intentSets,
+  timerRemaining,
+  hasBlockingAction,
+  onStartIntent,
+  onRequestAbandon,
+}: RitualStageProps) => {
   return (
     <section className="panel ritual-panel" aria-labelledby="ritual-title">
       <div className="section-heading">
@@ -16,6 +23,9 @@ const RitualStage = ({ intentSets, timerRemaining, hasBlockingAction, onStartInt
           <p className="eyebrow">Ritual Stage</p>
           <h2 id="ritual-title">仪式台</h2>
         </div>
+        <button className="ghost-button" type="button" onClick={onRequestAbandon}>
+          放弃本轮
+        </button>
       </div>
 
       <div className="stage-grid">

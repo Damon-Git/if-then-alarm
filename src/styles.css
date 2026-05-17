@@ -191,6 +191,7 @@ textarea {
 
 .primary-button,
 .secondary-button,
+.danger-button,
 .ghost-button,
 .icon-text-button {
   min-height: 38px;
@@ -210,6 +211,11 @@ textarea {
   color: #fff;
 }
 
+.danger-button {
+  background: #a0271f;
+  color: #fffaf4;
+}
+
 .ghost-button,
 .icon-text-button {
   border: 1px solid #cdbfb1;
@@ -219,6 +225,7 @@ textarea {
 
 .primary-button:disabled,
 .secondary-button:disabled,
+.danger-button:disabled,
 .ghost-button:disabled,
 .icon-text-button:disabled,
 .talisman-card:disabled {
@@ -377,6 +384,11 @@ textarea {
 
 .modal-panel h2 {
   margin: 0;
+}
+
+.modal-copy {
+  margin: 0;
+  color: #5e534a;
 }
 
 .modal-actions {

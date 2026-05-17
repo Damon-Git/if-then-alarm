@@ -4,9 +4,10 @@ import type { IntentSet, ReviewResult } from "../types";
 type ReviewPanelProps = {
   intentSets: IntentSet[];
   onSave: (result: ReviewResult, reviewText: string) => void;
+  onRequestAbandon: () => void;
 };
 
-const ReviewPanel = ({ intentSets, onSave }: ReviewPanelProps) => {
+const ReviewPanel = ({ intentSets, onSave, onRequestAbandon }: ReviewPanelProps) => {
   const [result, setResult] = useState<ReviewResult>("completed");
   const [reviewText, setReviewText] = useState("");
   const [error, setError] = useState("");
@@ -30,6 +31,9 @@ const ReviewPanel = ({ intentSets, onSave }: ReviewPanelProps) => {
           <p className="eyebrow">Review</p>
           <h2 id="review-title">本次复盘</h2>
         </div>
+        <button className="ghost-button" type="button" onClick={onRequestAbandon}>
+          放弃本轮
+        </button>
       </div>
 
       <div className="review-summary">
