@@ -1,4 +1,5 @@
 import type { CSSProperties } from "react";
+import { getIncenseVisualSlot } from "../lib/visualAssets";
 import { getIncenseVisualState, type IncenseVisualState } from "../lib/visualState";
 import type { IntentSetStatus } from "../types";
 
@@ -51,10 +52,30 @@ const IncenseVisual = ({ currentIncenseIndex, incenseCount, progress, size, stat
             key={incenseNumber}
             style={{ "--incense-stick-progress": `${stickProgressPercent}%` } as CSSProperties}
           >
-            <span className="incense-visual__stick" data-incense-layer="stick" aria-hidden="true" />
-            <span className="incense-visual__ash" data-incense-layer="ash" aria-hidden="true" />
-            <span className="incense-visual__ember" data-incense-layer="ember" aria-hidden="true" />
-            <span className="incense-visual__smoke" data-incense-layer="smoke" aria-hidden="true" />
+            <span
+              className="incense-visual__stick"
+              data-incense-layer="stick"
+              data-visual-slot={getIncenseVisualSlot(size, "stick")}
+              aria-hidden="true"
+            />
+            <span
+              className="incense-visual__ash"
+              data-incense-layer="ash"
+              data-visual-slot={getIncenseVisualSlot(size, "ash")}
+              aria-hidden="true"
+            />
+            <span
+              className="incense-visual__ember"
+              data-incense-layer="ember"
+              data-visual-slot={getIncenseVisualSlot(size, "ember")}
+              aria-hidden="true"
+            />
+            <span
+              className="incense-visual__smoke"
+              data-incense-layer="smoke"
+              data-visual-slot={getIncenseVisualSlot(size, "smoke")}
+              aria-hidden="true"
+            />
           </span>
         );
       })}

@@ -1,3 +1,4 @@
+import { getTalismanVisualSlot } from "../lib/visualAssets";
 import { getTalismanVisualState } from "../lib/visualState";
 import type { IntentSetStatus } from "../types";
 
@@ -11,11 +12,25 @@ type TalismanVisualProps = {
   variant: "situation" | "prevention";
 };
 
-const TalismanContent = ({ label, text }: Pick<TalismanVisualProps, "label" | "text">) => (
+const TalismanContent = ({ label, text, variant }: Pick<TalismanVisualProps, "label" | "text" | "variant">) => (
   <>
-    <span className="talisman-visual__template" data-talisman-layer="template" aria-hidden="true" />
-    <span className="talisman-visual__state" data-talisman-layer="state" aria-hidden="true" />
-    <span className="talisman-visual__text" data-talisman-layer="text">
+    <span
+      className="talisman-visual__template"
+      data-talisman-layer="template"
+      data-visual-slot={getTalismanVisualSlot(variant, "template")}
+      aria-hidden="true"
+    />
+    <span
+      className="talisman-visual__state"
+      data-talisman-layer="state"
+      data-visual-slot={getTalismanVisualSlot(variant, "state")}
+      aria-hidden="true"
+    />
+    <span
+      className="talisman-visual__text"
+      data-talisman-layer="text"
+      data-visual-slot={getTalismanVisualSlot(variant, "text")}
+    >
       <span className="talisman-visual__label">{label}</span>
       <strong>{text}</strong>
     </span>
@@ -46,14 +61,14 @@ const TalismanVisual = ({
         type="button"
         onClick={onClick}
       >
-        <TalismanContent label={label} text={text} />
+        <TalismanContent label={label} text={text} variant={variant} />
       </button>
     );
   }
 
   return (
     <div className={className} data-talisman-state={visualState} data-talisman-variant={variant}>
-      <TalismanContent label={label} text={text} />
+      <TalismanContent label={label} text={text} variant={variant} />
     </div>
   );
 };

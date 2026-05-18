@@ -1,3 +1,4 @@
+import { getCenserVisualSlot } from "../lib/visualAssets";
 import { getCenserVisualState } from "../lib/visualState";
 import type { IntentSetStatus } from "../types";
 import IncenseVisual from "./IncenseVisual";
@@ -32,11 +33,31 @@ const CenserVisual = ({ currentIncenseIndex, incenseCount, incenseProgress, size
           size={size}
           status={status}
         />
-        <span className="censer-visual__lid" data-censer-layer="lid" />
-        <span className="censer-visual__mouth" data-censer-layer="mouth" />
-        <span className="censer-visual__ash" data-censer-layer="ash" />
-        <span className="censer-visual__body" data-censer-layer="body" />
-        <span className="censer-visual__feet" data-censer-layer="feet" />
+        <span
+          className="censer-visual__lid"
+          data-censer-layer="lid"
+          data-visual-slot={getCenserVisualSlot(size, "lid")}
+        />
+        <span
+          className="censer-visual__mouth"
+          data-censer-layer="mouth"
+          data-visual-slot={getCenserVisualSlot(size, "mouth")}
+        />
+        <span
+          className="censer-visual__ash"
+          data-censer-layer="ash"
+          data-visual-slot={getCenserVisualSlot(size, "ash")}
+        />
+        <span
+          className="censer-visual__body"
+          data-censer-layer="body"
+          data-visual-slot={getCenserVisualSlot(size, "body")}
+        />
+        <span
+          className="censer-visual__feet"
+          data-censer-layer="feet"
+          data-visual-slot={getCenserVisualSlot(size, "feet")}
+        />
       </div>
 
       <span className="censer-visual__meta">香炉占位</span>

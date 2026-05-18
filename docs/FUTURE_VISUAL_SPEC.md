@@ -2,6 +2,8 @@
 
 当前阶段只使用占位元素，不制作复杂视觉和动画。后续视觉迭代必须围绕真实素材替换，而不是用 CSS 或 SVG 临时重画复杂对象。
 
+素材目录、命名、插槽和接入边界见 `docs/ASSET_PIPELINE.md`。
+
 ## 视觉状态中间层
 
 业务状态不直接等同于素材状态。当前通过 `src/lib/visualState.ts` 把业务状态映射为视觉状态，再交给 `TalismanVisual`、`CenserVisual`、`IncenseVisual` 使用。
