@@ -510,7 +510,7 @@ select {
   width: 50px;
 }
 
-.censer-visual--burning .censer-visual__body {
+.censer-visual--active .censer-visual__body {
   background: #d8916e;
 }
 
@@ -587,7 +587,7 @@ select {
   opacity: 0;
 }
 
-.incense-visual__unit--active .incense-visual__ember {
+.incense-visual__unit--burning .incense-visual__ember {
   opacity: 1;
 }
 

@@ -2,6 +2,16 @@
 
 当前阶段只使用占位元素，不制作复杂视觉和动画。后续视觉迭代必须围绕真实素材替换，而不是用 CSS 或 SVG 临时重画复杂对象。
 
+## 视觉状态中间层
+
+业务状态不直接等同于素材状态。当前通过 `src/lib/visualState.ts` 把业务状态映射为视觉状态，再交给 `TalismanVisual`、`CenserVisual`、`IncenseVisual` 使用。
+
+- 香炉视觉状态：`idle` / `active` / `resting` / `completed`
+- 线香视觉状态：`pending` / `burning` / `burned` / `resting`
+- 符箓视觉状态：`ready` / `disabled` / `completed`
+
+未来替换真实素材、添加燃烧或开盖动画时，应优先扩展这个视觉状态中间层，而不是让素材组件直接读取完整业务流程。
+
 ## 符箓
 
 1. 未来真实符箓必须使用上传好的图片模板作为背景。

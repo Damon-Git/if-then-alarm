@@ -30,6 +30,7 @@ const IntentSlot = ({ intentSet, actionDisabled, incenseProgress, timerRemaining
       <TalismanVisual
         disabled={!canStart}
         interactive
+        intentStatus={intentSet.status}
         label="情境性符箓"
         text={intentSet.situationIntent}
         variant="situation"
@@ -61,6 +62,7 @@ const IntentSlot = ({ intentSet, actionDisabled, incenseProgress, timerRemaining
           intentSet.preventionIntents.map((preventionIntent, index) => (
             <TalismanVisual
               key={`${intentSet.id}-${index}`}
+              intentStatus={intentSet.status}
               label={`第 ${index + 1} 条`}
               text={preventionIntent}
               variant="prevention"

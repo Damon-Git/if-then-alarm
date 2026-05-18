@@ -1,4 +1,5 @@
 import type { CSSProperties } from "react";
+import { getIncenseVisualState, type IncenseVisualState } from "../lib/visualState";
 import type { IntentSetStatus } from "../types";
 
 type IncenseVisualProps = {
@@ -11,33 +12,16 @@ type IncenseVisualProps = {
 
 const clampProgress = (progress: number) => Math.min(1, Math.max(0, progress));
 
-const getStickProgress = (
-  incenseNumber: number,
-  currentIncenseIndex: number,
-  progress: number,
-  status: IntentSetStatus,
-) => {
-  if (status === "idle") {
+const getStickProgress = (progress: number, visualState: IncenseVisualState) => {
+  if (visualState === "pending") {
     return 0;
   }
 
-  if (incenseNumber < currentIncenseIndex) {
-    return 1;
-  }
-
-  if (incenseNumber > currentIncenseIndex) {
-    return 0;
-  }
-
-  if (status === "burning") {
+  if (visualState === "burning") {
     return progress;
   }
 
-  if (status === "resting" || status === "completed") {
-    return 1;
-  }
-
-  return 0;
+  return 1;
 };
 
 const IncenseVisual = ({ currentIncenseIndex, incenseCount, progress, size, status }: IncenseVisualProps) => {
@@ -47,22 +31,22 @@ const IncenseVisual = ({ currentIncenseIndex, incenseCount, progress, size, stat
 
   return (
     <div
-      className={`incense-visual incense-visual--${size} incense-visual--${status}`}
+      className={`incense-visual incense-visual--${size}`}
       data-incense-count={incenseCount}
       data-incense-current={currentIncenseIndex}
       data-incense-progress={progressPercent}
       data-incense-size={size}
-      data-incense-status={status}
     >
       {incenseNumbers.map((incenseNumber) => {
-        const stickProgress = getStickProgress(incenseNumber, currentIncenseIndex, normalizedProgress, status);
+        const visualState = getIncenseVisualState(incenseNumber, currentIncenseIndex, status);
+        const stickProgress = getStickProgress(normalizedProgress, visualState);
         const stickProgressPercent = Math.round(stickProgress * 100);
-        const isActiveStick = status === "burning" && incenseNumber === currentIncenseIndex;
 
         return (
           <span
-            className={`incense-visual__unit${isActiveStick ? " incense-visual__unit--active" : ""}`}
+            className={`incense-visual__unit incense-visual__unit--${visualState}`}
             data-incense-index={incenseNumber}
+            data-incense-state={visualState}
             data-incense-stick-progress={stickProgressPercent}
             key={incenseNumber}
             style={{ "--incense-stick-progress": `${stickProgressPercent}%` } as CSSProperties}
