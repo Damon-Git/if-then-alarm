@@ -1,16 +1,18 @@
 import { TIMER_MODE_CONFIG } from "../constants";
 import { formatDurationLabel } from "../lib/timer";
 import type { TimerMode } from "../types";
+import DevSessionFixturesPanel from "./DevSessionFixturesPanel";
 
 type SettingsPanelProps = {
   disabled: boolean;
+  onDevSessionFixtureSaved?: (message: string) => void;
   timerMode: TimerMode;
   onTimerModeChange: (timerMode: TimerMode) => void;
 };
 
 const timerModes: TimerMode[] = ["dev", "prod"];
 
-const SettingsPanel = ({ disabled, timerMode, onTimerModeChange }: SettingsPanelProps) => {
+const SettingsPanel = ({ disabled, onDevSessionFixtureSaved, timerMode, onTimerModeChange }: SettingsPanelProps) => {
   const currentConfig = TIMER_MODE_CONFIG[timerMode];
 
   return (
@@ -42,6 +44,10 @@ const SettingsPanel = ({ disabled, timerMode, onTimerModeChange }: SettingsPanel
         {formatDurationLabel(currentConfig.breakSeconds)}
         {disabled ? "。当前轮次进行中，完成或放弃后可切换。" : ""}
       </p>
+
+      {import.meta.env.DEV && onDevSessionFixtureSaved ? (
+        <DevSessionFixturesPanel disabled={disabled} onFixtureSaved={onDevSessionFixtureSaved} />
+      ) : null}
     </section>
   );
 };

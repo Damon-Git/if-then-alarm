@@ -2,7 +2,7 @@ import { DEFAULT_TIMER_MODE } from "../constants";
 import { isTimerMode } from "./settingsStorage";
 import type { ActiveTimerSegment, PersistedSession } from "../types";
 
-const SESSION_STORAGE_KEY = "jiji-rululing.current-session";
+export const SESSION_STORAGE_KEY = "jiji-rululing.current-session";
 
 const isActiveTimerSegment = (value: unknown): value is ActiveTimerSegment => {
   if (!value || typeof value !== "object") {
@@ -76,4 +76,12 @@ export const savePersistedSession = (session: Omit<PersistedSession, "version" |
 
 export const clearPersistedSession = () => {
   window.localStorage.removeItem(SESSION_STORAGE_KEY);
+};
+
+export const saveRawPersistedSessionForDev = (session: unknown) => {
+  if (!import.meta.env.DEV) {
+    return;
+  }
+
+  window.localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(session));
 };

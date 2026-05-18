@@ -535,6 +535,7 @@ const App = () => {
           <SettingsPanel
             disabled={isSettingsDisabled}
             timerMode={settings.timerMode}
+            onDevSessionFixtureSaved={(message) => showToast("info", message)}
             onTimerModeChange={updateTimerMode}
           />
         ) : null}

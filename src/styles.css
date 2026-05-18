@@ -157,6 +157,57 @@ select {
   color: #5e534a;
 }
 
+.dev-fixtures {
+  grid-column: 1 / -1;
+  display: grid;
+  gap: 12px;
+  border-top: 1px solid #eadfd5;
+  padding-top: 14px;
+}
+
+.dev-fixtures__heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  color: #5e534a;
+}
+
+.dev-fixtures__heading span {
+  font-weight: 800;
+}
+
+.dev-fixtures__heading small,
+.dev-fixtures__note {
+  color: #7b7066;
+}
+
+.dev-fixtures__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.dev-fixtures__button {
+  align-items: flex-start;
+  display: grid;
+  height: auto;
+  min-height: 76px;
+  padding: 10px;
+  text-align: left;
+}
+
+.dev-fixtures__button span {
+  color: #6f6258;
+  font-size: 0.82rem;
+  font-weight: 500;
+}
+
+.dev-fixtures__note {
+  margin: 0;
+  font-size: 0.88rem;
+}
+
 .intent-form {
   display: grid;
   gap: 14px;
@@ -1148,6 +1199,10 @@ select {
   }
 
   .settings-panel {
+    grid-template-columns: 1fr;
+  }
+
+  .dev-fixtures__grid {
     grid-template-columns: 1fr;
   }
 
