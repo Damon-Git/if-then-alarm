@@ -1,8 +1,23 @@
 import { DEFAULT_TIMER_MODE } from "../constants";
 import { isTimerMode } from "./settingsStorage";
-import type { PersistedSession } from "../types";
+import type { ActiveTimerSegment, PersistedSession } from "../types";
 
 const SESSION_STORAGE_KEY = "jiji-rululing.current-session";
+
+const isActiveTimerSegment = (value: unknown): value is ActiveTimerSegment => {
+  if (!value || typeof value !== "object") {
+    return false;
+  }
+
+  const timerSegment = value as Partial<ActiveTimerSegment>;
+
+  return (
+    typeof timerSegment.startedAt === "string" &&
+    typeof timerSegment.durationSeconds === "number" &&
+    Number.isFinite(timerSegment.durationSeconds) &&
+    timerSegment.durationSeconds >= 0
+  );
+};
 
 const isPersistedSession = (value: unknown): value is PersistedSession => {
   if (!value || typeof value !== "object") {
@@ -16,6 +31,9 @@ const isPersistedSession = (value: unknown): value is PersistedSession => {
     (session.phase === "ritual" || session.phase === "review") &&
     Array.isArray(session.intentSets) &&
     typeof session.timerRemaining === "number" &&
+    (session.activeTimerSegment === undefined ||
+      session.activeTimerSegment === null ||
+      isActiveTimerSegment(session.activeTimerSegment)) &&
     (session.timerMode === undefined || isTimerMode(session.timerMode)) &&
     typeof session.updatedAt === "string"
   );
@@ -37,6 +55,7 @@ export const loadPersistedSession = (): PersistedSession | null => {
 
     return {
       ...parsedValue,
+      activeTimerSegment: parsedValue.activeTimerSegment ?? null,
       timerMode: parsedValue.timerMode ?? DEFAULT_TIMER_MODE,
     };
   } catch {

@@ -11,7 +11,7 @@ import StartIntentConfirmModal from "./components/StartIntentConfirmModal";
 import SetupForm from "./components/SetupForm";
 import ToastHost from "./components/ToastHost";
 import { clearPersistedSession, loadPersistedSession, savePersistedSession } from "./lib/sessionStorage";
-import { formatDurationLabel } from "./lib/timer";
+import { createActiveTimerSegment, formatDurationLabel, getTimerRemainingSeconds } from "./lib/timer";
 import { loadAppSettings, saveAppSettings } from "./lib/settingsStorage";
 import {
   clearHistoryRecords,
@@ -23,6 +23,7 @@ import {
 } from "./lib/storage";
 import type {
   ActiveModal,
+  ActiveTimerSegment,
   AppPhase,
   AppSettings,
   HistoryRecord,
@@ -43,17 +44,82 @@ const createId = () => {
   return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
 };
 
+const getSessionActiveIntentSet = (intentSets: IntentSet[]) =>
+  intentSets.find((intentSet) => intentSet.status === "burning" || intentSet.status === "resting") ?? null;
+
+const isTimerRestorable = (session: PersistedSession) => {
+  return Boolean(getSessionActiveIntentSet(session.intentSets) && !session.activeModal && session.timerRemaining > 0);
+};
+
+const resolvePersistedSession = (session: PersistedSession): PersistedSession => {
+  const activeIntentSet = getSessionActiveIntentSet(session.intentSets);
+
+  if (!activeIntentSet || !session.activeTimerSegment || session.activeModal) {
+    return session;
+  }
+
+  const timerRemaining = getTimerRemainingSeconds(session.activeTimerSegment);
+
+  if (timerRemaining > 0) {
+    return {
+      ...session,
+      timerRemaining,
+    };
+  }
+
+  if (activeIntentSet.status === "resting") {
+    return {
+      ...session,
+      activeModal: {
+        type: "rest-finished",
+        intentSetId: activeIntentSet.id,
+      },
+      activeTimerSegment: null,
+      timerRemaining: 0,
+    };
+  }
+
+  if (activeIntentSet.currentIncenseIndex < activeIntentSet.incenseCount) {
+    return {
+      ...session,
+      activeModal: {
+        type: "incense-finished",
+        intentSetId: activeIntentSet.id,
+      },
+      activeTimerSegment: null,
+      timerRemaining: 0,
+    };
+  }
+
+  const nextIntentSets = session.intentSets.map((intentSet) =>
+    intentSet.id === activeIntentSet.id ? { ...intentSet, status: "completed" as const } : intentSet,
+  );
+
+  return {
+    ...session,
+    activeModal: null,
+    activeTimerSegment: null,
+    intentSets: nextIntentSets,
+    phase: nextIntentSets.every((intentSet) => intentSet.status === "completed") ? "review" : session.phase,
+    timerRemaining: 0,
+  };
+};
+
 const App = () => {
   const [phase, setPhase] = useState<AppPhase>("setup");
   const [intentSets, setIntentSets] = useState<IntentSet[]>([]);
   const [timerRemaining, setTimerRemaining] = useState(0);
   const [activeModal, setActiveModal] = useState<ActiveModal | null>(null);
+  const [activeTimerSegment, setActiveTimerSegment] = useState<ActiveTimerSegment | null>(null);
   const [pendingStartIntentId, setPendingStartIntentId] = useState<string | null>(null);
   const [isAbandonConfirmOpen, setIsAbandonConfirmOpen] = useState(false);
   const [settings, setSettings] = useState<AppSettings>(() => loadAppSettings());
   const [historyRecords, setHistoryRecords] = useState<HistoryRecord[]>(() => loadHistoryRecords());
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
-  const [pendingSession, setPendingSession] = useState<PersistedSession | null>(() => loadPersistedSession());
+  const [pendingSession, setPendingSession] = useState<PersistedSession | null>(() => {
+    const persistedSession = loadPersistedSession();
+    return persistedSession ? resolvePersistedSession(persistedSession) : null;
+  });
   const [activeUtilityPanel, setActiveUtilityPanel] = useState<UtilityPanel | null>(null);
 
   const activeIntentSet = useMemo(
@@ -88,17 +154,26 @@ const App = () => {
     setToasts((currentToasts) => currentToasts.filter((toast) => toast.id !== toastId));
   };
 
+  const beginTimer = (durationSeconds: number) => {
+    setTimerRemaining(durationSeconds);
+    setActiveTimerSegment(createActiveTimerSegment(durationSeconds));
+  };
+
   useEffect(() => {
-    if (!activeIntentSet || activeModal || pendingStartIntentId || isAbandonConfirmOpen || timerRemaining <= 0) {
+    if (!activeIntentSet || !activeTimerSegment || activeModal || pendingStartIntentId || isAbandonConfirmOpen) {
       return;
     }
 
-    const timeoutId = window.setTimeout(() => {
-      setTimerRemaining((currentSeconds) => Math.max(0, currentSeconds - 1));
-    }, 1000);
+    const syncTimerRemaining = () => {
+      setTimerRemaining(getTimerRemainingSeconds(activeTimerSegment));
+    };
 
-    return () => window.clearTimeout(timeoutId);
-  }, [activeIntentSetKey, activeIntentSet, activeModal, pendingStartIntentId, isAbandonConfirmOpen, timerRemaining]);
+    syncTimerRemaining();
+
+    const intervalId = window.setInterval(syncTimerRemaining, 1000);
+
+    return () => window.clearInterval(intervalId);
+  }, [activeIntentSetKey, activeIntentSet, activeTimerSegment, activeModal, pendingStartIntentId, isAbandonConfirmOpen]);
 
   useEffect(() => {
     if (!activeIntentSet || activeModal || pendingStartIntentId || isAbandonConfirmOpen || timerRemaining !== 0) {
@@ -106,6 +181,8 @@ const App = () => {
     }
 
     if (activeIntentSet.status === "burning") {
+      setActiveTimerSegment(null);
+
       if (activeIntentSet.currentIncenseIndex < activeIntentSet.incenseCount) {
         setActiveModal({
           type: "incense-finished",
@@ -122,6 +199,7 @@ const App = () => {
     }
 
     if (activeIntentSet.status === "resting") {
+      setActiveTimerSegment(null);
       setActiveModal({
         type: "rest-finished",
         intentSetId: activeIntentSet.id,
@@ -159,14 +237,16 @@ const App = () => {
       phase: phase as Exclude<AppPhase, "setup">,
       intentSets,
       timerRemaining,
+      activeTimerSegment,
       activeModal,
       timerMode: settings.timerMode,
     });
-  }, [activeModal, hasUnsavedSession, intentSets, phase, settings.timerMode, timerRemaining]);
+  }, [activeModal, activeTimerSegment, hasUnsavedSession, intentSets, phase, settings.timerMode, timerRemaining]);
 
   const startRitual = (nextIntentSets: IntentSet[]) => {
     setIntentSets(nextIntentSets);
     setTimerRemaining(0);
+    setActiveTimerSegment(null);
     setActiveModal(null);
     setPendingStartIntentId(null);
     setIsAbandonConfirmOpen(false);
@@ -198,7 +278,7 @@ const App = () => {
           : intentSet,
       ),
     );
-    setTimerRemaining(timerConfig.focusSeconds);
+    beginTimer(timerConfig.focusSeconds);
     setPendingStartIntentId(null);
   };
 
@@ -208,19 +288,29 @@ const App = () => {
         intentSet.id === intentSetId ? { ...intentSet, status: "resting" } : intentSet,
       ),
     );
-    setTimerRemaining(timerConfig.breakSeconds);
+    beginTimer(timerConfig.breakSeconds);
     setActiveModal(null);
   };
 
   const continueNextIncense = (intentSetId: string) => {
+    const targetIntentSet = intentSets.find((intentSet) => intentSet.id === intentSetId);
+
+    if (!targetIntentSet || targetIntentSet.currentIncenseIndex >= targetIntentSet.incenseCount) {
+      setIntentSets((currentIntentSets) =>
+        currentIntentSets.map((intentSet) =>
+          intentSet.id === intentSetId ? { ...intentSet, status: "completed" } : intentSet,
+        ),
+      );
+      setTimerRemaining(0);
+      setActiveTimerSegment(null);
+      setActiveModal(null);
+      return;
+    }
+
     setIntentSets((currentIntentSets) =>
       currentIntentSets.map((intentSet) => {
         if (intentSet.id !== intentSetId) {
           return intentSet;
-        }
-
-        if (intentSet.currentIncenseIndex >= intentSet.incenseCount) {
-          return { ...intentSet, status: "completed" };
         }
 
         return {
@@ -230,21 +320,31 @@ const App = () => {
         };
       }),
     );
-    setTimerRemaining(timerConfig.focusSeconds);
+    beginTimer(timerConfig.focusSeconds);
     setActiveModal(null);
   };
 
   const requestAbandonSession = () => {
+    if (activeTimerSegment) {
+      setTimerRemaining(getTimerRemainingSeconds(activeTimerSegment));
+      setActiveTimerSegment(null);
+    }
+
     setIsAbandonConfirmOpen(true);
   };
 
   const cancelAbandonSession = () => {
+    if (activeIntentSet && timerRemaining > 0) {
+      setActiveTimerSegment(createActiveTimerSegment(timerRemaining));
+    }
+
     setIsAbandonConfirmOpen(false);
   };
 
   const confirmAbandonSession = () => {
     setIntentSets([]);
     setTimerRemaining(0);
+    setActiveTimerSegment(null);
     setActiveModal(null);
     setPendingStartIntentId(null);
     setIsAbandonConfirmOpen(false);
@@ -258,14 +358,20 @@ const App = () => {
       return;
     }
 
-    setIntentSets(pendingSession.intentSets);
-    setTimerRemaining(pendingSession.timerRemaining);
-    setActiveModal(pendingSession.activeModal);
+    const resolvedSession = resolvePersistedSession(pendingSession);
+    const restoredTimerSegment = isTimerRestorable(resolvedSession)
+      ? resolvedSession.activeTimerSegment ?? createActiveTimerSegment(resolvedSession.timerRemaining)
+      : null;
+
+    setIntentSets(resolvedSession.intentSets);
+    setTimerRemaining(resolvedSession.timerRemaining);
+    setActiveTimerSegment(restoredTimerSegment);
+    setActiveModal(resolvedSession.activeModal);
     setPendingStartIntentId(null);
     setIsAbandonConfirmOpen(false);
-    setSettings(saveAppSettings({ timerMode: pendingSession.timerMode }));
+    setSettings(saveAppSettings({ timerMode: resolvedSession.timerMode }));
     setActiveUtilityPanel(null);
-    setPhase(pendingSession.phase);
+    setPhase(resolvedSession.phase);
     setPendingSession(null);
   };
 
@@ -295,6 +401,7 @@ const App = () => {
     showToast("success", "复盘已保存。");
     setIntentSets([]);
     setTimerRemaining(0);
+    setActiveTimerSegment(null);
     setActiveModal(null);
     setPendingStartIntentId(null);
     setIsAbandonConfirmOpen(false);

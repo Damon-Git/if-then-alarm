@@ -59,11 +59,17 @@ export type HistoryImportResult = {
   skippedCount: number;
 };
 
+export type ActiveTimerSegment = {
+  startedAt: string;
+  durationSeconds: number;
+};
+
 export type PersistedSession = {
   version: 1;
   phase: Exclude<AppPhase, "setup">;
   intentSets: IntentSet[];
   timerRemaining: number;
+  activeTimerSegment: ActiveTimerSegment | null;
   activeModal: ActiveModal | null;
   timerMode: TimerMode;
   updatedAt: string;
