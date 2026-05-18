@@ -22,6 +22,15 @@
 
 小窗模式未来使用克制可爱的 Q 版香炉素材。小窗香炉与主祭台香炉一一对应，但不常驻显示符箓；未开始时可以作为香炉入口进入开始确认。当前实现中的小窗香炉只是槽位结构占位，不代表最终素材风格。
 
+主祭台香炉和小窗香炉统一从 `src/components/CenserVisual.tsx` 接入视觉层。未来替换真实素材时，优先替换 `CenserVisual` 内部结构和样式，不改计时、开始确认、休息、续香、复盘等业务逻辑。
+
+`CenserVisual` 当前预留这些图层钩子：
+
+- `data-censer-layer="body"`：香炉主体
+- `data-censer-layer="lid"`：香炉盖
+- `data-censer-layer="mouth"`：炉口
+- `data-censer-layer="ash"`：香灰层
+
 ## 线香
 
 线香未来要做成独立组件，包含：

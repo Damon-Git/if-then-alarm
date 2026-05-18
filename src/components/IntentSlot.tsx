@@ -1,4 +1,5 @@
 import type { IntentSet } from "../types";
+import CenserVisual from "./CenserVisual";
 import TimerPanel from "./TimerPanel";
 
 type IntentSlotProps = {
@@ -34,10 +35,12 @@ const IntentSlot = ({ intentSet, actionDisabled, timerRemaining, onStart }: Inte
         <strong>{intentSet.situationIntent}</strong>
       </button>
 
-      <div className="censer-placeholder" aria-label="香炉占位">
-        <span>香炉占位</span>
-        <strong>第 {intentSet.currentIncenseIndex} / {intentSet.incenseCount} 炷</strong>
-      </div>
+      <CenserVisual
+        currentIncenseIndex={intentSet.currentIncenseIndex}
+        incenseCount={intentSet.incenseCount}
+        size="stage"
+        status={intentSet.status}
+      />
 
       {intentSet.status === "burning" || intentSet.status === "resting" ? (
         <TimerPanel

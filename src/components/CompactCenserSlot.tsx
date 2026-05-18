@@ -1,5 +1,6 @@
 import { formatSeconds } from "../lib/timer";
 import type { IntentSet } from "../types";
+import CenserVisual from "./CenserVisual";
 
 type CompactCenserSlotProps = {
   actionDisabled: boolean;
@@ -46,11 +47,12 @@ const CompactCenserSlot = ({ actionDisabled, intentSet, onStart, timerRemaining 
         type="button"
         onClick={() => onStart(intentSet.id)}
       >
-        <span className="compact-censer__bowl" aria-hidden="true">
-          <span className="compact-censer__rim" />
-          <span className="compact-censer__body" />
-          <span className="compact-censer__feet" />
-        </span>
+        <CenserVisual
+          currentIncenseIndex={intentSet.currentIncenseIndex}
+          incenseCount={intentSet.incenseCount}
+          size="compact"
+          status={intentSet.status}
+        />
         <span className="compact-censer__status">{statusLabels[intentSet.status]}</span>
         <strong>
           {isActive ? formattedRemaining : `第 ${intentSet.currentIncenseIndex} / ${intentSet.incenseCount} 炷`}
