@@ -475,6 +475,12 @@ select {
   font-weight: 800;
 }
 
+.compact-censer__hint {
+  color: #746a61;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
 .compact-censer strong {
   font-size: 1.35rem;
   line-height: 1;
@@ -991,8 +997,12 @@ select {
     padding: 10px 0 14px;
   }
 
+  .app-header .eyebrow {
+    display: none;
+  }
+
   .app-header h1 {
-    font-size: 1.65rem;
+    font-size: 1.45rem;
   }
 
   .timer-mode {
@@ -1006,6 +1016,26 @@ select {
 
   .panel {
     padding: 12px;
+  }
+
+  .ritual-panel .section-heading {
+    align-items: center;
+    flex-direction: row;
+    margin-bottom: 10px;
+  }
+
+  .ritual-panel .eyebrow {
+    display: none;
+  }
+
+  .ritual-panel h2 {
+    font-size: 1.1rem;
+  }
+
+  .ritual-panel .section-heading .ghost-button {
+    min-height: 30px;
+    padding: 0 10px;
+    font-size: 0.84rem;
   }
 
   .stage-grid--full {
@@ -1038,5 +1068,55 @@ select {
 
   .compact-censer strong {
     font-size: 1.18rem;
+  }
+
+  .compact-censer__hint {
+    min-height: 1.2em;
+  }
+
+  .modal-backdrop {
+    padding: 10px;
+  }
+
+  .modal-panel {
+    max-height: calc(100vh - 20px);
+    gap: 10px;
+    overflow: auto;
+    padding: 14px;
+  }
+
+  .modal-panel .eyebrow {
+    display: none;
+  }
+
+  .modal-panel h2 {
+    font-size: 1.18rem;
+    line-height: 1.25;
+  }
+
+  .confirm-intent-summary {
+    gap: 6px;
+  }
+
+  .confirm-intent-summary span {
+    padding: 3px 7px;
+    font-size: 0.78rem;
+  }
+
+  .confirm-intent-body {
+    gap: 8px;
+  }
+
+  .confirm-intent-body p {
+    margin-top: 2px;
+  }
+
+  .confirm-intent-body ul {
+    max-height: 92px;
+    overflow: auto;
+  }
+
+  .modal-actions button {
+    width: 100%;
   }
 }
