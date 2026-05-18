@@ -292,7 +292,7 @@ select {
 .danger-button:disabled,
 .ghost-button:disabled,
 .icon-text-button:disabled,
-.talisman-card:disabled {
+.talisman-visual:disabled {
   cursor: not-allowed;
   opacity: 0.58;
 }
@@ -338,7 +338,8 @@ select {
   font-weight: 800;
 }
 
-.talisman-card {
+.talisman-visual {
+  position: relative;
   display: grid;
   gap: 6px;
   width: 100%;
@@ -346,28 +347,50 @@ select {
   border: 1px solid #c9b7a8;
   border-radius: 6px;
   padding: 12px;
+  overflow: hidden;
   background: #fbefe4;
   color: #241f1b;
   text-align: left;
 }
 
-.talisman-card--primary {
+.talisman-visual--interactive {
   cursor: pointer;
 }
 
-.talisman-card--primary strong,
-.talisman-card--secondary p,
+.talisman-visual__text strong,
 .history-intent strong,
 .history-record p {
   overflow-wrap: anywhere;
 }
 
-.talisman-card--secondary {
+.talisman-visual--prevention {
   min-height: auto;
   background: #f7f2ed;
 }
 
-.talisman-card__label {
+.talisman-visual__template,
+.talisman-visual__state {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.talisman-visual__template {
+  background: linear-gradient(180deg, rgb(255 255 255 / 28%), transparent);
+}
+
+.talisman-visual__state {
+  border: 1px solid rgb(138 47 37 / 10%);
+}
+
+.talisman-visual__text {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 6px;
+}
+
+.talisman-visual__label {
   color: #8a2f25;
   font-size: 0.78rem;
   font-weight: 800;

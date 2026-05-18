@@ -9,6 +9,14 @@
 3. 符箓文字应该是覆盖在图片上的文本层。
 4. 情境性符箓和预防性符箓可以使用不同模板，但文本层结构应保持一致，便于组件复用。
 
+情境性符箓和预防性符箓统一从 `src/components/TalismanVisual.tsx` 接入视觉层。未来替换真实符箓模板时，优先替换 `TalismanVisual` 内部结构和样式，不改开始确认、计时、休息、续香、复盘等业务逻辑。
+
+`TalismanVisual` 当前预留这些图层钩子：
+
+- `data-talisman-layer="template"`：符箓背景模板层
+- `data-talisman-layer="text"`：文字覆盖层
+- `data-talisman-layer="state"`：状态层，未来可用于燃烧、消失或禁用等视觉状态
+
 ## 香炉
 
 香炉未来要拆成图层：

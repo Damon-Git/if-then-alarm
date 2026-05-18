@@ -1,5 +1,6 @@
 import type { IntentSet } from "../types";
 import CenserVisual from "./CenserVisual";
+import TalismanVisual from "./TalismanVisual";
 import TimerPanel from "./TimerPanel";
 
 type IntentSlotProps = {
@@ -25,15 +26,14 @@ const IntentSlot = ({ intentSet, actionDisabled, timerRemaining, onStart }: Inte
         <span>{intentSet.incenseCount} 炷香</span>
       </div>
 
-      <button
-        className="talisman-card talisman-card--primary"
+      <TalismanVisual
         disabled={!canStart}
-        type="button"
+        interactive
+        label="情境性符箓"
+        text={intentSet.situationIntent}
+        variant="situation"
         onClick={() => onStart(intentSet.id)}
-      >
-        <span className="talisman-card__label">情境性符箓</span>
-        <strong>{intentSet.situationIntent}</strong>
-      </button>
+      />
 
       <CenserVisual
         currentIncenseIndex={intentSet.currentIncenseIndex}
@@ -57,10 +57,12 @@ const IntentSlot = ({ intentSet, actionDisabled, timerRemaining, onStart }: Inte
           <p className="muted-text">暂无预防性符箓</p>
         ) : (
           intentSet.preventionIntents.map((preventionIntent, index) => (
-            <div className="talisman-card talisman-card--secondary" key={`${intentSet.id}-${index}`}>
-              <span className="talisman-card__label">第 {index + 1} 条</span>
-              <p>{preventionIntent}</p>
-            </div>
+            <TalismanVisual
+              key={`${intentSet.id}-${index}`}
+              label={`第 ${index + 1} 条`}
+              text={preventionIntent}
+              variant="prevention"
+            />
           ))
         )}
       </div>
