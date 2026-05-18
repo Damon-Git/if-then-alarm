@@ -1,14 +1,17 @@
 import type { IntentSetStatus } from "../types";
+import IncenseVisual from "./IncenseVisual";
 
 type CenserVisualProps = {
   currentIncenseIndex: number;
   incenseCount: number;
+  incenseProgress: number;
   size: "stage" | "compact";
   status: IntentSetStatus;
 };
 
-const CenserVisual = ({ currentIncenseIndex, incenseCount, size, status }: CenserVisualProps) => {
+const CenserVisual = ({ currentIncenseIndex, incenseCount, incenseProgress, size, status }: CenserVisualProps) => {
   const incenseLabel = `第 ${currentIncenseIndex} / ${incenseCount} 炷`;
+  const incenseProgressPercent = Math.round(Math.min(1, Math.max(0, incenseProgress)) * 100);
 
   return (
     <div
@@ -20,6 +23,13 @@ const CenserVisual = ({ currentIncenseIndex, incenseCount, size, status }: Cense
       role={size === "stage" ? "img" : undefined}
     >
       <div className="censer-visual__asset" aria-hidden="true">
+        <IncenseVisual
+          currentIncenseIndex={currentIncenseIndex}
+          incenseCount={incenseCount}
+          progress={incenseProgress}
+          size={size}
+          status={status}
+        />
         <span className="censer-visual__lid" data-censer-layer="lid" />
         <span className="censer-visual__mouth" data-censer-layer="mouth" />
         <span className="censer-visual__ash" data-censer-layer="ash" />
@@ -29,6 +39,7 @@ const CenserVisual = ({ currentIncenseIndex, incenseCount, size, status }: Cense
 
       <span className="censer-visual__meta">香炉占位</span>
       <strong className="censer-visual__meta">{incenseLabel}</strong>
+      <span className="censer-visual__meta">线香进度 {incenseProgressPercent}%</span>
     </div>
   );
 };

@@ -4,6 +4,7 @@ import CenserVisual from "./CenserVisual";
 
 type CompactCenserSlotProps = {
   actionDisabled: boolean;
+  incenseProgress: number;
   intentSet: IntentSet;
   onStart: (intentSetId: string) => void;
   timerRemaining: number;
@@ -32,7 +33,13 @@ const getStatusHint = (intentSet: IntentSet, canStart: boolean, formattedRemaini
   return "本套已完成";
 };
 
-const CompactCenserSlot = ({ actionDisabled, intentSet, onStart, timerRemaining }: CompactCenserSlotProps) => {
+const CompactCenserSlot = ({
+  actionDisabled,
+  incenseProgress,
+  intentSet,
+  onStart,
+  timerRemaining,
+}: CompactCenserSlotProps) => {
   const isActive = intentSet.status === "burning" || intentSet.status === "resting";
   const canStart = intentSet.status === "idle" && !actionDisabled;
   const formattedRemaining = formatSeconds(timerRemaining);
@@ -50,6 +57,7 @@ const CompactCenserSlot = ({ actionDisabled, intentSet, onStart, timerRemaining 
         <CenserVisual
           currentIncenseIndex={intentSet.currentIncenseIndex}
           incenseCount={intentSet.incenseCount}
+          incenseProgress={incenseProgress}
           size="compact"
           status={intentSet.status}
         />

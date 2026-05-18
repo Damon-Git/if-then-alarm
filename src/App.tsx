@@ -406,6 +406,7 @@ const App = () => {
 
         {phase === "ritual" ? (
           <RitualStage
+            focusSeconds={timerConfig.focusSeconds}
             hasBlockingAction={hasBlockingAction}
             intentSets={intentSets}
             onRequestAbandon={requestAbandonSession}

@@ -6,6 +6,7 @@ import TimerPanel from "./TimerPanel";
 type IntentSlotProps = {
   intentSet: IntentSet;
   actionDisabled: boolean;
+  incenseProgress: number;
   timerRemaining: number;
   onStart: (intentSetId: string) => void;
 };
@@ -17,7 +18,7 @@ const statusLabels: Record<IntentSet["status"], string> = {
   completed: "已完成",
 };
 
-const IntentSlot = ({ intentSet, actionDisabled, timerRemaining, onStart }: IntentSlotProps) => {
+const IntentSlot = ({ intentSet, actionDisabled, incenseProgress, timerRemaining, onStart }: IntentSlotProps) => {
   const canStart = intentSet.status === "idle" && !actionDisabled;
   return (
     <article className={`intent-slot intent-slot--${intentSet.status}`}>
@@ -38,6 +39,7 @@ const IntentSlot = ({ intentSet, actionDisabled, timerRemaining, onStart }: Inte
       <CenserVisual
         currentIncenseIndex={intentSet.currentIncenseIndex}
         incenseCount={intentSet.incenseCount}
+        incenseProgress={incenseProgress}
         size="stage"
         status={intentSet.status}
       />
