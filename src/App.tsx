@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { TIMER_MODE_CONFIG } from "./constants";
 import AbandonSessionModal from "./components/AbandonSessionModal";
 import BreakModal from "./components/BreakModal";
+import ConfirmModal from "./components/ConfirmModal";
 import HistoryPanel from "./components/HistoryPanel";
 import ReviewPanel from "./components/ReviewPanel";
 import RestoreSessionModal from "./components/RestoreSessionModal";
@@ -35,6 +36,15 @@ import type {
 } from "./types";
 
 type UtilityPanel = "history" | "settings";
+
+type ConfirmationRequest =
+  | {
+      recordId: string;
+      type: "delete-history-record";
+    }
+  | {
+      type: "clear-history-records";
+    };
 
 const createId = () => {
   if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
@@ -111,6 +121,7 @@ const App = () => {
   const [timerRemaining, setTimerRemaining] = useState(0);
   const [activeModal, setActiveModal] = useState<ActiveModal | null>(null);
   const [activeTimerSegment, setActiveTimerSegment] = useState<ActiveTimerSegment | null>(null);
+  const [confirmationRequest, setConfirmationRequest] = useState<ConfirmationRequest | null>(null);
   const [pendingStartIntentId, setPendingStartIntentId] = useState<string | null>(null);
   const [isAbandonConfirmOpen, setIsAbandonConfirmOpen] = useState(false);
   const [settings, setSettings] = useState<AppSettings>(() => loadAppSettings());
@@ -412,27 +423,38 @@ const App = () => {
   };
 
   const deleteRecord = (recordId: string) => {
-    // Tauri migration point: replace system confirm with an in-app confirmation modal.
-    const shouldDelete = window.confirm("确定要删除这条历史记录吗？");
-
-    if (!shouldDelete) {
-      return;
-    }
-
-    setHistoryRecords(deleteHistoryRecord(recordId));
-    showToast("success", "已删除 1 条历史记录。");
+    setConfirmationRequest({
+      recordId,
+      type: "delete-history-record",
+    });
   };
 
   const clearRecords = () => {
-    // Tauri migration point: replace system confirm with an in-app confirmation modal.
-    const shouldClear = window.confirm("确定要清空全部历史记录吗？此操作不会影响当前正在进行的轮次。");
+    setConfirmationRequest({
+      type: "clear-history-records",
+    });
+  };
 
-    if (!shouldClear) {
+  const cancelConfirmation = () => {
+    setConfirmationRequest(null);
+  };
+
+  const confirmRequestedAction = () => {
+    if (!confirmationRequest) {
       return;
     }
 
-    setHistoryRecords(clearHistoryRecords());
-    showToast("success", "已清空全部历史记录。");
+    if (confirmationRequest.type === "delete-history-record") {
+      setHistoryRecords(deleteHistoryRecord(confirmationRequest.recordId));
+      showToast("success", "已删除 1 条历史记录。");
+    }
+
+    if (confirmationRequest.type === "clear-history-records") {
+      setHistoryRecords(clearHistoryRecords());
+      showToast("success", "已清空全部历史记录。");
+    }
+
+    setConfirmationRequest(null);
   };
 
   const exportRecords = () => {
@@ -568,6 +590,25 @@ const App = () => {
 
       {isAbandonConfirmOpen ? (
         <AbandonSessionModal onCancel={cancelAbandonSession} onConfirm={confirmAbandonSession} />
+      ) : null}
+
+      {confirmationRequest ? (
+        <ConfirmModal
+          cancelLabel="取消"
+          confirmLabel={confirmationRequest.type === "delete-history-record" ? "删除记录" : "清空全部"}
+          description={
+            confirmationRequest.type === "delete-history-record"
+              ? "这条历史记录删除后无法在应用内恢复。"
+              : "全部历史记录会被清空，但不会影响当前正在进行的轮次。"
+          }
+          eyebrow="History"
+          title={
+            confirmationRequest.type === "delete-history-record" ? "确定要删除这条历史记录吗？" : "确定要清空全部历史记录吗？"
+          }
+          variant="danger"
+          onCancel={cancelConfirmation}
+          onConfirm={confirmRequestedAction}
+        />
       ) : null}
 
       {pendingStartIntentSet ? (
