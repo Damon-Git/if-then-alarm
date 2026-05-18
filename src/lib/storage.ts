@@ -1,6 +1,7 @@
 import { isTimerMode } from "./settingsStorage";
 import type { HistoryExportPayload, HistoryImportResult, HistoryRecord, ReviewResult } from "../types";
 
+// Tauri migration point: route history persistence through a storage adapter before replacing localStorage.
 const HISTORY_STORAGE_KEY = "jiji-rululing.history";
 
 const isReviewResult = (value: unknown): value is ReviewResult =>

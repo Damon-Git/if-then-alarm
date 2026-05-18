@@ -4,6 +4,8 @@
 
 素材目录、命名、插槽和接入边界见 `docs/ASSET_PIPELINE.md`。
 
+桌面小窗和 Tauri 外壳迁移见 `docs/TAURI_MIGRATION_PLAN.md`。视觉组件应继续保持平台无关，避免直接依赖 Tauri API。
+
 ## 视觉状态中间层
 
 业务状态不直接等同于素材状态。当前通过 `src/lib/visualState.ts` 把业务状态映射为视觉状态，再交给 `TalismanVisual`、`CenserVisual`、`IncenseVisual` 使用。

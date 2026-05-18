@@ -218,6 +218,7 @@ const App = () => {
       return;
     }
 
+    // Tauri migration point: replace beforeunload with desktop window-close interception.
     const warnBeforeUnload = (event: BeforeUnloadEvent) => {
       event.preventDefault();
       event.returnValue = "";
@@ -411,6 +412,7 @@ const App = () => {
   };
 
   const deleteRecord = (recordId: string) => {
+    // Tauri migration point: replace system confirm with an in-app confirmation modal.
     const shouldDelete = window.confirm("确定要删除这条历史记录吗？");
 
     if (!shouldDelete) {
@@ -422,6 +424,7 @@ const App = () => {
   };
 
   const clearRecords = () => {
+    // Tauri migration point: replace system confirm with an in-app confirmation modal.
     const shouldClear = window.confirm("确定要清空全部历史记录吗？此操作不会影响当前正在进行的轮次。");
 
     if (!shouldClear) {
@@ -433,6 +436,7 @@ const App = () => {
   };
 
   const exportRecords = () => {
+    // Tauri migration point: replace browser download with a file-save dialog and filesystem write.
     const payload = createHistoryExportPayload(historyRecords);
     const jsonValue = JSON.stringify(payload, null, 2);
     const blob = new Blob([jsonValue], { type: "application/json" });

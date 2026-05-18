@@ -2,6 +2,7 @@ import { DEFAULT_TIMER_MODE } from "../constants";
 import { isTimerMode } from "./settingsStorage";
 import type { ActiveTimerSegment, PersistedSession } from "../types";
 
+// Tauri migration point: current-session persistence should move behind the same adapter as history/settings.
 export const SESSION_STORAGE_KEY = "jiji-rululing.current-session";
 
 const isActiveTimerSegment = (value: unknown): value is ActiveTimerSegment => {

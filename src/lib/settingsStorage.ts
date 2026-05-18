@@ -1,6 +1,7 @@
 import { DEFAULT_TIMER_MODE } from "../constants";
 import type { AppSettings, TimerMode } from "../types";
 
+// Tauri migration point: keep settings schema stable while swapping localStorage for desktop storage.
 const SETTINGS_STORAGE_KEY = "jiji-rululing.settings";
 
 export const isTimerMode = (value: unknown): value is TimerMode => value === "dev" || value === "prod";

@@ -44,6 +44,7 @@ const SetupForm = ({ onSubmit }: SetupFormProps) => {
       return;
     }
 
+    // Tauri migration point: replace beforeunload with desktop window-close interception.
     const warnBeforeUnload = (event: BeforeUnloadEvent) => {
       event.preventDefault();
       event.returnValue = "";
