@@ -2,7 +2,7 @@
 
 当前项目仍以 Web MVP 为主要验证入口，同时已经加入最小 Tauri 外壳。Tauri 迁移的目标不是重做业务流程，而是在保留 React 状态机和视觉组件边界的前提下，把 Web 容器逐步换成 macOS 优先的小窗桌面外壳。
 
-平台 API 使用点的完整清单见 `docs/PLATFORM_BOUNDARY_AUDIT.md`。本文只保留迁移路线和关键决策。
+平台 API 使用点的完整清单见 `docs/PLATFORM_BOUNDARY_AUDIT.md`。Tauri 桌面小窗的手动验收路径见 `docs/TAURI_DESKTOP_CHECKLIST.md`。本文只保留迁移路线和关键决策。
 
 ## 当前可直接迁移的部分
 
@@ -146,4 +146,4 @@ npm run tauri:dev
 
 ## 建议下一步
 
-先在安装 Rust 的本机环境跑通 `npm run tauri:dev`，确认窗口尺寸、滚动、弹窗遮罩和小窗香炉舞台表现稳定。通过后再考虑系统通知、窗口关闭拦截和持久化 adapter 替换。
+先按 `docs/TAURI_DESKTOP_CHECKLIST.md` 跑通最小桌面小窗验收，确认窗口尺寸、滚动、弹窗遮罩和小窗香炉舞台表现稳定。通过后再考虑系统通知、窗口关闭拦截和持久化 adapter 替换。

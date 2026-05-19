@@ -2,6 +2,8 @@
 
 当前小窗目标是为未来 macOS 菜单栏弹窗准备窄窗口体验。现阶段已经提供最小 Tauri 外壳，但仍不接系统菜单栏；主要验收仍以 Web 窄窗口和 Tauri 固定小窗尺寸为准。
 
+Tauri 桌面窗口的完整手动验收路径见 `docs/TAURI_DESKTOP_CHECKLIST.md`。
+
 ## 目标尺寸
 
 - 第一验收尺寸：`390px × 620px`。
