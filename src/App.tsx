@@ -16,6 +16,13 @@ import { clearPersistedSession, loadPersistedSession, savePersistedSession } fro
 import { createActiveTimerSegment, formatDurationLabel, getTimerRemainingSeconds } from "./lib/timer";
 import { loadAppSettings, saveAppSettings } from "./lib/settingsStorage";
 import {
+  canChangeTimerSettings,
+  getActiveIntentSet,
+  hasBlockingRitualAction,
+  hasUnsavedRitualSession,
+  isTimerRestorable,
+} from "./lib/sessionGuards";
+import {
   clearHistoryRecords,
   createHistoryExportPayload,
   deleteHistoryRecord,
@@ -55,15 +62,8 @@ const createId = () => {
   return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
 };
 
-const getSessionActiveIntentSet = (intentSets: IntentSet[]) =>
-  intentSets.find((intentSet) => intentSet.status === "burning" || intentSet.status === "resting") ?? null;
-
-const isTimerRestorable = (session: PersistedSession) => {
-  return Boolean(getSessionActiveIntentSet(session.intentSets) && !session.activeModal && session.timerRemaining > 0);
-};
-
 const resolvePersistedSession = (session: PersistedSession): PersistedSession => {
-  const activeIntentSet = getSessionActiveIntentSet(session.intentSets);
+  const activeIntentSet = getActiveIntentSet(session.intentSets);
 
   if (!activeIntentSet || !session.activeTimerSegment || session.activeModal) {
     return session;
@@ -134,10 +134,7 @@ const App = () => {
   });
   const [activeUtilityPanel, setActiveUtilityPanel] = useState<UtilityPanel | null>(null);
 
-  const activeIntentSet = useMemo(
-    () => intentSets.find((intentSet) => intentSet.status === "burning" || intentSet.status === "resting") ?? null,
-    [intentSets],
-  );
+  const activeIntentSet = useMemo(() => getActiveIntentSet(intentSets), [intentSets]);
 
   const activeIntentSetKey = activeIntentSet
     ? `${activeIntentSet.id}-${activeIntentSet.status}-${activeIntentSet.currentIncenseIndex}`
@@ -150,7 +147,7 @@ const App = () => {
     ? intentSets.find((intentSet) => intentSet.id === pendingStartIntentId) ?? null
     : null;
 
-  const hasUnsavedSession = phase === "ritual" || phase === "review";
+  const hasUnsavedSession = hasUnsavedRitualSession(phase);
   const timerConfig = TIMER_MODE_CONFIG[settings.timerMode];
 
   const showToast = (type: ToastMessage["type"], message: string) => {
@@ -481,15 +478,19 @@ const App = () => {
   };
 
   const updateTimerMode = (timerMode: TimerMode) => {
-    if (hasUnsavedSession || pendingSession) {
+    if (!canChangeTimerSettings({ pendingSession, phase })) {
       return;
     }
 
     setSettings(saveAppSettings({ timerMode }));
   };
 
-  const hasBlockingAction = Boolean(activeIntentSet || activeModal || pendingStartIntentId);
-  const isSettingsDisabled = hasUnsavedSession || Boolean(pendingSession);
+  const hasBlockingAction = hasBlockingRitualAction({
+    activeModal,
+    intentSets,
+    pendingStartIntentId,
+  });
+  const isSettingsDisabled = !canChangeTimerSettings({ pendingSession, phase });
 
   const toggleUtilityPanel = (panel: UtilityPanel) => {
     setActiveUtilityPanel((currentPanel) => (currentPanel === panel ? null : panel));
