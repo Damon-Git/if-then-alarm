@@ -17,20 +17,28 @@
 
 ## 当前实现
 
-当前 Web/Tauri MVP 仍使用同一套前端逻辑：
+当前 Web/Tauri MVP 使用同一套核心 session 逻辑，并在桌面环境补充原生关闭拦截：
 
 - `src/App.tsx` 在 `ritual` 和 `review` 阶段保存当前 session。
 - `src/lib/sessionStorage.ts` 通过 `jiji-rululing.current-session` 保存未完成轮次。
 - `src/lib/timer.ts` 使用 `startedAt` 和 `durationSeconds` 推导剩余时间。
 - `RestoreSessionModal` 在启动时提示用户恢复或丢弃未完成轮次。
 - 保存复盘、确认放弃本轮、丢弃恢复提示时，会清除当前 session。
+- `src/lib/tauriWindow.ts` 封装 Tauri 窗口关闭事件和窗口销毁调用。
+- Tauri 桌面端点击关闭按钮时，如果存在填写草稿、仪式台轮次或复盘轮次，会先展示应用内确认弹窗。
 
-当前浏览器离开保护仍使用 `beforeunload`：
+浏览器离开保护仍使用 `beforeunload`：
 
 - `src/App.tsx`：仪式台和复盘页。
 - `src/components/SetupForm.tsx`：填写页已有草稿时。
 
-在 Tauri 中，`beforeunload` 是否能覆盖所有关闭路径不能作为最终保障。它当前只作为 Web MVP 保护层保留。
+`beforeunload` 只作为 Web 版保护层保留。Tauri 桌面端以窗口关闭事件为准。
+
+桌面关闭确认规则：
+
+- 填写页已有草稿时，提示用户继续填写或关闭窗口；关闭后草稿不会保存。
+- 仪式台或复盘页存在未保存轮次时，提示用户继续当前轮次或保留并关闭。
+- “保留并关闭”不会放弃轮次；重新启动后仍然走恢复/丢弃流程。
 
 ## 恢复规则
 
@@ -61,13 +69,6 @@
 
 ## 后续 Tauri 原生方案
 
-后续进入桌面能力阶段时，应使用 Tauri 窗口关闭事件替代 `beforeunload`：
-
-- 监听主窗口关闭事件。
-- 如果处于填写草稿、仪式台或复盘页，阻止直接关闭。
-- 展示应用内确认弹窗，而不是依赖系统默认提示。
-- 让用户明确选择“继续留在本轮”或“放弃并关闭”。
-
 当未来接入菜单栏小窗后，还需要区分：
 
 - 关闭窗口。
@@ -79,7 +80,6 @@
 
 ## 当前不做
 
-- 不接 Tauri 原生关闭拦截。
 - 不接系统通知。
 - 不处理 macOS 睡眠后的系统通知补偿。
 - 不区分窗口隐藏和应用退出。

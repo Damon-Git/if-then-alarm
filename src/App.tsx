@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { TIMER_MODE_CONFIG } from "./constants";
 import AbandonSessionModal from "./components/AbandonSessionModal";
 import BreakModal from "./components/BreakModal";
@@ -14,6 +14,7 @@ import ToastHost from "./components/ToastHost";
 import { downloadTextFile, readTextFile } from "./lib/fileTransferAdapter";
 import { clearPersistedSession, loadPersistedSession, savePersistedSession } from "./lib/sessionStorage";
 import { createActiveTimerSegment, formatDurationLabel, getTimerRemainingSeconds } from "./lib/timer";
+import { closeCurrentTauriWindow, listenForTauriCloseRequest } from "./lib/tauriWindow";
 import { loadAppSettings, saveAppSettings } from "./lib/settingsStorage";
 import {
   canChangeTimerSettings,
@@ -52,6 +53,14 @@ type ConfirmationRequest =
     }
   | {
       type: "clear-history-records";
+    };
+
+type TauriCloseRequest =
+  | {
+      type: "active-session";
+    }
+  | {
+      type: "setup-draft";
     };
 
 const createId = () => {
@@ -133,6 +142,8 @@ const App = () => {
     return persistedSession ? resolvePersistedSession(persistedSession) : null;
   });
   const [activeUtilityPanel, setActiveUtilityPanel] = useState<UtilityPanel | null>(null);
+  const [hasUnsavedSetupDraft, setHasUnsavedSetupDraft] = useState(false);
+  const [tauriCloseRequest, setTauriCloseRequest] = useState<TauriCloseRequest | null>(null);
 
   const activeIntentSet = useMemo(() => getActiveIntentSet(intentSets), [intentSets]);
 
@@ -149,6 +160,19 @@ const App = () => {
 
   const hasUnsavedSession = hasUnsavedRitualSession(phase);
   const timerConfig = TIMER_MODE_CONFIG[settings.timerMode];
+  const closeStateRef = useRef({
+    hasUnsavedSession: false,
+    hasUnsavedSetupDraft: false,
+    isCloseConfirmOpen: false,
+  });
+
+  useEffect(() => {
+    closeStateRef.current = {
+      hasUnsavedSession,
+      hasUnsavedSetupDraft,
+      isCloseConfirmOpen: Boolean(tauriCloseRequest),
+    };
+  }, [hasUnsavedSession, hasUnsavedSetupDraft, tauriCloseRequest]);
 
   const showToast = (type: ToastMessage["type"], message: string) => {
     const id = createId();
@@ -227,7 +251,6 @@ const App = () => {
       return;
     }
 
-    // Tauri migration point: replace beforeunload with desktop window-close interception.
     const warnBeforeUnload = (event: BeforeUnloadEvent) => {
       event.preventDefault();
       event.returnValue = "";
@@ -237,6 +260,47 @@ const App = () => {
 
     return () => window.removeEventListener("beforeunload", warnBeforeUnload);
   }, [hasUnsavedSession]);
+
+  useEffect(() => {
+    let unlisten: (() => void) | undefined;
+    let isMounted = true;
+
+    listenForTauriCloseRequest(() => {
+      const { hasUnsavedSession, hasUnsavedSetupDraft, isCloseConfirmOpen } = closeStateRef.current;
+
+      if (isCloseConfirmOpen) {
+        return true;
+      }
+
+      if (hasUnsavedSession) {
+        setTauriCloseRequest({ type: "active-session" });
+        return true;
+      }
+
+      if (hasUnsavedSetupDraft) {
+        setTauriCloseRequest({ type: "setup-draft" });
+        return true;
+      }
+
+      return false;
+    })
+      .then((nextUnlisten) => {
+        if (isMounted) {
+          unlisten = nextUnlisten;
+          return;
+        }
+
+        nextUnlisten();
+      })
+      .catch(() => {
+        // Keep browser behavior unchanged if the Tauri listener cannot be registered.
+      });
+
+    return () => {
+      isMounted = false;
+      unlisten?.();
+    };
+  }, []);
 
   useEffect(() => {
     if (!hasUnsavedSession || intentSets.length === 0) {
@@ -261,6 +325,7 @@ const App = () => {
     setPendingStartIntentId(null);
     setIsAbandonConfirmOpen(false);
     setActiveUtilityPanel(null);
+    setHasUnsavedSetupDraft(false);
     setPhase("ritual");
   };
 
@@ -455,6 +520,31 @@ const App = () => {
     setConfirmationRequest(null);
   };
 
+  const cancelTauriCloseRequest = () => {
+    setTauriCloseRequest(null);
+  };
+
+  const confirmTauriCloseRequest = async () => {
+    setTauriCloseRequest(null);
+
+    if (hasUnsavedSession && intentSets.length > 0) {
+      savePersistedSession({
+        phase: phase as Exclude<AppPhase, "setup">,
+        intentSets,
+        timerRemaining: activeTimerSegment ? getTimerRemainingSeconds(activeTimerSegment) : timerRemaining,
+        activeTimerSegment,
+        activeModal,
+        timerMode: settings.timerMode,
+      });
+    }
+
+    const didClose = await closeCurrentTauriWindow();
+
+    if (!didClose) {
+      window.close();
+    }
+  };
+
   const exportRecords = () => {
     const payload = createHistoryExportPayload(historyRecords);
     const jsonValue = JSON.stringify(payload, null, 2);
@@ -484,6 +574,10 @@ const App = () => {
 
     setSettings(saveAppSettings({ timerMode }));
   };
+
+  const updateSetupDraftState = useCallback((nextHasUnsavedDraft: boolean) => {
+    setHasUnsavedSetupDraft(nextHasUnsavedDraft);
+  }, []);
 
   const hasBlockingAction = hasBlockingRitualAction({
     activeModal,
@@ -528,7 +622,9 @@ const App = () => {
       </header>
 
       <main className="app-main">
-        {phase === "setup" ? <SetupForm onSubmit={startRitual} /> : null}
+        {phase === "setup" ? (
+          <SetupForm onDraftStateChange={updateSetupDraftState} onSubmit={startRitual} />
+        ) : null}
 
         {phase === "ritual" ? (
           <RitualStage
@@ -601,6 +697,23 @@ const App = () => {
           variant="danger"
           onCancel={cancelConfirmation}
           onConfirm={confirmRequestedAction}
+        />
+      ) : null}
+
+      {tauriCloseRequest ? (
+        <ConfirmModal
+          cancelLabel={tauriCloseRequest.type === "setup-draft" ? "继续填写" : "继续当前轮次"}
+          confirmLabel={tauriCloseRequest.type === "setup-draft" ? "关闭窗口" : "保留并关闭"}
+          description={
+            tauriCloseRequest.type === "setup-draft"
+              ? "当前填写内容还没有进入仪式台，关闭后不会保存这份草稿。"
+              : "当前轮次会保留在本地。下次打开时，你可以选择恢复或丢弃。"
+          }
+          eyebrow="Desktop"
+          title={tauriCloseRequest.type === "setup-draft" ? "确定要关闭窗口吗？" : "要暂时关闭窗口吗？"}
+          variant={tauriCloseRequest.type === "setup-draft" ? "danger" : "default"}
+          onCancel={cancelTauriCloseRequest}
+          onConfirm={confirmTauriCloseRequest}
         />
       ) : null}
 

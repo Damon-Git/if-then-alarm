@@ -6,6 +6,7 @@ import type { IntentSet, IntentSetDraft, SetupValidationErrors } from "../types"
 import IntentSetForm from "./IntentSetForm";
 
 type SetupFormProps = {
+  onDraftStateChange?: (hasUnsavedDraft: boolean) => void;
   onSubmit: (intentSets: IntentSet[]) => void;
 };
 
@@ -24,7 +25,7 @@ const createEmptyDraft = (): IntentSetDraft => ({
   incenseCount: 1,
 });
 
-const SetupForm = ({ onSubmit }: SetupFormProps) => {
+const SetupForm = ({ onDraftStateChange, onSubmit }: SetupFormProps) => {
   const [drafts, setDrafts] = useState<IntentSetDraft[]>(() => [createEmptyDraft()]);
   const [errors, setErrors] = useState<SetupValidationErrors>({});
 
@@ -35,7 +36,7 @@ const SetupForm = ({ onSubmit }: SetupFormProps) => {
       return;
     }
 
-    // Tauri migration point: replace beforeunload with desktop window-close interception.
+    // Web-only protection. Tauri desktop close handling is coordinated by App.
     const warnBeforeUnload = (event: BeforeUnloadEvent) => {
       event.preventDefault();
       event.returnValue = "";
@@ -45,6 +46,12 @@ const SetupForm = ({ onSubmit }: SetupFormProps) => {
 
     return () => window.removeEventListener("beforeunload", warnBeforeUnload);
   }, [hasUnsavedDraft]);
+
+  useEffect(() => {
+    onDraftStateChange?.(hasUnsavedDraft);
+
+    return () => onDraftStateChange?.(false);
+  }, [hasUnsavedDraft, onDraftStateChange]);
 
   const updateDraft = (updatedDraft: IntentSetDraft) => {
     setDrafts((currentDrafts) =>
