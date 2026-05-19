@@ -2,7 +2,7 @@
 
 当前项目仍以 Web MVP 为主要验证入口，同时已经加入最小 Tauri 外壳。Tauri 迁移的目标不是重做业务流程，而是在保留 React 状态机和视觉组件边界的前提下，把 Web 容器逐步换成 macOS 优先的小窗桌面外壳。
 
-平台 API 使用点的完整清单见 `docs/PLATFORM_BOUNDARY_AUDIT.md`。Tauri 桌面小窗的手动验收路径见 `docs/TAURI_DESKTOP_CHECKLIST.md`。本文只保留迁移路线和关键决策。
+平台 API 使用点的完整清单见 `docs/PLATFORM_BOUNDARY_AUDIT.md`。Tauri 桌面小窗的手动验收路径见 `docs/TAURI_DESKTOP_CHECKLIST.md`。关闭与恢复语义见 `docs/TAURI_CLOSE_RESTORE_NOTES.md`。本文只保留迁移路线和关键决策。
 
 ## 当前可直接迁移的部分
 
@@ -44,7 +44,7 @@ Tauri 阶段应替换 adapter 实现，桌面版可使用：
 - `src/App.tsx`：仪式台和复盘页离开保护。
 - `src/components/SetupForm.tsx`：填写页草稿离开保护。
 
-Tauri 阶段需要改为窗口关闭事件拦截，判断当前是否存在未保存轮次或填写草稿，再展示应用内确认弹窗。Web 的 `beforeunload` 文案不可控，不适合作为桌面最终体验。
+关闭与恢复的当前产品语义见 `docs/TAURI_CLOSE_RESTORE_NOTES.md`。Tauri 阶段需要改为窗口关闭事件拦截，判断当前是否存在未保存轮次或填写草稿，再展示应用内确认弹窗。Web 的 `beforeunload` 文案不可控，不适合作为桌面最终体验。
 
 ### 确认弹窗
 
