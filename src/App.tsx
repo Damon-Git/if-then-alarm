@@ -11,6 +11,7 @@ import SettingsPanel from "./components/SettingsPanel";
 import StartIntentConfirmModal from "./components/StartIntentConfirmModal";
 import SetupForm from "./components/SetupForm";
 import ToastHost from "./components/ToastHost";
+import { downloadTextFile, readTextFile } from "./lib/fileTransferAdapter";
 import { clearPersistedSession, loadPersistedSession, savePersistedSession } from "./lib/sessionStorage";
 import { createActiveTimerSegment, formatDurationLabel, getTimerRemainingSeconds } from "./lib/timer";
 import { loadAppSettings, saveAppSettings } from "./lib/settingsStorage";
@@ -458,27 +459,18 @@ const App = () => {
   };
 
   const exportRecords = () => {
-    // Tauri migration point: replace browser download with a file-save dialog and filesystem write.
     const payload = createHistoryExportPayload(historyRecords);
     const jsonValue = JSON.stringify(payload, null, 2);
-    const blob = new Blob([jsonValue], { type: "application/json" });
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement("a");
     const dateSegment = new Date().toISOString().slice(0, 10).replace(/-/g, "");
 
-    link.href = url;
-    link.download = `jiji-rululing-history-${dateSegment}.json`;
-    document.body.append(link);
-    link.click();
-    link.remove();
-    window.URL.revokeObjectURL(url);
+    downloadTextFile(`jiji-rululing-history-${dateSegment}.json`, jsonValue, "application/json");
 
     showToast("success", `已导出 ${historyRecords.length} 条历史记录。`);
   };
 
   const importRecords = async (file: File) => {
     try {
-      const rawValue = await file.text();
+      const rawValue = await readTextFile(file);
       const result = importHistoryExportPayload(rawValue);
 
       setHistoryRecords(result.records);
