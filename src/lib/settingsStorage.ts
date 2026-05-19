@@ -1,14 +1,14 @@
 import { DEFAULT_TIMER_MODE } from "../constants";
+import { persistenceAdapter } from "./persistenceAdapter";
 import type { AppSettings, TimerMode } from "../types";
 
-// Tauri migration point: keep settings schema stable while swapping localStorage for desktop storage.
 const SETTINGS_STORAGE_KEY = "jiji-rululing.settings";
 
 export const isTimerMode = (value: unknown): value is TimerMode => value === "dev" || value === "prod";
 
 export const loadAppSettings = (): AppSettings => {
   try {
-    const rawValue = window.localStorage.getItem(SETTINGS_STORAGE_KEY);
+    const rawValue = persistenceAdapter.getItem(SETTINGS_STORAGE_KEY);
 
     if (!rawValue) {
       return { timerMode: DEFAULT_TIMER_MODE };
@@ -29,6 +29,6 @@ export const loadAppSettings = (): AppSettings => {
 };
 
 export const saveAppSettings = (settings: AppSettings) => {
-  window.localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(settings));
+  persistenceAdapter.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(settings));
   return settings;
 };

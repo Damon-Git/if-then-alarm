@@ -1,7 +1,7 @@
+import { persistenceAdapter } from "./persistenceAdapter";
 import { isTimerMode } from "./settingsStorage";
 import type { HistoryExportPayload, HistoryImportResult, HistoryRecord, ReviewResult } from "../types";
 
-// Tauri migration point: route history persistence through a storage adapter before replacing localStorage.
 const HISTORY_STORAGE_KEY = "jiji-rululing.history";
 
 const isReviewResult = (value: unknown): value is ReviewResult =>
@@ -55,7 +55,7 @@ const parseHistoryExportPayload = (value: unknown): HistoryExportPayload | null 
 
 export const loadHistoryRecords = (): HistoryRecord[] => {
   try {
-    const rawValue = window.localStorage.getItem(HISTORY_STORAGE_KEY);
+    const rawValue = persistenceAdapter.getItem(HISTORY_STORAGE_KEY);
 
     if (!rawValue) {
       return [];
@@ -76,18 +76,18 @@ export const loadHistoryRecords = (): HistoryRecord[] => {
 export const saveHistoryRecord = (record: HistoryRecord) => {
   const records = loadHistoryRecords();
   const nextRecords = [record, ...records];
-  window.localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(nextRecords));
+  persistenceAdapter.setItem(HISTORY_STORAGE_KEY, JSON.stringify(nextRecords));
   return nextRecords;
 };
 
 export const deleteHistoryRecord = (recordId: string) => {
   const nextRecords = loadHistoryRecords().filter((record) => record.id !== recordId);
-  window.localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(nextRecords));
+  persistenceAdapter.setItem(HISTORY_STORAGE_KEY, JSON.stringify(nextRecords));
   return nextRecords;
 };
 
 export const clearHistoryRecords = () => {
-  window.localStorage.removeItem(HISTORY_STORAGE_KEY);
+  persistenceAdapter.removeItem(HISTORY_STORAGE_KEY);
   return [];
 };
 
@@ -121,7 +121,7 @@ export const importHistoryExportPayload = (rawValue: string): HistoryImportResul
     (first, second) => new Date(second.createdAt).getTime() - new Date(first.createdAt).getTime(),
   );
 
-  window.localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(nextRecords));
+  persistenceAdapter.setItem(HISTORY_STORAGE_KEY, JSON.stringify(nextRecords));
 
   return {
     importedCount: importedRecords.length,

@@ -19,19 +19,19 @@
 
 ### 本地持久化
 
-当前使用 `window.localStorage`：
+当前本地持久化已经通过 `src/lib/persistenceAdapter.ts` 统一访问。Web 版 adapter 仍然使用 `window.localStorage`，调用点集中在：
 
 - `src/lib/storage.ts`：历史记录。
 - `src/lib/sessionStorage.ts`：当前未完成轮次。
 - `src/lib/settingsStorage.ts`：计时模式设置。
 
-Tauri 阶段建议新增统一持久化适配层，例如 `src/lib/persistenceAdapter.ts`。Web 版继续使用 localStorage，桌面版可替换为：
+Tauri 阶段应替换 adapter 实现，桌面版可使用：
 
 - Tauri Store 插件；
 - app data 目录下 JSON 文件；
 - 后续如需要再迁移到 SQLite。
 
-初期不建议直接把 Tauri API 分散写进业务组件。
+不应把 Tauri API 分散写进业务组件或具体存储模块。
 
 ### 关闭保护
 
@@ -132,7 +132,6 @@ Tauri 阶段应改为 Tauri 文件对话框和文件系统 API：
 
 在真正进入 Tauri 前，先做一轮“平台边界封装”：
 
-- 抽出持久化适配接口，让 storage/session/settings 先通过同一个 Web adapter 访问 localStorage。
 - 抽出导入导出文件接口，Web 版仍用浏览器下载和 `<input>`，桌面版再接 Tauri 文件 API。
 
 这样后续接 Tauri 时，主要替换 adapter，不需要重写业务组件。

@@ -1,8 +1,8 @@
 import { DEFAULT_TIMER_MODE } from "../constants";
+import { persistenceAdapter } from "./persistenceAdapter";
 import { isTimerMode } from "./settingsStorage";
 import type { ActiveTimerSegment, PersistedSession } from "../types";
 
-// Tauri migration point: current-session persistence should move behind the same adapter as history/settings.
 export const SESSION_STORAGE_KEY = "jiji-rululing.current-session";
 
 const isActiveTimerSegment = (value: unknown): value is ActiveTimerSegment => {
@@ -42,7 +42,7 @@ const isPersistedSession = (value: unknown): value is PersistedSession => {
 
 export const loadPersistedSession = (): PersistedSession | null => {
   try {
-    const rawValue = window.localStorage.getItem(SESSION_STORAGE_KEY);
+    const rawValue = persistenceAdapter.getItem(SESSION_STORAGE_KEY);
 
     if (!rawValue) {
       return null;
@@ -71,12 +71,12 @@ export const savePersistedSession = (session: Omit<PersistedSession, "version" |
     updatedAt: new Date().toISOString(),
   };
 
-  window.localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(nextSession));
+  persistenceAdapter.setItem(SESSION_STORAGE_KEY, JSON.stringify(nextSession));
   return nextSession;
 };
 
 export const clearPersistedSession = () => {
-  window.localStorage.removeItem(SESSION_STORAGE_KEY);
+  persistenceAdapter.removeItem(SESSION_STORAGE_KEY);
 };
 
 export const saveRawPersistedSessionForDev = (session: unknown) => {
@@ -84,5 +84,5 @@ export const saveRawPersistedSessionForDev = (session: unknown) => {
     return;
   }
 
-  window.localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(session));
+  persistenceAdapter.setItem(SESSION_STORAGE_KEY, JSON.stringify(session));
 };
