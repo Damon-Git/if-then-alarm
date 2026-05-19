@@ -1,6 +1,7 @@
 node_modules
 dist
 artifacts
+src-tauri/target
 *.tsbuildinfo
 .env
 .env.local
