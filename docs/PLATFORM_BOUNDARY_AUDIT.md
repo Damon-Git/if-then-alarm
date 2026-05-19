@@ -16,6 +16,7 @@
 | 历史、session、设置持久化 | `src/lib/persistenceAdapter.ts` | `window.localStorage` | 已封装 | 替换 adapter 为 Tauri Store、app data JSON 或 SQLite |
 | 历史删除/清空确认 | `src/components/ConfirmModal.tsx` | React 应用内弹窗 | 已封装 | 继续复用应用内弹窗 |
 | Tauri 窗口关闭拦截 | `src/lib/tauriWindow.ts` | `@tauri-apps/api/window` | 已封装 | 桌面端监听关闭事件，业务层只接收确认请求 |
+| 桌面计时通知 | `src/lib/notificationAdapter.ts` | `@tauri-apps/plugin-notification`、`window.setTimeout` | 已封装 | 通过 adapter 延迟发送和取消当前计时段通知 |
 | 历史导出 | `src/lib/fileTransferAdapter.ts` | `Blob`、`window.URL.createObjectURL`、`document.createElement("a")` | 已封装 | 替换 adapter 为 Tauri 文件保存对话框和文件写入 |
 | 历史导入读取 | `src/lib/fileTransferAdapter.ts` | `File.text()` | 已封装 | 替换 adapter 为 Tauri 文件打开对话框和文件读取 |
 
@@ -25,7 +26,7 @@
 | --- | --- | --- | --- | --- |
 | 仪式台/复盘 Web 离开保护 | `src/App.tsx` | `beforeunload` | 暂时保留 | Web 版保留；Tauri 桌面端已走窗口关闭事件拦截 |
 | 填写页草稿 Web 离开保护 | `src/components/SetupForm.tsx` | `beforeunload` | 暂时保留 | Web 版保留；Tauri 桌面端已走窗口关闭事件拦截 |
-| UI 倒计时刷新 | `src/App.tsx` | `window.setInterval`、`window.clearInterval` | 暂时保留 | 可继续用于 UI 刷新；提醒和后台行为需接 Tauri/系统能力 |
+| UI 倒计时刷新 | `src/App.tsx` | `window.setInterval`、`window.clearInterval` | 暂时保留 | 可继续用于 UI 刷新；收起窗口后的提醒由通知 adapter 补足 |
 | Toast 自动消失 | `src/App.tsx` | `window.setTimeout` | 暂时保留 | 可保留；不影响桌面核心能力 |
 | 开发恢复场景开关 | `src/components/SettingsPanel.tsx`、`src/lib/sessionStorage.ts` | `import.meta.env.DEV` | 暂时保留 | 保留但必须确认 release 构建不可见 |
 | Web 文件选择入口 | `src/components/HistoryPanel.tsx` | `<input type="file">`、`File` | 暂时保留 | Tauri 阶段可由文件 adapter 接管打开文件流程 |
@@ -51,7 +52,6 @@
 
 当前代码没有直接使用这些桌面相关能力：
 
-- `Notification`
 - `navigator`
 - 系统托盘或菜单栏 API
 - 全局快捷键
@@ -62,6 +62,6 @@
 1. Tauri 初始化后，先替换持久化 adapter，确保历史、session、设置仍可读写。
 2. 替换文件传输 adapter，接入保存/打开文件对话框。
 3. 继续保留 Web 版 `beforeunload`，桌面端关闭拦截已先接入。
-4. 再接系统通知、菜单栏入口、置顶、小窗隐藏策略。
+4. 后续继续接菜单栏入口、置顶、小窗隐藏策略。
 
 当前不建议继续抽象 `Date`、`crypto.randomUUID` 或 UI 刷新 interval；这些不是迁移阻塞点。

@@ -28,3 +28,13 @@ export const closeCurrentTauriWindow = async () => {
   await getCurrentWindow().destroy();
   return true;
 };
+
+export const hideCurrentTauriWindow = async () => {
+  if (!isTauriRuntime()) {
+    return false;
+  }
+
+  const { getCurrentWindow } = await import("@tauri-apps/api/window");
+  await getCurrentWindow().hide();
+  return true;
+};

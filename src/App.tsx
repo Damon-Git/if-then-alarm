@@ -12,9 +12,10 @@ import StartIntentConfirmModal from "./components/StartIntentConfirmModal";
 import SetupForm from "./components/SetupForm";
 import ToastHost from "./components/ToastHost";
 import { downloadTextFile, readTextFile } from "./lib/fileTransferAdapter";
+import { cancelTimerNotification, scheduleTimerNotification } from "./lib/notificationAdapter";
 import { clearPersistedSession, loadPersistedSession, savePersistedSession } from "./lib/sessionStorage";
 import { createActiveTimerSegment, formatDurationLabel, getTimerRemainingSeconds } from "./lib/timer";
-import { closeCurrentTauriWindow, listenForTauriCloseRequest } from "./lib/tauriWindow";
+import { closeCurrentTauriWindow, hideCurrentTauriWindow, listenForTauriCloseRequest } from "./lib/tauriWindow";
 import { loadAppSettings, saveAppSettings } from "./lib/settingsStorage";
 import {
   canChangeTimerSettings,
@@ -187,9 +188,10 @@ const App = () => {
     setToasts((currentToasts) => currentToasts.filter((toast) => toast.id !== toastId));
   };
 
-  const beginTimer = (durationSeconds: number) => {
+  const beginTimer = (durationSeconds: number, notificationKind: ActiveModal["type"]) => {
     setTimerRemaining(durationSeconds);
     setActiveTimerSegment(createActiveTimerSegment(durationSeconds));
+    void scheduleTimerNotification({ delaySeconds: durationSeconds, kind: notificationKind });
   };
 
   useEffect(() => {
@@ -325,6 +327,7 @@ const App = () => {
     setPendingStartIntentId(null);
     setIsAbandonConfirmOpen(false);
     setActiveUtilityPanel(null);
+    void cancelTimerNotification();
     setHasUnsavedSetupDraft(false);
     setPhase("ritual");
   };
@@ -353,7 +356,7 @@ const App = () => {
           : intentSet,
       ),
     );
-    beginTimer(timerConfig.focusSeconds);
+    beginTimer(timerConfig.focusSeconds, "incense-finished");
     setPendingStartIntentId(null);
   };
 
@@ -363,7 +366,7 @@ const App = () => {
         intentSet.id === intentSetId ? { ...intentSet, status: "resting" } : intentSet,
       ),
     );
-    beginTimer(timerConfig.breakSeconds);
+    beginTimer(timerConfig.breakSeconds, "rest-finished");
     setActiveModal(null);
   };
 
@@ -395,7 +398,7 @@ const App = () => {
         };
       }),
     );
-    beginTimer(timerConfig.focusSeconds);
+    beginTimer(timerConfig.focusSeconds, "incense-finished");
     setActiveModal(null);
   };
 
@@ -424,6 +427,7 @@ const App = () => {
     setPendingStartIntentId(null);
     setIsAbandonConfirmOpen(false);
     setActiveUtilityPanel(null);
+    void cancelTimerNotification();
     setPhase("setup");
     clearPersistedSession();
   };
@@ -448,10 +452,20 @@ const App = () => {
     setActiveUtilityPanel(null);
     setPhase(resolvedSession.phase);
     setPendingSession(null);
+
+    if (restoredTimerSegment) {
+      void scheduleTimerNotification({
+        delaySeconds: resolvedSession.timerRemaining,
+        kind: resolvedSession.intentSets.some((intentSet) => intentSet.status === "resting")
+          ? "rest-finished"
+          : "incense-finished",
+      });
+    }
   };
 
   const discardPendingSession = () => {
     clearPersistedSession();
+    void cancelTimerNotification();
     setPendingSession(null);
   };
 
@@ -481,6 +495,7 @@ const App = () => {
     setPendingStartIntentId(null);
     setIsAbandonConfirmOpen(false);
     setActiveUtilityPanel(null);
+    void cancelTimerNotification();
     setPhase("setup");
     clearPersistedSession();
   };
@@ -538,7 +553,10 @@ const App = () => {
       });
     }
 
-    const didClose = await closeCurrentTauriWindow();
+    const didClose =
+      tauriCloseRequest?.type === "active-session"
+        ? await hideCurrentTauriWindow()
+        : await closeCurrentTauriWindow();
 
     if (!didClose) {
       window.close();
@@ -703,11 +721,11 @@ const App = () => {
       {tauriCloseRequest ? (
         <ConfirmModal
           cancelLabel={tauriCloseRequest.type === "setup-draft" ? "继续填写" : "继续当前轮次"}
-          confirmLabel={tauriCloseRequest.type === "setup-draft" ? "关闭窗口" : "保留并关闭"}
+          confirmLabel={tauriCloseRequest.type === "setup-draft" ? "关闭窗口" : "保留并收起"}
           description={
             tauriCloseRequest.type === "setup-draft"
               ? "当前填写内容还没有进入仪式台，关闭后不会保存这份草稿。"
-              : "当前轮次会保留在本地。下次打开时，你可以选择恢复或丢弃。"
+              : "当前轮次会继续计时，并在本段结束时发送系统通知。"
           }
           eyebrow="Desktop"
           title={tauriCloseRequest.type === "setup-draft" ? "确定要关闭窗口吗？" : "要暂时关闭窗口吗？"}
