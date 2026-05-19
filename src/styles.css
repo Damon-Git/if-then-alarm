@@ -474,12 +474,12 @@ select {
   position: relative;
   display: block;
   width: 96px;
-  height: 74px;
+  height: 104px;
 }
 
 .censer-visual--compact .censer-visual__asset {
   width: 82px;
-  height: 62px;
+  height: 90px;
 }
 
 .censer-visual__lid,
@@ -493,7 +493,7 @@ select {
 }
 
 .censer-visual__lid {
-  top: 4px;
+  top: 34px;
   width: 54px;
   height: 10px;
   border-radius: 999px;
@@ -501,7 +501,7 @@ select {
 }
 
 .censer-visual__mouth {
-  top: 16px;
+  top: 46px;
   width: 84px;
   height: 18px;
   border: 2px solid #8a5f4b;
@@ -510,7 +510,7 @@ select {
 }
 
 .censer-visual__ash {
-  top: 22px;
+  top: 52px;
   width: 58px;
   height: 7px;
   border-radius: 999px;
@@ -518,7 +518,7 @@ select {
 }
 
 .censer-visual__body {
-  top: 28px;
+  top: 58px;
   width: 72px;
   height: 34px;
   border: 2px solid #8a5f4b;
@@ -528,7 +528,7 @@ select {
 }
 
 .censer-visual__feet {
-  top: 59px;
+  top: 89px;
   width: 52px;
   height: 8px;
   border-radius: 999px;
@@ -536,28 +536,28 @@ select {
 }
 
 .censer-visual--compact .censer-visual__lid {
-  top: 3px;
+  top: 28px;
   width: 48px;
 }
 
 .censer-visual--compact .censer-visual__mouth {
-  top: 12px;
+  top: 37px;
   width: 78px;
 }
 
 .censer-visual--compact .censer-visual__ash {
-  top: 18px;
+  top: 43px;
   width: 54px;
 }
 
 .censer-visual--compact .censer-visual__body {
-  top: 24px;
+  top: 49px;
   width: 66px;
   height: 32px;
 }
 
 .censer-visual--compact .censer-visual__feet {
-  top: 52px;
+  top: 77px;
   width: 50px;
 }
 
