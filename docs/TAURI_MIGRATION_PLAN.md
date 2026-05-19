@@ -2,6 +2,8 @@
 
 当前项目仍是 Web MVP。Tauri 迁移的目标不是重做业务流程，而是在保留 React 状态机和视觉组件边界的前提下，把 Web 容器换成 macOS 优先的小窗桌面外壳。
 
+平台 API 使用点的完整清单见 `docs/PLATFORM_BOUNDARY_AUDIT.md`。本文只保留迁移路线和关键决策。
+
 ## 当前可直接迁移的部分
 
 - React + TypeScript + Vite 前端结构。
@@ -16,6 +18,8 @@
 这些部分应尽量保持平台无关，不直接调用 Tauri API。
 
 ## 需要替换或封装的浏览器边界
+
+详细状态以 `docs/PLATFORM_BOUNDARY_AUDIT.md` 为准。
 
 ### 本地持久化
 
