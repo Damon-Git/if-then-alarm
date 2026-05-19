@@ -37,7 +37,7 @@ Tauri 阶段应替换 adapter 实现，桌面版可使用：
 
 不应把 Tauri API 分散写进业务组件或具体存储模块。
 
-当前 `PersistenceAdapter` 是同步接口。后续迁移到 Tauri 文件或 Store 时，优先采用“启动时异步加载到内存 cache，业务层继续同步读写 adapter，再异步落盘”的过渡方案，避免一次性把所有 storage 调用改成异步。
+当前 `PersistenceAdapter` 是同步接口。后续迁移到 Tauri 文件或 Store 时，优先采用“启动时异步加载到内存 cache，业务层继续同步读写 adapter，再异步落盘”的过渡方案，避免一次性把所有 storage 调用改成异步。当前已经提供 `createMemoryPersistenceAdapter`、`createPersistenceSnapshot` 和 `initializePersistenceCacheFromAdapter` 作为第一步缓存层准备，但默认 adapter 仍然是 Web `localStorage`。
 
 ### 关闭保护
 

@@ -121,6 +121,8 @@ npm run tauri:dev
 ## 持久化迁移准备
 
 - [ ] 当前历史、session、设置仍走 Web `localStorage` adapter。
+- [ ] `createMemoryPersistenceAdapter` 只作为后续桌面存储缓存层，不改变当前默认存储位置。
+- [ ] `PERSISTENCE_STORAGE_KEYS` 包含 history、current session、settings 三个 key。
 - [ ] 持久化迁移计划记录在 `docs/PERSISTENCE_MIGRATION_PLAN.md`。
 - [ ] 当前阶段不清理旧 `localStorage` 数据。
 

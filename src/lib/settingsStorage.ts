@@ -1,8 +1,6 @@
 import { DEFAULT_TIMER_MODE } from "../constants";
-import { persistenceAdapter } from "./persistenceAdapter";
+import { persistenceAdapter, SETTINGS_STORAGE_KEY } from "./persistenceAdapter";
 import type { AppSettings, TimerMode } from "../types";
-
-const SETTINGS_STORAGE_KEY = "jiji-rululing.settings";
 
 export const isTimerMode = (value: unknown): value is TimerMode => value === "dev" || value === "prod";
 

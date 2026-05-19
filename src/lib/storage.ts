@@ -1,8 +1,6 @@
-import { persistenceAdapter } from "./persistenceAdapter";
+import { HISTORY_STORAGE_KEY, persistenceAdapter } from "./persistenceAdapter";
 import { isTimerMode } from "./settingsStorage";
 import type { HistoryExportPayload, HistoryImportResult, HistoryRecord, ReviewResult } from "../types";
-
-const HISTORY_STORAGE_KEY = "jiji-rululing.history";
 
 const isReviewResult = (value: unknown): value is ReviewResult =>
   value === "completed" || value === "partial" || value === "failed";

@@ -1,9 +1,9 @@
 import { DEFAULT_TIMER_MODE } from "../constants";
-import { persistenceAdapter } from "./persistenceAdapter";
+import { persistenceAdapter, SESSION_STORAGE_KEY } from "./persistenceAdapter";
 import { isTimerMode } from "./settingsStorage";
 import type { ActiveTimerSegment, PersistedSession } from "../types";
 
-export const SESSION_STORAGE_KEY = "jiji-rululing.current-session";
+export { SESSION_STORAGE_KEY } from "./persistenceAdapter";
 
 const isActiveTimerSegment = (value: unknown): value is ActiveTimerSegment => {
   if (!value || typeof value !== "object") {

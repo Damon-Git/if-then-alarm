@@ -1,6 +1,6 @@
 # 持久化迁移计划
 
-本文记录从当前 Web `localStorage` 持久化迁移到 Tauri 桌面持久化的目标、数据边界和迁移原则。当前阶段只做计划，不替换实现。
+本文记录从当前 Web `localStorage` 持久化迁移到 Tauri 桌面持久化的目标、数据边界和迁移原则。当前阶段已经补充内存缓存 adapter，但默认持久化仍然是 `localStorage`，不会迁移或清理用户数据。
 
 ## 当前状态
 
@@ -21,6 +21,15 @@ type PersistenceAdapter = {
 ```
 
 当前实现是 `window.localStorage`。业务组件不应该直接读写 `localStorage`。
+
+当前已提供的迁移准备工具：
+
+- `createMemoryPersistenceAdapter`：创建同步内存缓存 adapter。
+- `createPersistenceSnapshot`：从指定 adapter 导出已知持久化 key 的快照。
+- `initializePersistenceCacheFromAdapter`：从源 adapter 初始化缓存 adapter。
+- `PERSISTENCE_STORAGE_KEYS`：集中记录当前需要迁移的 key。
+
+这些工具只为后续 Tauri 文件/Store adapter 做准备，当前默认 `persistenceAdapter` 仍然指向 `webPersistenceAdapter`。
 
 ## 当前 key
 
@@ -89,7 +98,7 @@ type DesktopPersistenceFile = {
 1. 保持同步业务接口，应用启动时先异步加载桌面存储到内存 cache，再让现有模块同步读写 cache，并由 adapter 异步落盘。
 2. 把 `storage.ts`、`sessionStorage.ts`、`settingsStorage.ts` 全部改成异步 API。
 
-当前更推荐第 1 条。理由：
+当前更推荐第 1 条。内存缓存 adapter 已经为这条路径做了第一步准备。理由：
 
 - 对现有业务调用点影响小。
 - `App.tsx` 初始 state 仍可保持清晰。
@@ -174,7 +183,7 @@ type AppSettings = {
 
 ## 当前不做
 
-- 不替换 `localStorage` 实现。
+- 不把默认 `persistenceAdapter` 从 `localStorage` 切到内存缓存。
 - 不引入 Tauri Store 插件。
 - 不引入 SQLite。
 - 不改 `HistoryRecord`、`PersistedSession`、`AppSettings` 类型。
