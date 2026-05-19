@@ -13,7 +13,7 @@
 
 | 能力 | 当前文件 | 当前 API | 状态 | Tauri 处理 |
 | --- | --- | --- | --- | --- |
-| 历史、session、设置持久化 | `src/lib/persistenceAdapter.ts` | `window.localStorage` | 已封装 | 替换 adapter 为 Tauri Store、app data JSON 或 SQLite |
+| 历史、session、设置持久化 | `src/lib/persistenceAdapter.ts` | `window.localStorage` | 已封装 | 迁移计划见 `docs/PERSISTENCE_MIGRATION_PLAN.md`；优先替换为 Tauri Store 或 app data JSON |
 | 历史删除/清空确认 | `src/components/ConfirmModal.tsx` | React 应用内弹窗 | 已封装 | 继续复用应用内弹窗 |
 | Tauri 窗口关闭拦截 | `src/lib/tauriWindow.ts` | `@tauri-apps/api/window` | 已封装 | 桌面端监听关闭事件，业务层只接收确认请求 |
 | 桌面计时通知 | `src/lib/notificationAdapter.ts` | `@tauri-apps/plugin-notification`、`window.setTimeout` | 已封装 | 通过 adapter 延迟发送和取消当前计时段通知 |
@@ -59,7 +59,7 @@
 
 ## 迁移优先级
 
-1. Tauri 初始化后，先替换持久化 adapter，确保历史、session、设置仍可读写。
+1. 按 `docs/PERSISTENCE_MIGRATION_PLAN.md` 实现桌面持久化 adapter 和旧 `localStorage` 首次迁移。
 2. 替换文件传输 adapter，接入保存/打开文件对话框。
 3. 继续保留 Web 版 `beforeunload`，桌面端关闭拦截已先接入。
 4. 后续继续接置顶、Dock 隐藏和更完整的小窗隐藏策略。
