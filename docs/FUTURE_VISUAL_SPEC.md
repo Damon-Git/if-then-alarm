@@ -6,6 +6,8 @@
 
 桌面小窗和 Tauri 外壳迁移见 `docs/TAURI_MIGRATION_PLAN.md`。视觉组件应继续保持平台无关，避免直接依赖 Tauri API。
 
+桌面应用图标、菜单栏图标和通知图标的资产边界见 `src-tauri/icons/README.md`。这些图标属于桌面外壳资产，不应混入符箓、香炉、线香等仪式台视觉组件。
+
 ## 视觉状态中间层
 
 业务状态不直接等同于素材状态。当前通过 `src/lib/visualState.ts` 把业务状态映射为视觉状态，再交给 `TalismanVisual`、`CenserVisual`、`IncenseVisual` 使用。
@@ -82,3 +84,5 @@
 ## 当前占位原则
 
 当前占位元素只表达结构关系：上方符箓、中间香炉、下方预防性符箓。占位元素不模拟复杂纹样，不制造假的符箓、香炉、线香细节。
+
+当前 `src-tauri/icons/icon.png` 也是占位资产，不代表正式应用图标。macOS 菜单栏右侧的“令”字入口只用于桌面交互验证，不代表正式菜单栏 template icon。
