@@ -13,10 +13,35 @@
   box-sizing: border-box;
 }
 
+html,
+body,
+#root {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
 body {
   min-width: 320px;
   min-height: 100vh;
   margin: 0;
+  scrollbar-color: rgb(90 82 74 / 34%) transparent;
+  scrollbar-width: thin;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  border: 2px solid transparent;
+  border-radius: 999px;
+  background: rgb(90 82 74 / 34%);
+  background-clip: content-box;
 }
 
 button,
@@ -40,7 +65,7 @@ select {
 }
 
 .app-shell {
-  width: min(1180px, calc(100vw - 32px));
+  width: min(1180px, calc(100% - 32px));
   margin: 0 auto;
   padding: 28px 0 48px;
 }
@@ -1178,7 +1203,7 @@ select {
 
 @media (max-width: 720px) {
   .app-shell {
-    width: min(100vw - 20px, 680px);
+    width: min(calc(100% - 20px), 680px);
     padding-top: 16px;
   }
 
@@ -1217,13 +1242,13 @@ select {
   .toast-host {
     right: 10px;
     bottom: 10px;
-    width: calc(100vw - 20px);
+    width: calc(100% - 20px);
   }
 }
 
 @media (max-width: 560px) {
   .app-shell {
-    width: min(100vw - 16px, 420px);
+    width: min(calc(100% - 16px), 420px);
     padding-top: 8px;
   }
 
@@ -1293,7 +1318,7 @@ select {
 
   .censer-visual--compact .censer-visual__asset {
     width: 74px;
-    height: 58px;
+    height: 90px;
   }
 
   .censer-visual--compact .censer-visual__mouth {
@@ -1361,7 +1386,7 @@ select {
 
 @media (max-width: 430px) {
   .app-shell {
-    width: min(100vw - 12px, 390px);
+    width: min(calc(100% - 12px), 390px);
     padding: 6px 0 18px;
   }
 
