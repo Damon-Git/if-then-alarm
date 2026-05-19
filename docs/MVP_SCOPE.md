@@ -4,6 +4,8 @@
 
 Tauri 迁移路径见 `docs/TAURI_MIGRATION_PLAN.md`。当前阶段只做迁移准备，不初始化桌面外壳。
 
+小窗目标尺寸和验收约束见 `docs/COMPACT_WINDOW_SPEC.md`。当前仍在 Web 中模拟 macOS 菜单栏窄窗口体验。
+
 ## 当前要做
 
 - 用户可以创建 1-3 套执行意图。
