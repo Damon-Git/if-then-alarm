@@ -20,6 +20,8 @@ export const webPersistenceAdapter: PersistenceAdapter = {
   setItem: (key, value) => window.localStorage.setItem(key, value),
 };
 
+let currentPersistenceAdapter: PersistenceAdapter = webPersistenceAdapter;
+
 export const createMemoryPersistenceAdapter = (initialSnapshot: Record<string, string> = {}): PersistenceAdapter => {
   const values = new Map(Object.entries(initialSnapshot));
 
@@ -61,4 +63,21 @@ export const initializePersistenceCacheFromAdapter = (
   return snapshot;
 };
 
-export const persistenceAdapter = webPersistenceAdapter;
+export const setPersistenceAdapter = (adapter: PersistenceAdapter) => {
+  const previousAdapter = currentPersistenceAdapter;
+  currentPersistenceAdapter = adapter;
+
+  return () => {
+    currentPersistenceAdapter = previousAdapter;
+  };
+};
+
+export const resetPersistenceAdapterForTest = () => {
+  currentPersistenceAdapter = webPersistenceAdapter;
+};
+
+export const persistenceAdapter: PersistenceAdapter = {
+  getItem: (key) => currentPersistenceAdapter.getItem(key),
+  removeItem: (key) => currentPersistenceAdapter.removeItem(key),
+  setItem: (key, value) => currentPersistenceAdapter.setItem(key, value),
+};

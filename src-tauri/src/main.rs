@@ -1,7 +1,81 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use tauri::Manager;
+use std::fs;
+use std::path::PathBuf;
+use std::time::{SystemTime, UNIX_EPOCH};
 use tauri::tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent};
+use tauri::Manager;
+
+const DESKTOP_PERSISTENCE_FILENAME: &str = "persistence.v1.json";
+
+fn desktop_persistence_file_path(app_handle: &tauri::AppHandle) -> Result<PathBuf, String> {
+    app_handle
+        .path()
+        .app_data_dir()
+        .map(|directory| directory.join(DESKTOP_PERSISTENCE_FILENAME))
+        .map_err(|error| format!("failed to resolve app data directory: {error}"))
+}
+
+fn ensure_parent_directory(file_path: &PathBuf) -> Result<(), String> {
+    if let Some(parent) = file_path.parent() {
+        fs::create_dir_all(parent)
+            .map_err(|error| format!("failed to create app data directory: {error}"))?;
+    }
+
+    Ok(())
+}
+
+#[tauri::command]
+fn read_desktop_persistence_file(app_handle: tauri::AppHandle) -> Result<Option<String>, String> {
+    let file_path = desktop_persistence_file_path(&app_handle)?;
+
+    if !file_path.exists() {
+        return Ok(None);
+    }
+
+    fs::read_to_string(&file_path)
+        .map(Some)
+        .map_err(|error| format!("failed to read desktop persistence file: {error}"))
+}
+
+#[tauri::command]
+fn write_desktop_persistence_file(
+    app_handle: tauri::AppHandle,
+    contents: String,
+) -> Result<(), String> {
+    let file_path = desktop_persistence_file_path(&app_handle)?;
+    ensure_parent_directory(&file_path)?;
+
+    let temporary_path = file_path.with_file_name(format!("{DESKTOP_PERSISTENCE_FILENAME}.tmp"));
+    fs::write(&temporary_path, contents)
+        .map_err(|error| format!("failed to write temporary persistence file: {error}"))?;
+    fs::rename(&temporary_path, &file_path)
+        .map_err(|error| format!("failed to replace desktop persistence file: {error}"))?;
+
+    Ok(())
+}
+
+#[tauri::command]
+fn backup_corrupt_desktop_persistence_file(
+    app_handle: tauri::AppHandle,
+) -> Result<Option<String>, String> {
+    let file_path = desktop_persistence_file_path(&app_handle)?;
+
+    if !file_path.exists() {
+        return Ok(None);
+    }
+
+    let timestamp = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map_err(|error| format!("failed to create backup timestamp: {error}"))?
+        .as_secs();
+    let backup_path = file_path.with_file_name(format!("persistence.v1.corrupt-{timestamp}.json"));
+
+    fs::rename(&file_path, &backup_path)
+        .map_err(|error| format!("failed to backup corrupt persistence file: {error}"))?;
+
+    Ok(Some(backup_path.to_string_lossy().into_owned()))
+}
 
 fn show_main_window(app_handle: &tauri::AppHandle) {
     if let Some(window) = app_handle.get_webview_window("main") {
@@ -27,6 +101,11 @@ fn toggle_main_window(app_handle: &tauri::AppHandle) {
 fn main() {
     let app = tauri::Builder::default()
         .plugin(tauri_plugin_notification::init())
+        .invoke_handler(tauri::generate_handler![
+            backup_corrupt_desktop_persistence_file,
+            read_desktop_persistence_file,
+            write_desktop_persistence_file
+        ])
         .setup(|app| {
             let mut tray = TrayIconBuilder::with_id("main")
                 .title("令")

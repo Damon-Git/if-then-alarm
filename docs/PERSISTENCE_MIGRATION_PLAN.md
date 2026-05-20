@@ -1,6 +1,6 @@
 # 持久化迁移计划
 
-本文记录从当前 Web `localStorage` 持久化迁移到 Tauri 桌面持久化的目标、数据边界和迁移原则。当前阶段已经补充内存缓存 adapter 和桌面 JSON 纯函数 schema 层，但默认持久化仍然是 `localStorage`，不会迁移或清理用户数据。
+本文记录从当前 Web `localStorage` 持久化迁移到 Tauri 桌面持久化的目标、数据边界和迁移原则。当前阶段已经补充内存缓存 adapter、桌面 JSON 纯函数 schema 层和 Tauri 桌面文件 adapter。浏览器环境仍使用 `localStorage`；Tauri 环境会优先使用 app data 目录下的桌面 JSON。
 
 桌面 JSON 文件的详细规格见 `docs/DESKTOP_PERSISTENCE_JSON_SPEC.md`。
 
@@ -34,8 +34,10 @@ type PersistenceAdapter = {
 - `createDesktopPersistenceJsonFromSnapshot`：把现有 key snapshot normalize 成桌面 JSON。
 - `normalizeDesktopPersistenceJson`：读取桌面 JSON 后做 schema 过滤、去重和默认值补齐。
 - `createSnapshotFromDesktopPersistenceJson`：把桌面 JSON 转回现有同步 adapter 能消费的 key snapshot。
+- `createDesktopPersistenceAdapter`：以同步内存 cache 承接业务读写，并把更新异步排队写回桌面 JSON 文件。
+- `initializeDesktopPersistence`：Tauri 启动时加载桌面 JSON；文件不存在时从旧 `localStorage` 生成第一份 manifest。
 
-这些工具只为后续 Tauri 文件/Store adapter 做准备，当前默认 `persistenceAdapter` 仍然指向 `webPersistenceAdapter`。
+这些工具只在 Tauri 环境启动时切换默认 `persistenceAdapter`；非 Tauri 环境仍然指向 `webPersistenceAdapter`。
 
 ## 当前 key
 
@@ -190,9 +192,9 @@ type AppSettings = {
 
 ## 当前不做
 
-- 不把默认 `persistenceAdapter` 从 `localStorage` 切到内存缓存。
 - 不引入 Tauri Store 插件。
 - 不引入 SQLite。
 - 不改 `HistoryRecord`、`PersistedSession`、`AppSettings` 类型。
 - 不清理旧 `localStorage` 数据。
-- 不创建或读取真实 app data 目录下的 `persistence.v1.json`。
+- 不提供用户可见的“重新从旧 Web 数据导入”按钮。
+- 不提供完整 manifest 导入导出。

@@ -8,6 +8,7 @@ import {
   createDesktopPersistenceJsonFromSnapshot,
   createSnapshotFromDesktopPersistenceJson,
   normalizeDesktopPersistenceJson,
+  updateDesktopPersistenceJsonFromSnapshot,
 } from "./desktopPersistenceSchema";
 import { HISTORY_STORAGE_KEY, SESSION_STORAGE_KEY, SETTINGS_STORAGE_KEY } from "./persistenceAdapter";
 
@@ -143,5 +144,34 @@ describe("desktop persistence schema", () => {
     const snapshot = createSnapshotFromDesktopPersistenceJson(createDefaultDesktopPersistenceJson({ now: NOW }));
 
     expect(snapshot[SESSION_STORAGE_KEY]).toBeUndefined();
+  });
+
+  it("updates a desktop manifest from the current persistence snapshot", () => {
+    const currentManifest = {
+      ...createDefaultDesktopPersistenceJson({
+        migratedAt: "2026-05-19T08:00:00.000Z",
+        migrationSource: "localStorage",
+        now: "2026-05-19T08:00:00.000Z",
+      }),
+      history: [createHistoryRecord("old", "2026-05-19T08:00:00.000Z")],
+    };
+    const nextRecord = createHistoryRecord("next", "2026-05-20T07:00:00.000Z");
+
+    const nextManifest = updateDesktopPersistenceJsonFromSnapshot(
+      currentManifest,
+      {
+        [HISTORY_STORAGE_KEY]: JSON.stringify([nextRecord]),
+        [SETTINGS_STORAGE_KEY]: JSON.stringify({ timerMode: "prod" }),
+      },
+      { now: NOW },
+    );
+
+    expect(nextManifest.createdAt).toBe(currentManifest.createdAt);
+    expect(nextManifest.updatedAt).toBe(NOW);
+    expect(nextManifest.migratedAt).toBe(currentManifest.migratedAt);
+    expect(nextManifest.migrationSource).toBe("localStorage");
+    expect(nextManifest.history).toEqual([nextRecord]);
+    expect(nextManifest.currentSession).toBeNull();
+    expect(nextManifest.settings.timerMode).toBe("prod");
   });
 });

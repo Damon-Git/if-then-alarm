@@ -162,3 +162,17 @@ export const createSnapshotFromDesktopPersistenceJson = (
 
   return snapshot;
 };
+
+export const updateDesktopPersistenceJsonFromSnapshot = (
+  currentPersistenceValue: DesktopPersistenceJson,
+  snapshot: PersistenceSnapshot,
+  { now = getNow() }: Pick<CreateDesktopPersistenceOptions, "now"> = {},
+): DesktopPersistenceJson => ({
+  ...createDesktopPersistenceJsonFromSnapshot(snapshot, {
+    migratedAt: currentPersistenceValue.migratedAt,
+    migrationSource: currentPersistenceValue.migrationSource ?? "desktop-json",
+    now,
+  }),
+  createdAt: currentPersistenceValue.createdAt,
+  updatedAt: now,
+});

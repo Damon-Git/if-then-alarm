@@ -120,10 +120,13 @@ npm run tauri:dev
 
 ## 持久化迁移准备
 
-- [ ] 当前历史、session、设置仍走 Web `localStorage` adapter。
-- [ ] `createMemoryPersistenceAdapter` 只作为后续桌面存储缓存层，不改变当前默认存储位置。
+- [ ] 浏览器环境下，历史、session、设置仍走 Web `localStorage` adapter。
+- [ ] Tauri 环境下，历史、session、设置会写入 app data 目录下的 `persistence.v1.json`。
+- [ ] `createMemoryPersistenceAdapter` 作为 Tauri 桌面存储的同步缓存层，业务模块不直接调用异步文件 API。
 - [ ] `PERSISTENCE_STORAGE_KEYS` 包含 history、current session、settings 三个 key。
 - [ ] 桌面 JSON 纯函数 schema 已覆盖默认值、迁移、坏数据降级和 snapshot 映射。
+- [ ] 首次运行 Tauri 桌面版时，如果没有桌面 JSON，会从旧 `localStorage` 生成第一份文件。
+- [ ] 桌面 JSON 损坏时，会先备份为 `persistence.v1.corrupt-*.json`，再尝试恢复。
 - [ ] 持久化迁移计划记录在 `docs/PERSISTENCE_MIGRATION_PLAN.md`。
 - [ ] 桌面 JSON 文件规格记录在 `docs/DESKTOP_PERSISTENCE_JSON_SPEC.md`。
 - [ ] 第一版桌面落盘目标是 app data 目录下的 `persistence.v1.json`。
