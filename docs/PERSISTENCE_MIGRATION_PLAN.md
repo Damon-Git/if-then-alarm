@@ -2,6 +2,8 @@
 
 本文记录从当前 Web `localStorage` 持久化迁移到 Tauri 桌面持久化的目标、数据边界和迁移原则。当前阶段已经补充内存缓存 adapter，但默认持久化仍然是 `localStorage`，不会迁移或清理用户数据。
 
+桌面 JSON 文件的详细规格见 `docs/DESKTOP_PERSISTENCE_JSON_SPEC.md`。
+
 ## 当前状态
 
 当前所有业务持久化都通过 `src/lib/persistenceAdapter.ts` 进入：
@@ -54,8 +56,9 @@ type PersistenceAdapter = {
 
 当前推荐优先级：
 
-1. Tauri Store 插件或 app data JSON 文件。
-2. 如果后续历史分析变重，再评估 SQLite。
+1. app data JSON 文件，规格见 `docs/DESKTOP_PERSISTENCE_JSON_SPEC.md`。
+2. Tauri Store 插件。
+3. 如果后续历史分析变重，再评估 SQLite。
 
 当前不建议立刻上 SQLite。当前数据量小，schema 简单，先把迁移路径和备份恢复做扎实更重要。
 
@@ -70,7 +73,7 @@ type PersistenceAdapter = {
 
 ## 建议桌面存储形态
 
-如果使用 app data JSON 文件，可以采用单文件 manifest：
+桌面 JSON 文件的正式第一版规格见 `docs/DESKTOP_PERSISTENCE_JSON_SPEC.md`。核心形态是 app data 目录下的单文件 manifest：
 
 ```ts
 type DesktopPersistenceFile = {

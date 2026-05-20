@@ -2,7 +2,7 @@
 
 当前项目仍以 Web MVP 为主要验证入口，同时已经加入最小 Tauri 外壳。Tauri 迁移的目标不是重做业务流程，而是在保留 React 状态机和视觉组件边界的前提下，把 Web 容器逐步换成 macOS 优先的小窗桌面外壳。
 
-平台 API 使用点的完整清单见 `docs/PLATFORM_BOUNDARY_AUDIT.md`。Tauri 桌面小窗的手动验收路径见 `docs/TAURI_DESKTOP_CHECKLIST.md`。关闭与恢复语义见 `docs/TAURI_CLOSE_RESTORE_NOTES.md`。持久化迁移细节见 `docs/PERSISTENCE_MIGRATION_PLAN.md`。本文只保留迁移路线和关键决策。
+平台 API 使用点的完整清单见 `docs/PLATFORM_BOUNDARY_AUDIT.md`。Tauri 桌面小窗的手动验收路径见 `docs/TAURI_DESKTOP_CHECKLIST.md`。关闭与恢复语义见 `docs/TAURI_CLOSE_RESTORE_NOTES.md`。持久化迁移计划见 `docs/PERSISTENCE_MIGRATION_PLAN.md`，桌面 JSON 文件规格见 `docs/DESKTOP_PERSISTENCE_JSON_SPEC.md`。本文只保留迁移路线和关键决策。
 
 ## 当前可直接迁移的部分
 
@@ -31,13 +31,13 @@
 
 Tauri 阶段应替换 adapter 实现，桌面版可使用：
 
-- Tauri Store 插件；
 - app data 目录下 JSON 文件；
+- Tauri Store 插件；
 - 后续如需要再迁移到 SQLite。
 
 不应把 Tauri API 分散写进业务组件或具体存储模块。
 
-当前 `PersistenceAdapter` 是同步接口。后续迁移到 Tauri 文件或 Store 时，优先采用“启动时异步加载到内存 cache，业务层继续同步读写 adapter，再异步落盘”的过渡方案，避免一次性把所有 storage 调用改成异步。当前已经提供 `createMemoryPersistenceAdapter`、`createPersistenceSnapshot` 和 `initializePersistenceCacheFromAdapter` 作为第一步缓存层准备，但默认 adapter 仍然是 Web `localStorage`。
+当前 `PersistenceAdapter` 是同步接口。后续迁移到 Tauri 文件或 Store 时，优先采用“启动时异步加载到内存 cache，业务层继续同步读写 adapter，再异步落盘”的过渡方案，避免一次性把所有 storage 调用改成异步。当前已经提供 `createMemoryPersistenceAdapter`、`createPersistenceSnapshot` 和 `initializePersistenceCacheFromAdapter` 作为第一步缓存层准备，但默认 adapter 仍然是 Web `localStorage`。第一版桌面落盘目标是 app data 目录下的 `persistence.v1.json`。
 
 ### 关闭保护
 
