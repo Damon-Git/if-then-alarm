@@ -26,6 +26,8 @@ export type DesktopPersistenceAdapter = PersistenceAdapter & {
   flush: () => Promise<void>;
 };
 
+export const DESKTOP_PERSISTENCE_WRITE_ERROR_EVENT = "jiji-rululing:desktop-persistence-write-error";
+
 type InitializeDesktopPersistenceOptions = {
   fileClient?: DesktopPersistenceFileClient;
   force?: boolean;
@@ -44,8 +46,23 @@ export type DesktopPersistenceInitializationResult =
       source: "desktop-json" | "empty" | "localStorage";
     };
 
+let lastInitializationResult: DesktopPersistenceInitializationResult | null = null;
+
 const isTauriRuntime = () =>
   typeof window !== "undefined" && Boolean((window as Window & { __TAURI_INTERNALS__?: unknown }).__TAURI_INTERNALS__);
+
+const rememberInitializationResult = (result: DesktopPersistenceInitializationResult) => {
+  lastInitializationResult = result;
+  return result;
+};
+
+export const getDesktopPersistenceInitializationResult = () => lastInitializationResult;
+
+export const consumeDesktopPersistenceInitializationResult = () => {
+  const result = lastInitializationResult;
+  lastInitializationResult = null;
+  return result;
+};
 
 const createDesktopPersistenceFileClient = (): DesktopPersistenceFileClient => ({
   backupCorruptTextFile: () => invoke<string | null>("backup_corrupt_desktop_persistence_file"),
@@ -56,6 +73,14 @@ const createDesktopPersistenceFileClient = (): DesktopPersistenceFileClient => (
 const stringifyDesktopPersistenceJson = (manifest: DesktopPersistenceJson) => `${JSON.stringify(manifest, null, 2)}\n`;
 
 const hasSnapshotValues = (snapshot: Record<string, string | undefined>) => Object.keys(snapshot).length > 0;
+
+const dispatchWriteErrorEvent = () => {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  window.dispatchEvent(new CustomEvent(DESKTOP_PERSISTENCE_WRITE_ERROR_EVENT));
+};
 
 const createManifestFromWebStorage = (now: string) => {
   const webSnapshot = createPersistenceSnapshot(webPersistenceAdapter);
@@ -120,6 +145,7 @@ export const createDesktopPersistenceAdapter = ({
     latestWrite = currentWrite;
     writeQueue = currentWrite.catch((error) => {
       console.error("Failed to persist desktop data.", error);
+      dispatchWriteErrorEvent();
     });
   };
 
@@ -143,10 +169,10 @@ export const initializeDesktopPersistence = async ({
   now = new Date().toISOString(),
 }: InitializeDesktopPersistenceOptions = {}): Promise<DesktopPersistenceInitializationResult> => {
   if (!force && !isTauriRuntime()) {
-    return {
+    return rememberInitializationResult({
       enabled: false,
       reason: "not-tauri",
-    };
+    });
   }
 
   try {
@@ -182,18 +208,18 @@ export const initializeDesktopPersistence = async ({
 
     setPersistenceAdapter(desktopAdapter);
 
-    return {
+    return rememberInitializationResult({
       corruptBackupPath,
       enabled: true,
       manifest,
       source,
-    };
+    });
   } catch (error) {
     console.error("Failed to initialize desktop persistence.", error);
 
-    return {
+    return rememberInitializationResult({
       enabled: false,
       reason: "error",
-    };
+    });
   }
 };

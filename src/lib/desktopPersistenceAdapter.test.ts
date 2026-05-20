@@ -1,8 +1,11 @@
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { HistoryRecord } from "../types";
 import { createDefaultDesktopPersistenceJson } from "./desktopPersistenceSchema";
 import {
+  DESKTOP_PERSISTENCE_WRITE_ERROR_EVENT,
+  consumeDesktopPersistenceInitializationResult,
   createDesktopPersistenceAdapter,
+  getDesktopPersistenceInitializationResult,
   initializeDesktopPersistence,
   type DesktopPersistenceFileClient,
 } from "./desktopPersistenceAdapter";
@@ -60,10 +63,12 @@ describe("desktop persistence adapter", () => {
   beforeEach(() => {
     window.localStorage.clear();
     resetPersistenceAdapterForTest();
+    consumeDesktopPersistenceInitializationResult();
   });
 
   afterEach(() => {
     resetPersistenceAdapterForTest();
+    consumeDesktopPersistenceInitializationResult();
     window.localStorage.clear();
   });
 
@@ -71,6 +76,10 @@ describe("desktop persistence adapter", () => {
     const file = createFileClient();
 
     await expect(initializeDesktopPersistence({ fileClient: file.fileClient, now: NOW })).resolves.toEqual({
+      enabled: false,
+      reason: "not-tauri",
+    });
+    expect(getDesktopPersistenceInitializationResult()).toEqual({
       enabled: false,
       reason: "not-tauri",
     });
@@ -97,6 +106,7 @@ describe("desktop persistence adapter", () => {
     expect(result.enabled ? result.source : "").toBe("desktop-json");
     expect(JSON.parse(persistenceAdapter.getItem(HISTORY_STORAGE_KEY) ?? "")).toEqual([record]);
     expect(JSON.parse(persistenceAdapter.getItem(SETTINGS_STORAGE_KEY) ?? "")).toEqual({ timerMode: "prod" });
+    expect(getDesktopPersistenceInitializationResult()).toEqual(result);
     expect(file.writes).toEqual([]);
   });
 
@@ -166,5 +176,32 @@ describe("desktop persistence adapter", () => {
       migrationSource: "desktop-json",
       updatedAt: NOW,
     });
+  });
+
+  it("emits an event when desktop file writes fail", async () => {
+    const consoleError = vi.spyOn(console, "error").mockImplementation(() => undefined);
+    const cacheAdapter = createMemoryPersistenceAdapter();
+    const adapter = createDesktopPersistenceAdapter({
+      cacheAdapter,
+      fileClient: {
+        backupCorruptTextFile: async () => null,
+        readTextFile: async () => null,
+        writeTextFile: async () => {
+          throw new Error("write failed");
+        },
+      },
+      initialManifest: createDefaultDesktopPersistenceJson({ now: NOW }),
+      now: () => NOW,
+    });
+    const writeErrorListener = vi.fn();
+
+    window.addEventListener(DESKTOP_PERSISTENCE_WRITE_ERROR_EVENT, writeErrorListener);
+    adapter.setItem(HISTORY_STORAGE_KEY, JSON.stringify([createHistoryRecord("failed-write")]));
+
+    await expect(adapter.flush()).rejects.toThrow("write failed");
+    expect(writeErrorListener).toHaveBeenCalledTimes(1);
+
+    window.removeEventListener(DESKTOP_PERSISTENCE_WRITE_ERROR_EVENT, writeErrorListener);
+    consoleError.mockRestore();
   });
 });

@@ -126,10 +126,15 @@ npm run tauri:dev
 - [ ] `PERSISTENCE_STORAGE_KEYS` 包含 history、current session、settings 三个 key。
 - [ ] 桌面 JSON 纯函数 schema 已覆盖默认值、迁移、坏数据降级和 snapshot 映射。
 - [ ] 首次运行 Tauri 桌面版时，如果没有桌面 JSON，会从旧 `localStorage` 生成第一份文件。
+- [ ] 从旧 `localStorage` 迁移成功时，会显示“已迁移到桌面本地数据文件。”。
 - [ ] 桌面 JSON 损坏时，会先备份为 `persistence.v1.corrupt-*.json`，再尝试恢复。
+- [ ] 桌面 JSON 损坏并恢复时，会显示“本地数据文件异常，已保留备份并尝试恢复。”。
+- [ ] 桌面持久化初始化失败时，会显示“桌面数据文件暂不可用，本次将临时使用浏览器存储。”。
+- [ ] 桌面 JSON 写入失败时，会显示“本地数据文件写入失败，本次更改可能暂未落盘。”。
 - [ ] 持久化迁移计划记录在 `docs/PERSISTENCE_MIGRATION_PLAN.md`。
 - [ ] 桌面 JSON 文件规格记录在 `docs/DESKTOP_PERSISTENCE_JSON_SPEC.md`。
 - [ ] 第一版桌面落盘目标是 app data 目录下的 `persistence.v1.json`。
+- [ ] macOS 开发环境可在 `~/Library/Application Support/com.damon.jijirululing/persistence.v1.json` 查看桌面 JSON。
 - [ ] 当前阶段不清理旧 `localStorage` 数据。
 
 ## 当前不验收

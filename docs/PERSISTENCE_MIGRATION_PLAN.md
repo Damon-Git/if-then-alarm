@@ -36,6 +36,8 @@ type PersistenceAdapter = {
 - `createSnapshotFromDesktopPersistenceJson`：把桌面 JSON 转回现有同步 adapter 能消费的 key snapshot。
 - `createDesktopPersistenceAdapter`：以同步内存 cache 承接业务读写，并把更新异步排队写回桌面 JSON 文件。
 - `initializeDesktopPersistence`：Tauri 启动时加载桌面 JSON；文件不存在时从旧 `localStorage` 生成第一份 manifest。
+- `getDesktopPersistenceInitializationResult` / `consumeDesktopPersistenceInitializationResult`：把启动阶段的迁移、恢复或回退状态交给应用层显示一次性提示。
+- `DESKTOP_PERSISTENCE_WRITE_ERROR_EVENT`：桌面 JSON 写入失败时通知应用层显示 toast。
 
 这些工具只在 Tauri 环境启动时切换默认 `persistenceAdapter`；非 Tauri 环境仍然指向 `webPersistenceAdapter`。
 
@@ -189,6 +191,16 @@ type AppSettings = {
 - 进行中轮次收起/退出后重启，恢复提示仍正确。
 - 计时模式切换后重启仍保留。
 - 导出 JSON 后能重新导入。
+- 首次迁移成功时出现一次 toast。
+- 损坏文件恢复时出现一次 toast。
+- 写入失败时出现错误 toast。
+
+macOS 开发环境可用以下命令定位桌面 JSON 文件：
+
+```bash
+ls -la ~/Library/Application\ Support/com.damon.jijirululing/
+cat ~/Library/Application\ Support/com.damon.jijirululing/persistence.v1.json
+```
 
 ## 当前不做
 

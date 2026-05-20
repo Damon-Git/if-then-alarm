@@ -24,6 +24,13 @@
 persistence.v1.json
 ```
 
+当前 macOS 开发环境可用以下路径查看：
+
+```bash
+ls -la ~/Library/Application\ Support/com.damon.jijirululing/
+cat ~/Library/Application\ Support/com.damon.jijirululing/persistence.v1.json
+```
+
 说明：
 
 - 文件名带 `v1`，便于未来并行保留新旧格式。
@@ -137,7 +144,7 @@ persistence.v1.json.tmp -> persistence.v1.json
 如果写入失败：
 
 - 内存缓存暂时保留最新状态。
-- 显示 toast 或记录日志。
+- 显示 toast 并记录日志。
 - 下一次写入可以重试。
 
 ## Normalize 规则
@@ -196,7 +203,18 @@ persistence.v1.corrupt-YYYYMMDD-HHmmss.json
 本地数据文件异常，已保留备份并尝试恢复。
 ```
 
-当前阶段可以先不做 toast，但实现时必须保留恢复结果状态。
+当前阶段已接入 toast。首次从旧 `localStorage` 迁移成功、损坏文件恢复、初始化失败回退、写入失败都会给出轻量提示。
+
+## 用户提示
+
+当前阶段只做轻量 toast，不做独立状态面板：
+
+| 场景 | 提示 |
+| --- | --- |
+| 从旧 `localStorage` 迁移成功 | `已迁移到桌面本地数据文件。` |
+| 桌面 JSON 损坏并已备份恢复 | `本地数据文件异常，已保留备份并尝试恢复。` |
+| 桌面持久化初始化失败 | `桌面数据文件暂不可用，本次将临时使用浏览器存储。` |
+| 写入桌面 JSON 失败 | `本地数据文件写入失败，本次更改可能暂未落盘。` |
 
 ## 导入导出关系
 

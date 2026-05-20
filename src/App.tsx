@@ -11,6 +11,10 @@ import SettingsPanel from "./components/SettingsPanel";
 import StartIntentConfirmModal from "./components/StartIntentConfirmModal";
 import SetupForm from "./components/SetupForm";
 import ToastHost from "./components/ToastHost";
+import {
+  DESKTOP_PERSISTENCE_WRITE_ERROR_EVENT,
+  consumeDesktopPersistenceInitializationResult,
+} from "./lib/desktopPersistenceAdapter";
 import { downloadTextFile, readTextFile } from "./lib/fileTransferAdapter";
 import { cancelTimerNotification, scheduleTimerNotification } from "./lib/notificationAdapter";
 import { clearPersistedSession, loadPersistedSession, savePersistedSession } from "./lib/sessionStorage";
@@ -187,6 +191,44 @@ const App = () => {
   const dismissToast = (toastId: string) => {
     setToasts((currentToasts) => currentToasts.filter((toast) => toast.id !== toastId));
   };
+
+  useEffect(() => {
+    const persistenceResult = consumeDesktopPersistenceInitializationResult();
+
+    if (!persistenceResult) {
+      return;
+    }
+
+    if (!persistenceResult.enabled) {
+      if (persistenceResult.reason === "not-tauri") {
+        return;
+      }
+
+      showToast("error", "桌面数据文件暂不可用，本次将临时使用浏览器存储。");
+      return;
+    }
+
+    if (persistenceResult.corruptBackupPath) {
+      showToast("info", "本地数据文件异常，已保留备份并尝试恢复。");
+      return;
+    }
+
+    if (persistenceResult.source === "localStorage") {
+      showToast("success", "已迁移到桌面本地数据文件。");
+    }
+  }, []);
+
+  useEffect(() => {
+    const handleWriteError = () => {
+      showToast("error", "本地数据文件写入失败，本次更改可能暂未落盘。");
+    };
+
+    window.addEventListener(DESKTOP_PERSISTENCE_WRITE_ERROR_EVENT, handleWriteError);
+
+    return () => {
+      window.removeEventListener(DESKTOP_PERSISTENCE_WRITE_ERROR_EVENT, handleWriteError);
+    };
+  }, []);
 
   const beginTimer = (durationSeconds: number, notificationKind: ActiveModal["type"]) => {
     setTimerRemaining(durationSeconds);
