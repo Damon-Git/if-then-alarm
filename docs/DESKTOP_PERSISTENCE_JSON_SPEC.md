@@ -1,6 +1,6 @@
 # 桌面 JSON 持久化规格
 
-本文定义 Tauri 桌面版使用 app data JSON 文件持久化的第一版规格。当前阶段只定义规格，不接 Tauri 文件系统 API。
+本文定义 Tauri 桌面版使用 app data JSON 文件持久化的第一版规格。当前阶段已实现纯函数 schema 层，不接 Tauri 文件系统 API。
 
 ## 目标
 
@@ -208,24 +208,27 @@ persistence.v1.corrupt-YYYYMMDD-HHmmss.json
 - 当前 session 和设置属于运行状态，不适合作为普通历史备份。
 - 未来如果需要完整备份，可以另做“完整数据备份”功能。
 
-## 下一轮代码切分
+## 代码切分状态
 
-建议分三步实现：
+建议分三步实现。当前状态如下：
 
 1. **纯函数层**
    - `desktopPersistenceSchema.ts`
    - 负责 `DesktopPersistenceJson` 类型、默认值、normalize、key 映射。
    - 不引入 Tauri API。
+   - 已实现，并由 `desktopPersistenceSchema.test.ts` 覆盖默认值、旧 snapshot 迁移、坏数据降级、反向生成 snapshot。
 
 2. **桌面文件 adapter**
    - `desktopPersistenceAdapter.ts`
    - 负责 app data 路径、读文件、写临时文件、替换文件。
    - 只在 Tauri 环境启用。
+   - 未实现。
 
 3. **启动接线**
    - 应用启动时加载桌面 JSON 到 memory adapter。
    - Web 环境继续使用 `webPersistenceAdapter`。
    - 保持现有业务模块同步调用形态。
+   - 未实现。
 
 ## 当前不做
 

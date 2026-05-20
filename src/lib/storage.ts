@@ -5,7 +5,7 @@ import type { HistoryExportPayload, HistoryImportResult, HistoryRecord, ReviewRe
 const isReviewResult = (value: unknown): value is ReviewResult =>
   value === "completed" || value === "partial" || value === "failed";
 
-const isHistoryRecord = (value: unknown): value is HistoryRecord => {
+export const isHistoryRecord = (value: unknown): value is HistoryRecord => {
   if (!value || typeof value !== "object") {
     return false;
   }

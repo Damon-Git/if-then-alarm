@@ -40,6 +40,18 @@ const isPersistedSession = (value: unknown): value is PersistedSession => {
   );
 };
 
+export const normalizePersistedSession = (value: unknown): PersistedSession | null => {
+  if (!isPersistedSession(value)) {
+    return null;
+  }
+
+  return {
+    ...value,
+    activeTimerSegment: value.activeTimerSegment ?? null,
+    timerMode: value.timerMode ?? DEFAULT_TIMER_MODE,
+  };
+};
+
 export const loadPersistedSession = (): PersistedSession | null => {
   try {
     const rawValue = persistenceAdapter.getItem(SESSION_STORAGE_KEY);
@@ -50,15 +62,7 @@ export const loadPersistedSession = (): PersistedSession | null => {
 
     const parsedValue = JSON.parse(rawValue);
 
-    if (!isPersistedSession(parsedValue)) {
-      return null;
-    }
-
-    return {
-      ...parsedValue,
-      activeTimerSegment: parsedValue.activeTimerSegment ?? null,
-      timerMode: parsedValue.timerMode ?? DEFAULT_TIMER_MODE,
-    };
+    return normalizePersistedSession(parsedValue);
   } catch {
     return null;
   }

@@ -123,6 +123,7 @@ npm run tauri:dev
 - [ ] 当前历史、session、设置仍走 Web `localStorage` adapter。
 - [ ] `createMemoryPersistenceAdapter` 只作为后续桌面存储缓存层，不改变当前默认存储位置。
 - [ ] `PERSISTENCE_STORAGE_KEYS` 包含 history、current session、settings 三个 key。
+- [ ] 桌面 JSON 纯函数 schema 已覆盖默认值、迁移、坏数据降级和 snapshot 映射。
 - [ ] 持久化迁移计划记录在 `docs/PERSISTENCE_MIGRATION_PLAN.md`。
 - [ ] 桌面 JSON 文件规格记录在 `docs/DESKTOP_PERSISTENCE_JSON_SPEC.md`。
 - [ ] 第一版桌面落盘目标是 app data 目录下的 `persistence.v1.json`。
