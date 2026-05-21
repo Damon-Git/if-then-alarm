@@ -1,4 +1,5 @@
-import { getCenserVisualSlot } from "../lib/visualAssets";
+import { getCenserVisualSlot, type CenserAssetLayer, type VisualAssetSize } from "../lib/visualAssets";
+import { getCenserAssetUrl } from "../lib/visualAssetManifest";
 import { getCenserVisualState } from "../lib/visualState";
 import type { IntentSetStatus } from "../types";
 import IncenseVisual from "./IncenseVisual";
@@ -26,6 +27,21 @@ type CenserVisualProps = {
   status: IntentSetStatus;
 };
 
+const CenserLayer = ({ layer, size }: { layer: CenserAssetLayer; size: VisualAssetSize }) => {
+  const visualSlot = getCenserVisualSlot(size, layer);
+  const assetUrl = getCenserAssetUrl(size, layer);
+
+  return (
+    <span
+      className={`censer-visual__${layer}${assetUrl ? " visual-layer--with-asset" : ""}`}
+      data-censer-layer={layer}
+      data-visual-slot={visualSlot}
+    >
+      {assetUrl ? <img alt="" className="visual-layer__asset" draggable="false" src={assetUrl} /> : null}
+    </span>
+  );
+};
+
 const CenserVisual = ({ currentIncenseIndex, incenseCount, incenseProgress, size, status }: CenserVisualProps) => {
   const incenseLabel = `第 ${currentIncenseIndex} / ${incenseCount} 炷`;
   const incenseProgressPercent = Math.round(Math.min(1, Math.max(0, incenseProgress)) * 100);
@@ -48,31 +64,11 @@ const CenserVisual = ({ currentIncenseIndex, incenseCount, incenseProgress, size
           size={size}
           status={status}
         />
-        <span
-          className="censer-visual__lid"
-          data-censer-layer="lid"
-          data-visual-slot={getCenserVisualSlot(size, "lid")}
-        />
-        <span
-          className="censer-visual__mouth"
-          data-censer-layer="mouth"
-          data-visual-slot={getCenserVisualSlot(size, "mouth")}
-        />
-        <span
-          className="censer-visual__ash"
-          data-censer-layer="ash"
-          data-visual-slot={getCenserVisualSlot(size, "ash")}
-        />
-        <span
-          className="censer-visual__body"
-          data-censer-layer="body"
-          data-visual-slot={getCenserVisualSlot(size, "body")}
-        />
-        <span
-          className="censer-visual__feet"
-          data-censer-layer="feet"
-          data-visual-slot={getCenserVisualSlot(size, "feet")}
-        />
+        <CenserLayer layer="lid" size={size} />
+        <CenserLayer layer="mouth" size={size} />
+        <CenserLayer layer="ash" size={size} />
+        <CenserLayer layer="body" size={size} />
+        <CenserLayer layer="feet" size={size} />
       </div>
 
       <span className="censer-visual__meta">香炉占位</span>

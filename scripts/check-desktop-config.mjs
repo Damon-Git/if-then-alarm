@@ -265,6 +265,8 @@ await Promise.all(
     "src/lib/fileTransferAdapter.ts",
     "src/lib/notificationAdapter.ts",
     "src/lib/tauriWindow.ts",
+    "src/lib/visualAssetManifest.ts",
+    "src/lib/visualAssetManifest.test.ts",
     "src-tauri/src/main.rs",
     "src-tauri/icons/README.md",
     "src-tauri/icons/app-icon/README.md",

@@ -9,6 +9,7 @@
 - 视觉组件只接收渲染所需的最小语义字段。
 - 业务状态先经过 `src/lib/visualState.ts` 映射，再进入视觉组件。
 - 素材槽位通过 `src/lib/visualAssets.ts` 生成，组件内部通过 `data-visual-slot` 暴露。
+- 素材 URL 通过 `src/lib/visualAssetManifest.ts` 查询；manifest 为空时必须回退到现有 CSS 占位。
 - 视觉组件不能直接读取完整 session、history、settings、timer interval、localStorage、Tauri API 或桌面平台 API。
 - 接入真实图片、动画或图层时，优先改视觉组件内部结构和 CSS，不改计时、复盘、历史、导入导出、桌面持久化等业务逻辑。
 
@@ -161,6 +162,8 @@ type TalismanVisualProps = {
 - `window.setInterval`
 
 这些逻辑属于应用状态、平台适配或副作用层，不属于视觉组件。
+
+视觉组件也不应直接硬编码真实素材路径。真实图片路径统一从 `src/lib/visualAssetManifest.ts` 读取；manifest key 受 `VisualAssetSlot` 限制，应与 `data-visual-slot` 保持一致。
 
 ## 修改接口的规则
 

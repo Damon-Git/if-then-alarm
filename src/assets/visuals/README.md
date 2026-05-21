@@ -15,6 +15,8 @@
 
 ## data-visual-slot 对应关系
 
+真实素材 URL 通过 `src/lib/visualAssetManifest.ts` 与下列插槽对应。manifest 为空时，组件继续使用现有 CSS 占位图层。
+
 符箓：
 
 - `talisman/situation/template`

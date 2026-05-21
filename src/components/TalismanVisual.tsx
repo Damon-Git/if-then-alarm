@@ -1,4 +1,9 @@
-import { getTalismanVisualSlot } from "../lib/visualAssets";
+import {
+  getTalismanVisualSlot,
+  type TalismanAssetLayer,
+  type TalismanAssetVariant,
+} from "../lib/visualAssets";
+import { getTalismanAssetUrl } from "../lib/visualAssetManifest";
 import { getTalismanVisualState } from "../lib/visualState";
 import type { IntentSetStatus } from "../types";
 
@@ -33,20 +38,32 @@ type TalismanVisualProps = {
   variant: "situation" | "prevention";
 };
 
+const TalismanLayer = ({
+  layer,
+  variant,
+}: {
+  layer: Extract<TalismanAssetLayer, "template" | "state">;
+  variant: TalismanAssetVariant;
+}) => {
+  const visualSlot = getTalismanVisualSlot(variant, layer);
+  const assetUrl = getTalismanAssetUrl(variant, layer);
+
+  return (
+    <span
+      className={`talisman-visual__${layer}${assetUrl ? " visual-layer--with-asset" : ""}`}
+      data-talisman-layer={layer}
+      data-visual-slot={visualSlot}
+      aria-hidden="true"
+    >
+      {assetUrl ? <img alt="" className="visual-layer__asset" draggable="false" src={assetUrl} /> : null}
+    </span>
+  );
+};
+
 const TalismanContent = ({ label, text, variant }: Pick<TalismanVisualProps, "label" | "text" | "variant">) => (
   <>
-    <span
-      className="talisman-visual__template"
-      data-talisman-layer="template"
-      data-visual-slot={getTalismanVisualSlot(variant, "template")}
-      aria-hidden="true"
-    />
-    <span
-      className="talisman-visual__state"
-      data-talisman-layer="state"
-      data-visual-slot={getTalismanVisualSlot(variant, "state")}
-      aria-hidden="true"
-    />
+    <TalismanLayer layer="template" variant={variant} />
+    <TalismanLayer layer="state" variant={variant} />
     <span
       className="talisman-visual__text"
       data-talisman-layer="text"

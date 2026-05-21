@@ -94,9 +94,21 @@ src/assets/visuals/talisman/situation/template.png
 
 - 业务状态到视觉状态的映射只放在 `src/lib/visualState.ts`。
 - 视觉插槽和素材目录约定只放在 `src/lib/visualAssets.ts` 和本文档。
+- 真实素材 URL 只通过 `src/lib/visualAssetManifest.ts` 接入。
 - 接入真实素材时，优先修改 `TalismanVisual`、`CenserVisual`、`IncenseVisual` 的内部结构和 CSS。
 - 不应为了接素材修改计时、复盘、历史、本地存储等业务逻辑。
 - 不应在当前占位 CSS 中继续追加复杂假纹样。
+
+## Manifest 接入
+
+当前 `src/lib/visualAssetManifest.ts` 默认导出空 manifest。视觉组件会先查询对应 `data-visual-slot`：
+
+- 如果 manifest 中存在 URL，则在该图层渲染 `<img>`。
+- 如果 manifest 中没有 URL，则保留现有 CSS 占位图层。
+
+接入真实素材时，应先把图片放入对应目录，再在 `visualAssetManifest` 中为对应插槽配置 URL。不要在组件里直接硬编码图片路径。
+
+在 Vite 中，建议先在 `visualAssetManifest.ts` 中 import 图片，让构建器生成最终 URL，再把 import 结果填入 manifest。
 
 ## 当前阶段不做
 
