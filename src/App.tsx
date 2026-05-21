@@ -15,7 +15,12 @@ import {
   DESKTOP_PERSISTENCE_WRITE_ERROR_EVENT,
   consumeDesktopPersistenceInitializationResult,
 } from "./lib/desktopPersistenceAdapter";
-import { downloadTextFile, readTextFile } from "./lib/fileTransferAdapter";
+import {
+  downloadTextFile,
+  readTextFile,
+  selectAndReadTextFile,
+  shouldUseDesktopFileDialog,
+} from "./lib/fileTransferAdapter";
 import { cancelTimerNotification, scheduleTimerNotification } from "./lib/notificationAdapter";
 import { clearPersistedSession, loadPersistedSession, savePersistedSession } from "./lib/sessionStorage";
 import { createActiveTimerSegment, formatDurationLabel, getTimerRemainingSeconds } from "./lib/timer";
@@ -605,19 +610,34 @@ const App = () => {
     }
   };
 
-  const exportRecords = () => {
+  const exportRecords = async () => {
     const payload = createHistoryExportPayload(historyRecords);
     const jsonValue = JSON.stringify(payload, null, 2);
     const dateSegment = new Date().toISOString().slice(0, 10).replace(/-/g, "");
 
-    downloadTextFile(`jiji-rululing-history-${dateSegment}.json`, jsonValue, "application/json");
+    const result = await downloadTextFile(`jiji-rululing-history-${dateSegment}.json`, jsonValue, "application/json");
+
+    if (result.status === "cancelled") {
+      return;
+    }
 
     showToast("success", `已导出 ${historyRecords.length} 条历史记录。`);
   };
 
-  const importRecords = async (file: File) => {
+  const importRecords = async (file?: File) => {
     try {
-      const rawValue = await readTextFile(file);
+      const transferResult = file
+        ? {
+            content: await readTextFile(file),
+            status: "completed" as const,
+          }
+        : await selectAndReadTextFile();
+
+      if (transferResult.status === "cancelled") {
+        return;
+      }
+
+      const rawValue = transferResult.content;
       const result = importHistoryExportPayload(rawValue);
 
       setHistoryRecords(result.records);
@@ -722,6 +742,7 @@ const App = () => {
             onDeleteRecord={deleteRecord}
             onExportRecords={exportRecords}
             onImportRecords={importRecords}
+            useNativeFileDialog={shouldUseDesktopFileDialog()}
           />
         ) : null}
       </main>

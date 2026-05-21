@@ -2,5 +2,11 @@
   "identifier": "default",
   "description": "Default capability for the main desktop window.",
   "windows": ["main"],
-  "permissions": ["core:default", "core:window:allow-destroy", "core:window:allow-hide", "notification:default"]
+  "permissions": [
+    "core:default",
+    "core:window:allow-destroy",
+    "core:window:allow-hide",
+    "dialog:default",
+    "notification:default"
+  ]
 }

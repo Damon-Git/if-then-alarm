@@ -8,7 +8,8 @@ type HistoryPanelProps = {
   onClearRecords: () => void;
   onDeleteRecord: (recordId: string) => void;
   onExportRecords: () => void;
-  onImportRecords: (file: File) => void;
+  onImportRecords: (file?: File) => void;
+  useNativeFileDialog: boolean;
 };
 
 type ResultFilter = "all" | ReviewResult;
@@ -110,6 +111,7 @@ const HistoryPanel = ({
   onDeleteRecord,
   onExportRecords,
   onImportRecords,
+  useNativeFileDialog,
 }: HistoryPanelProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [query, setQuery] = useState("");
@@ -129,6 +131,11 @@ const HistoryPanel = ({
   }, [query, rangeFilter, records, resultFilter]);
 
   const selectImportFile = () => {
+    if (useNativeFileDialog) {
+      onImportRecords();
+      return;
+    }
+
     fileInputRef.current?.click();
   };
 
@@ -153,13 +160,15 @@ const HistoryPanel = ({
           <button className="ghost-button" type="button" onClick={selectImportFile}>
             导入历史
           </button>
-          <input
-            accept="application/json,.json"
-            className="hidden-file-input"
-            onChange={importFile}
-            ref={fileInputRef}
-            type="file"
-          />
+          {useNativeFileDialog ? null : (
+            <input
+              accept="application/json,.json"
+              className="hidden-file-input"
+              onChange={importFile}
+              ref={fileInputRef}
+              type="file"
+            />
+          )}
           {records.length > 0 ? (
             <>
               <button className="ghost-button" type="button" onClick={onExportRecords}>

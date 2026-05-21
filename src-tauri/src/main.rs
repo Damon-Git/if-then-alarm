@@ -77,6 +77,16 @@ fn backup_corrupt_desktop_persistence_file(
     Ok(Some(backup_path.to_string_lossy().into_owned()))
 }
 
+#[tauri::command]
+fn read_user_text_file(path: String) -> Result<String, String> {
+    fs::read_to_string(path).map_err(|error| format!("failed to read selected file: {error}"))
+}
+
+#[tauri::command]
+fn write_user_text_file(path: String, contents: String) -> Result<(), String> {
+    fs::write(path, contents).map_err(|error| format!("failed to write selected file: {error}"))
+}
+
 fn show_main_window(app_handle: &tauri::AppHandle) {
     if let Some(window) = app_handle.get_webview_window("main") {
         let _ = window.show();
@@ -100,11 +110,14 @@ fn toggle_main_window(app_handle: &tauri::AppHandle) {
 
 fn main() {
     let app = tauri::Builder::default()
+        .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_notification::init())
         .invoke_handler(tauri::generate_handler![
             backup_corrupt_desktop_persistence_file,
             read_desktop_persistence_file,
-            write_desktop_persistence_file
+            read_user_text_file,
+            write_desktop_persistence_file,
+            write_user_text_file
         ])
         .setup(|app| {
             let mut tray = TrayIconBuilder::with_id("main")
