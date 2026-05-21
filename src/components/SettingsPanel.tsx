@@ -6,7 +6,9 @@ import DevSessionFixturesPanel from "./DevSessionFixturesPanel";
 type SettingsPanelProps = {
   disabled: boolean;
   isAlwaysOnTop: boolean;
+  isDockVisible: boolean;
   onAlwaysOnTopChange: (isAlwaysOnTop: boolean) => void;
+  onDockVisibleChange: (isDockVisible: boolean) => void;
   onDevSessionFixtureSaved?: (message: string) => void;
   timerMode: TimerMode;
   onTimerModeChange: (timerMode: TimerMode) => void;
@@ -18,7 +20,9 @@ const timerModes: TimerMode[] = ["dev", "prod"];
 const SettingsPanel = ({
   disabled,
   isAlwaysOnTop,
+  isDockVisible,
   onAlwaysOnTopChange,
+  onDockVisibleChange,
   onDevSessionFixtureSaved,
   onTimerModeChange,
   supportsWindowAlwaysOnTop,
@@ -57,17 +61,31 @@ const SettingsPanel = ({
       </p>
 
       {supportsWindowAlwaysOnTop ? (
-        <label className="settings-toggle">
-          <span>
-            <strong>窗口置顶</strong>
-            <small>开启后，小窗会保持在其他窗口上方。</small>
-          </span>
-          <input
-            checked={isAlwaysOnTop}
-            onChange={(event) => onAlwaysOnTopChange(event.target.checked)}
-            type="checkbox"
-          />
-        </label>
+        <div className="settings-toggle-list" aria-label="桌面窗口设置">
+          <label className="settings-toggle">
+            <span>
+              <strong>窗口置顶</strong>
+              <small>开启后，小窗会保持在其他窗口上方。</small>
+            </span>
+            <input
+              checked={isAlwaysOnTop}
+              onChange={(event) => onAlwaysOnTopChange(event.target.checked)}
+              type="checkbox"
+            />
+          </label>
+
+          <label className="settings-toggle">
+            <span>
+              <strong>在 Dock 中显示</strong>
+              <small>关闭后仍可通过菜单栏“令”入口唤回窗口。</small>
+            </span>
+            <input
+              checked={isDockVisible}
+              onChange={(event) => onDockVisibleChange(event.target.checked)}
+              type="checkbox"
+            />
+          </label>
+        </div>
       ) : null}
 
       {import.meta.env.DEV && onDevSessionFixtureSaved ? (

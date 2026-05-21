@@ -48,3 +48,13 @@ export const setCurrentTauriWindowAlwaysOnTop = async (isAlwaysOnTop: boolean) =
   await getCurrentWindow().setAlwaysOnTop(isAlwaysOnTop);
   return true;
 };
+
+export const setTauriDockVisibility = async (isDockVisible: boolean) => {
+  if (!isTauriRuntime()) {
+    return false;
+  }
+
+  const { setDockVisibility } = await import("@tauri-apps/api/app");
+  await setDockVisibility(isDockVisible);
+  return true;
+};

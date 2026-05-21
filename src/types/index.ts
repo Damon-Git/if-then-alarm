@@ -15,6 +15,7 @@ export type TimerMode = "dev" | "prod";
 
 export type AppSettings = {
   isAlwaysOnTop: boolean;
+  isDockVisible: boolean;
   timerMode: TimerMode;
 };
 

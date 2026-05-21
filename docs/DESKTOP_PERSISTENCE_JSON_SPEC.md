@@ -82,6 +82,7 @@ const defaultDesktopPersistenceJson: DesktopPersistenceJson = {
   currentSession: null,
   settings: {
     isAlwaysOnTop: false,
+    isDockVisible: true,
     timerMode: DEFAULT_TIMER_MODE,
   },
 };
@@ -168,8 +169,9 @@ persistence.v1.json.tmp -> persistence.v1.json
 
 设置：
 
-- 无效则回退到 `{ timerMode: DEFAULT_TIMER_MODE, isAlwaysOnTop: false }`。
+- 无效则回退到 `{ timerMode: DEFAULT_TIMER_MODE, isAlwaysOnTop: false, isDockVisible: true }`。
 - 旧设置缺失 `isAlwaysOnTop` 时补为 `false`。
+- 旧设置缺失 `isDockVisible` 时补为 `true`，避免升级后用户找不到 Dock 图标。
 - 不把开发 fixture 状态写入设置。
 
 ## localStorage 首次迁移

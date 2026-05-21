@@ -61,6 +61,7 @@ describe("desktop persistence schema", () => {
       migrationSource: "empty",
       settings: {
         isAlwaysOnTop: false,
+        isDockVisible: true,
         timerMode: DEFAULT_TIMER_MODE,
       },
       updatedAt: NOW,
@@ -93,6 +94,7 @@ describe("desktop persistence schema", () => {
     expect(manifest.currentSession?.timerMode).toBe(DEFAULT_TIMER_MODE);
     expect(manifest.settings).toEqual({
       isAlwaysOnTop: false,
+      isDockVisible: true,
       timerMode: "prod",
     });
     expect(manifest.migrationSource).toBe("localStorage");
@@ -124,6 +126,7 @@ describe("desktop persistence schema", () => {
     expect(normalized.currentSession).toBeNull();
     expect(normalized.settings).toEqual({
       isAlwaysOnTop: false,
+      isDockVisible: true,
       timerMode: DEFAULT_TIMER_MODE,
     });
     expect(normalized.migrationSource).toBeUndefined();
@@ -137,6 +140,7 @@ describe("desktop persistence schema", () => {
       history: [record],
       settings: {
         isAlwaysOnTop: true,
+        isDockVisible: false,
         timerMode: "prod" as const,
       },
     };
@@ -147,6 +151,7 @@ describe("desktop persistence schema", () => {
     expect(JSON.parse(snapshot[SESSION_STORAGE_KEY] ?? "")).toEqual(manifest.currentSession);
     expect(JSON.parse(snapshot[SETTINGS_STORAGE_KEY] ?? "")).toEqual({
       isAlwaysOnTop: true,
+      isDockVisible: false,
       timerMode: "prod",
     });
   });
@@ -172,7 +177,7 @@ describe("desktop persistence schema", () => {
       currentManifest,
       {
         [HISTORY_STORAGE_KEY]: JSON.stringify([nextRecord]),
-        [SETTINGS_STORAGE_KEY]: JSON.stringify({ isAlwaysOnTop: true, timerMode: "prod" }),
+        [SETTINGS_STORAGE_KEY]: JSON.stringify({ isAlwaysOnTop: true, isDockVisible: false, timerMode: "prod" }),
       },
       { now: NOW },
     );
@@ -185,6 +190,7 @@ describe("desktop persistence schema", () => {
     expect(nextManifest.currentSession).toBeNull();
     expect(nextManifest.settings).toEqual({
       isAlwaysOnTop: true,
+      isDockVisible: false,
       timerMode: "prod",
     });
   });

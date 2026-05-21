@@ -10,6 +10,7 @@ describe("settings storage", () => {
   it("normalizes missing settings to defaults", () => {
     expect(normalizeAppSettings(null)).toEqual({
       isAlwaysOnTop: false,
+      isDockVisible: true,
       timerMode: DEFAULT_TIMER_MODE,
     });
   });
@@ -17,13 +18,15 @@ describe("settings storage", () => {
   it("normalizes legacy settings without window behavior fields", () => {
     expect(normalizeAppSettings({ timerMode: "prod" })).toEqual({
       isAlwaysOnTop: false,
+      isDockVisible: true,
       timerMode: "prod",
     });
   });
 
   it("normalizes invalid settings values", () => {
-    expect(normalizeAppSettings({ isAlwaysOnTop: "yes", timerMode: "fast" })).toEqual({
+    expect(normalizeAppSettings({ isAlwaysOnTop: "yes", isDockVisible: "no", timerMode: "fast" })).toEqual({
       isAlwaysOnTop: false,
+      isDockVisible: true,
       timerMode: DEFAULT_TIMER_MODE,
     });
   });
@@ -31,11 +34,13 @@ describe("settings storage", () => {
   it("saves and loads app settings", () => {
     saveAppSettings({
       isAlwaysOnTop: true,
+      isDockVisible: false,
       timerMode: "prod",
     });
 
     expect(loadAppSettings()).toEqual({
       isAlwaysOnTop: true,
+      isDockVisible: false,
       timerMode: "prod",
     });
   });

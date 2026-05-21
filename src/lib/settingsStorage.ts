@@ -6,6 +6,7 @@ export const isTimerMode = (value: unknown): value is TimerMode => value === "de
 
 export const createDefaultAppSettings = (): AppSettings => ({
   isAlwaysOnTop: false,
+  isDockVisible: true,
   timerMode: DEFAULT_TIMER_MODE,
 });
 
@@ -18,6 +19,7 @@ export const normalizeAppSettings = (value: unknown): AppSettings => {
 
   return {
     isAlwaysOnTop: settings.isAlwaysOnTop === true,
+    isDockVisible: settings.isDockVisible !== false,
     timerMode: isTimerMode(settings.timerMode) ? settings.timerMode : DEFAULT_TIMER_MODE,
   };
 };

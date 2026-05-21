@@ -30,6 +30,7 @@ import {
   isTauriRuntime,
   listenForTauriCloseRequest,
   setCurrentTauriWindowAlwaysOnTop,
+  setTauriDockVisibility,
 } from "./lib/tauriWindow";
 import { loadAppSettings, saveAppSettings } from "./lib/settingsStorage";
 import {
@@ -195,6 +196,12 @@ const App = () => {
       showToast("error", "窗口置顶设置未能生效。");
     });
   }, [settings.isAlwaysOnTop]);
+
+  useEffect(() => {
+    setTauriDockVisibility(settings.isDockVisible).catch(() => {
+      showToast("error", "Dock 显示设置未能生效。");
+    });
+  }, [settings.isDockVisible]);
 
   const showToast = (type: ToastMessage["type"], message: string) => {
     const id = createId();
@@ -671,6 +678,10 @@ const App = () => {
     setSettings((currentSettings) => saveAppSettings({ ...currentSettings, isAlwaysOnTop }));
   };
 
+  const updateDockVisible = (isDockVisible: boolean) => {
+    setSettings((currentSettings) => saveAppSettings({ ...currentSettings, isDockVisible }));
+  };
+
   const updateSetupDraftState = useCallback((nextHasUnsavedDraft: boolean) => {
     setHasUnsavedSetupDraft(nextHasUnsavedDraft);
   }, []);
@@ -746,7 +757,9 @@ const App = () => {
           <SettingsPanel
             disabled={isSettingsDisabled}
             isAlwaysOnTop={settings.isAlwaysOnTop}
+            isDockVisible={settings.isDockVisible}
             onAlwaysOnTopChange={updateAlwaysOnTop}
+            onDockVisibleChange={updateDockVisible}
             timerMode={settings.timerMode}
             onDevSessionFixtureSaved={(message) => showToast("info", message)}
             onTimerModeChange={updateTimerMode}

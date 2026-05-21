@@ -92,7 +92,7 @@ describe("desktop persistence adapter", () => {
       JSON.stringify({
         ...createDefaultDesktopPersistenceJson({ now: NOW }),
         history: [record],
-        settings: { isAlwaysOnTop: true, timerMode: "prod" },
+        settings: { isAlwaysOnTop: true, isDockVisible: false, timerMode: "prod" },
       }),
     );
 
@@ -107,6 +107,7 @@ describe("desktop persistence adapter", () => {
     expect(JSON.parse(persistenceAdapter.getItem(HISTORY_STORAGE_KEY) ?? "")).toEqual([record]);
     expect(JSON.parse(persistenceAdapter.getItem(SETTINGS_STORAGE_KEY) ?? "")).toEqual({
       isAlwaysOnTop: true,
+      isDockVisible: false,
       timerMode: "prod",
     });
     expect(getDesktopPersistenceInitializationResult()).toEqual(result);
@@ -133,7 +134,7 @@ describe("desktop persistence adapter", () => {
       history: [record],
       migratedAt: NOW,
       migrationSource: "localStorage",
-      settings: { isAlwaysOnTop: false, timerMode: "prod" },
+      settings: { isAlwaysOnTop: false, isDockVisible: true, timerMode: "prod" },
     });
   });
 

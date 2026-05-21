@@ -182,14 +182,19 @@ select {
   color: #5e534a;
 }
 
-.settings-toggle {
+.settings-toggle-list {
   grid-column: 1 / -1;
+  display: grid;
+  gap: 12px;
+  border-top: 1px solid #eadfd5;
+  padding-top: 14px;
+}
+
+.settings-toggle {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  border-top: 1px solid #eadfd5;
-  padding-top: 14px;
 }
 
 .settings-toggle span {
