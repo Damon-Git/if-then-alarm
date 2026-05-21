@@ -485,7 +485,7 @@ const App = () => {
     setIsAbandonConfirmOpen(false);
   };
 
-  const confirmAbandonSession = () => {
+  const abandonCurrentSession = () => {
     setIntentSets([]);
     setTimerRemaining(0);
     setActiveTimerSegment(null);
@@ -496,6 +496,10 @@ const App = () => {
     void cancelTimerNotification();
     setPhase("setup");
     clearPersistedSession();
+  };
+
+  const confirmAbandonSession = () => {
+    abandonCurrentSession();
   };
 
   const restorePendingSession = () => {
@@ -605,9 +609,7 @@ const App = () => {
     setTauriCloseRequest(null);
   };
 
-  const confirmTauriCloseRequest = async () => {
-    setTauriCloseRequest(null);
-
+  const saveCurrentSessionForWindowHide = () => {
     if (hasUnsavedSession && intentSets.length > 0) {
       savePersistedSession({
         phase: phase as Exclude<AppPhase, "setup">,
@@ -618,11 +620,40 @@ const App = () => {
         timerMode: settings.timerMode,
       });
     }
+  };
 
-    const didClose =
-      tauriCloseRequest?.type === "active-session"
-        ? await hideCurrentTauriWindow()
-        : await closeCurrentTauriWindow();
+  const hideTauriWindowWithCurrentSession = async () => {
+    setTauriCloseRequest(null);
+    saveCurrentSessionForWindowHide();
+
+    const didClose = await hideCurrentTauriWindow();
+
+    if (!didClose) {
+      window.close();
+    }
+  };
+
+  const abandonAndCloseTauriSession = async () => {
+    setTauriCloseRequest(null);
+    abandonCurrentSession();
+
+    const didClose = await closeCurrentTauriWindow();
+
+    if (!didClose) {
+      window.close();
+    }
+  };
+
+  const confirmTauriCloseRequest = async () => {
+    const closeRequest = tauriCloseRequest;
+    setTauriCloseRequest(null);
+
+    if (closeRequest?.type === "active-session") {
+      await hideTauriWindowWithCurrentSession();
+      return;
+    }
+
+    const didClose = await closeCurrentTauriWindow();
 
     if (!didClose) {
       window.close();
@@ -815,18 +846,20 @@ const App = () => {
 
       {tauriCloseRequest ? (
         <ConfirmModal
-          cancelLabel={tauriCloseRequest.type === "setup-draft" ? "继续填写" : "继续当前轮次"}
+          cancelLabel={tauriCloseRequest.type === "setup-draft" ? "继续填写" : "放弃并退出"}
+          cancelVariant={tauriCloseRequest.type === "setup-draft" ? "default" : "danger"}
           confirmLabel={tauriCloseRequest.type === "setup-draft" ? "关闭窗口" : "保留并收起"}
           description={
             tauriCloseRequest.type === "setup-draft"
               ? "当前填写内容还没有进入仪式台，关闭后不会保存这份草稿。"
-              : "当前轮次会继续计时，并在本段结束时发送系统通知。"
+              : "放弃并退出会结束本轮且不写入历史；保留并收起会继续计时，并在本段结束时发送系统通知。"
           }
           eyebrow="Desktop"
-          title={tauriCloseRequest.type === "setup-draft" ? "确定要关闭窗口吗？" : "要暂时关闭窗口吗？"}
+          title={tauriCloseRequest.type === "setup-draft" ? "确定要关闭窗口吗？" : "要关闭当前轮次吗？"}
           variant={tauriCloseRequest.type === "setup-draft" ? "danger" : "default"}
-          onCancel={cancelTauriCloseRequest}
-          onConfirm={confirmTauriCloseRequest}
+          onCancel={tauriCloseRequest.type === "setup-draft" ? cancelTauriCloseRequest : abandonAndCloseTauriSession}
+          onConfirm={tauriCloseRequest.type === "setup-draft" ? confirmTauriCloseRequest : hideTauriWindowWithCurrentSession}
+          onDismiss={cancelTauriCloseRequest}
         />
       ) : null}
 

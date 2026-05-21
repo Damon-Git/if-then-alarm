@@ -42,7 +42,7 @@ Web 环境仍使用 `beforeunload`：
 - `src/App.tsx`：仪式台和复盘页离开保护。
 - `src/components/SetupForm.tsx`：填写页草稿离开保护。
 
-关闭与恢复的当前产品语义见 `docs/TAURI_CLOSE_RESTORE_NOTES.md`。Tauri 桌面端已经接入窗口关闭事件拦截：存在填写草稿、未保存轮次或复盘轮次时，先展示应用内确认弹窗，再决定继续、关闭或保留并收起。Web 的 `beforeunload` 文案不可控，只作为 Web 开发入口的保护。
+关闭与恢复的当前产品语义见 `docs/TAURI_CLOSE_RESTORE_NOTES.md`。Tauri 桌面端已经接入窗口关闭事件拦截：存在填写草稿、未保存轮次或复盘轮次时，先展示应用内确认弹窗，再决定关闭弹窗维持原样、放弃并退出，或保留并收起。Web 的 `beforeunload` 文案不可控，只作为 Web 开发入口的保护。
 
 ### 确认弹窗
 
