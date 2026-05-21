@@ -1297,6 +1297,12 @@ select {
 }
 
 @media (max-width: 560px) {
+  html:has(.app-shell--ritual),
+  body:has(.app-shell--ritual),
+  body:has(.app-shell--ritual) #root {
+    background: transparent;
+  }
+
   .app-shell {
     width: min(calc(100% - 16px), 420px);
     padding-top: 8px;
@@ -1362,8 +1368,9 @@ select {
   }
 
   .app-shell--ritual {
-    width: 100%;
-    min-height: 100dvh;
+    width: max-content;
+    max-width: 100%;
+    min-height: 0;
     padding: 0;
   }
 
@@ -1375,18 +1382,20 @@ select {
   }
 
   .app-shell--ritual .app-main {
-    min-height: 100dvh;
+    min-height: 0;
     display: grid;
     place-items: center;
     gap: 0;
+    background: transparent;
   }
 
   .app-shell--ritual .ritual-panel {
-    width: 100%;
-    min-height: 100dvh;
+    width: max-content;
+    max-width: 100%;
+    min-height: 0;
     border: 0;
     border-radius: 0;
-    padding: 18px 12px;
+    padding: 0;
     background: transparent;
     box-shadow: none;
     display: grid;
@@ -1397,9 +1406,11 @@ select {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 18px;
+    gap: 12px;
     width: 100%;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
+    overflow: visible;
+    background: transparent;
   }
 
   .app-shell--ritual .compact-censer {
@@ -1407,8 +1418,8 @@ select {
   }
 
   .app-shell--ritual .compact-censer__button {
-    width: 104px;
-    min-height: 132px;
+    width: 94px;
+    min-height: 112px;
     border: 0;
     padding: 0;
     background: transparent;
@@ -1427,6 +1438,11 @@ select {
   .app-shell--ritual .compact-censer strong,
   .app-shell--ritual .compact-censer p {
     display: none;
+  }
+
+  .app-shell--ritual .censer-visual--compact .censer-visual__asset {
+    width: 74px;
+    height: 84px;
   }
 
   .compact-censer__button {

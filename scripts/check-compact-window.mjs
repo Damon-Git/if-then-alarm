@@ -71,6 +71,26 @@ const run = async () => {
     assert(!(await page.locator(".stage-grid--full").isVisible()), "full ritual stage should be hidden in compact viewport");
     assert((await page.locator(".compact-censer").count()) === 3, "compact stage should show three censer slots");
     assert((await page.locator(".compact-censer p:visible").count()) === 0, "compact ritual scene should hide intent summaries");
+    const ritualSceneStyle = await page.locator(".compact-stage").evaluate((element) => {
+      const style = window.getComputedStyle(element);
+      return {
+        backgroundColor: style.backgroundColor,
+        flexWrap: style.flexWrap,
+      };
+    });
+    assert(ritualSceneStyle.flexWrap === "nowrap", "compact ritual censers should stay in a single row");
+    assert(
+      ritualSceneStyle.backgroundColor === "rgba(0, 0, 0, 0)",
+      `compact ritual scene should not draw a background: ${ritualSceneStyle.backgroundColor}`,
+    );
+    const censerBoxes = await page.locator(".compact-censer").evaluateAll((elements) =>
+      elements.map((element) => {
+        const box = element.getBoundingClientRect();
+        return { top: Math.round(box.top) };
+      }),
+    );
+    const rowTops = new Set(censerBoxes.map((box) => box.top));
+    assert(rowTops.size === 1, `compact ritual censers should be side by side: ${JSON.stringify(censerBoxes)}`);
     await assertNoHorizontalOverflow(page, "ritual");
 
     await page.screenshot({ fullPage: true, path: screenshotPath });
