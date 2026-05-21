@@ -1,6 +1,6 @@
 # 视觉素材接入管线
 
-本文件约定未来真实符箓、香炉、线香素材如何进入项目。当前版本仍使用占位元素，不引入真实图片、不做动画。
+本文件约定未来真实符箓、香炉、线香素材如何进入项目。当前版本仍使用占位元素，不引入真实图片、不做动画。素材目录内的执行清单见 `src/assets/visuals/README.md`。
 
 ## 目录结构
 
@@ -25,6 +25,8 @@ src/assets/visuals/
 - `censer/compact/`：macOS 菜单栏窄窗口的小窗 Q 版香炉素材。
 - `incense/stage/`：主祭台线香素材。
 - `incense/compact/`：小窗线香素材。
+
+每个叶子目录都保留 `README.md`，用于记录该目录的具体用途、对应插槽和当前不做事项。
 
 ## 插槽约定
 
@@ -76,6 +78,8 @@ src/assets/visuals/talisman/situation/template.png
 ```
 
 同一类素材优先保持相同文件名，只通过目录区分 `stage` 和 `compact`。
+
+当前目录中只允许保留 README 和 `.gitkeep`。真实素材进入项目时，应在对应目录更新 README，记录素材来源、用途和替换范围。
 
 ## 素材格式
 

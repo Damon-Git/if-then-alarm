@@ -271,6 +271,13 @@ await Promise.all(
     "src-tauri/icons/app-icon/placeholder-icon.png",
     "src-tauri/icons/menubar-icon/README.md",
     "src-tauri/icons/notification-icon/README.md",
+    "src/assets/visuals/README.md",
+    "src/assets/visuals/talisman/situation/README.md",
+    "src/assets/visuals/talisman/prevention/README.md",
+    "src/assets/visuals/censer/stage/README.md",
+    "src/assets/visuals/censer/compact/README.md",
+    "src/assets/visuals/incense/stage/README.md",
+    "src/assets/visuals/incense/compact/README.md",
   ].map(assertFileExists),
 );
 
