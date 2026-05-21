@@ -108,6 +108,20 @@ assert(
   tauriConfig.build?.devUrl === "http://127.0.0.1:5173",
   "Tauri devUrl is pinned to 127.0.0.1:5173",
 );
+assert(
+  tauriConfig.bundle?.active === true,
+  "Tauri bundle is active for internal app builds",
+);
+assert(
+  Array.isArray(tauriConfig.bundle?.targets) &&
+    tauriConfig.bundle.targets.length === 1 &&
+    tauriConfig.bundle.targets[0] === "app",
+  "Tauri bundle target is limited to macOS app",
+);
+assert(
+  tauriConfig.bundle?.icon?.includes("icons/icon.png"),
+  "Tauri bundle uses the placeholder app icon",
+);
 
 const mainWindow = tauriConfig.app?.windows?.find(
   (windowConfig) => windowConfig.label === "main",
@@ -243,6 +257,7 @@ assertTextIncludes(
 await Promise.all(
   [
     "docs/TAURI_DESKTOP_CHECKLIST.md",
+    "docs/MACOS_INTERNAL_BUILD.md",
     "docs/DESKTOP_PERSISTENCE_JSON_SPEC.md",
     "docs/DESKTOP_BEHAVIOR_REGRESSION.md",
     "src/lib/desktopPersistenceAdapter.ts",

@@ -1,6 +1,6 @@
 # Tauri 桌面验收清单
 
-本清单用于每次修改 Tauri 外壳、小窗布局、弹窗、滚动、通知或桌面相关行为后做手动验收。当前阶段不验收真实打包发布。
+本清单用于每次修改 Tauri 外壳、小窗布局、弹窗、滚动、通知或桌面相关行为后做手动验收。当前阶段只验收内部 `.app` 冒烟，不验收 DMG、签名、公证或正式发布。
 
 桌面行为的组合回归顺序见 `docs/DESKTOP_BEHAVIOR_REGRESSION.md`。
 
@@ -12,6 +12,14 @@
 - [ ] 执行 `npm run build` 通过。
 - [ ] 执行 `cargo check` 通过。
 - [ ] 如果 `5173` 被其他应用占用，先释放端口；如果是本项目 Vite 服务，可直接复用。
+
+## 内部打包冒烟
+
+内部打包说明见 `docs/MACOS_INTERNAL_BUILD.md`。
+
+- [ ] 执行 `npm run tauri:build` 通过。
+- [ ] 生成 `src-tauri/target/release/bundle/macos/急急如律令.app`。
+- [ ] 当前只验收内部 `.app`，不验收 DMG、签名、公证或正式发布。
 
 ## 启动桌面窗口
 
