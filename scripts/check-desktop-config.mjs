@@ -140,9 +140,13 @@ assert(
 [
   "core:default",
   "core:app:allow-set-dock-visibility",
+  "core:window:allow-center",
   "core:window:allow-destroy",
   "core:window:allow-hide",
   "core:window:allow-set-always-on-top",
+  "core:window:allow-set-focus",
+  "core:window:allow-set-size",
+  "core:window:allow-show",
   "dialog:default",
   "notification:default",
 ].forEach((permission) => assertPermission(capability, permission));
@@ -232,6 +236,11 @@ assertTextIncludes(
   tauriWindow,
   "setTauriDockVisibility",
   "Tauri window adapter exposes Dock visibility control",
+);
+assertTextIncludes(
+  tauriWindow,
+  "expandCurrentTauriWindow",
+  "Tauri window adapter exposes full-window expansion control",
 );
 assertTextIncludes(
   appTsx,

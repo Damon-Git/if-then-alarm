@@ -26,6 +26,7 @@ import { clearPersistedSession, loadPersistedSession, savePersistedSession } fro
 import { createActiveTimerSegment, formatDurationLabel, getTimerRemainingSeconds } from "./lib/timer";
 import {
   closeCurrentTauriWindow,
+  expandCurrentTauriWindow,
   hideCurrentTauriWindow,
   isTauriRuntime,
   listenForTauriCloseRequest,
@@ -406,6 +407,12 @@ const App = () => {
     setPendingStartIntentId(intentSetId);
   };
 
+  const requestFullRitualView = () => {
+    expandCurrentTauriWindow().catch(() => {
+      showToast("error", "完整窗口未能打开。");
+    });
+  };
+
   const cancelStartIntent = () => {
     setPendingStartIntentId(null);
   };
@@ -769,6 +776,7 @@ const App = () => {
             focusSeconds={timerConfig.focusSeconds}
             hasBlockingAction={hasBlockingAction}
             intentSets={intentSets}
+            onOpenFullView={requestFullRitualView}
             onRequestAbandon={requestAbandonSession}
             onStartIntent={requestStartIntent}
             timerRemaining={timerRemaining}

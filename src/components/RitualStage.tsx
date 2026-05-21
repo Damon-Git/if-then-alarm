@@ -8,6 +8,7 @@ type RitualStageProps = {
   timerRemaining: number;
   hasBlockingAction: boolean;
   onStartIntent: (intentSetId: string) => void;
+  onOpenFullView: () => void;
   onRequestAbandon: () => void;
 };
 
@@ -31,6 +32,7 @@ const RitualStage = ({
   timerRemaining,
   hasBlockingAction,
   onStartIntent,
+  onOpenFullView,
   onRequestAbandon,
 }: RitualStageProps) => {
   return (
@@ -74,6 +76,7 @@ const RitualStage = ({
               incenseProgress={incenseProgress}
               intentSet={intentSet}
               key={intentSet.id}
+              onOpenFullView={onOpenFullView}
               onStart={onStartIntent}
               timerRemaining={isActive ? timerRemaining : 0}
             />

@@ -39,6 +39,21 @@ export const hideCurrentTauriWindow = async () => {
   return true;
 };
 
+export const expandCurrentTauriWindow = async () => {
+  if (!isTauriRuntime()) {
+    return false;
+  }
+
+  const { getCurrentWindow, LogicalSize } = await import("@tauri-apps/api/window");
+  const currentWindow = getCurrentWindow();
+
+  await currentWindow.setSize(new LogicalSize(960, 760));
+  await currentWindow.center();
+  await currentWindow.show();
+  await currentWindow.setFocus();
+  return true;
+};
+
 export const setCurrentTauriWindowAlwaysOnTop = async (isAlwaysOnTop: boolean) => {
   if (!isTauriRuntime()) {
     return false;
