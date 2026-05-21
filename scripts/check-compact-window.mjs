@@ -63,10 +63,14 @@ const run = async () => {
     await page.getByLabel("第 3 套香数").getByRole("button", { name: "1 炷" }).click();
     await page.getByRole("button", { name: "进入仪式台" }).click();
 
-    await assertVisible(page.getByRole("heading", { name: "仪式台" }), "ritual title");
     await assertVisible(page.locator(".compact-stage"), "compact stage");
+    assert(!(await page.getByRole("heading", { name: "急急如律令" }).isVisible()), "app title should be hidden in compact ritual scene");
+    assert(!(await page.getByRole("button", { name: "历史" }).isVisible()), "history button should be hidden in compact ritual scene");
+    assert(!(await page.getByRole("button", { name: "设置" }).isVisible()), "settings button should be hidden in compact ritual scene");
+    assert(!(await page.getByRole("heading", { name: "仪式台" }).isVisible()), "ritual title should be hidden in compact ritual scene");
     assert(!(await page.locator(".stage-grid--full").isVisible()), "full ritual stage should be hidden in compact viewport");
     assert((await page.locator(".compact-censer").count()) === 3, "compact stage should show three censer slots");
+    assert((await page.locator(".compact-censer p:visible").count()) === 0, "compact ritual scene should hide intent summaries");
     await assertNoHorizontalOverflow(page, "ritual");
 
     await page.screenshot({ fullPage: true, path: screenshotPath });

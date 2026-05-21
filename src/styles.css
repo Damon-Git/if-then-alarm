@@ -1361,6 +1361,74 @@ select {
     gap: 10px;
   }
 
+  .app-shell--ritual {
+    width: 100%;
+    min-height: 100dvh;
+    padding: 0;
+  }
+
+  .app-shell--ritual .app-header,
+  .app-shell--ritual .ritual-panel > .section-heading,
+  .app-shell--ritual .settings-panel,
+  .app-shell--ritual .history-panel {
+    display: none;
+  }
+
+  .app-shell--ritual .app-main {
+    min-height: 100dvh;
+    display: grid;
+    place-items: center;
+    gap: 0;
+  }
+
+  .app-shell--ritual .ritual-panel {
+    width: 100%;
+    min-height: 100dvh;
+    border: 0;
+    border-radius: 0;
+    padding: 18px 12px;
+    background: transparent;
+    box-shadow: none;
+    display: grid;
+    place-items: center;
+  }
+
+  .app-shell--ritual .compact-stage {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .app-shell--ritual .compact-censer {
+    place-items: center;
+  }
+
+  .app-shell--ritual .compact-censer__button {
+    width: 104px;
+    min-height: 132px;
+    border: 0;
+    padding: 0;
+    background: transparent;
+  }
+
+  .app-shell--ritual .compact-censer--idle .compact-censer__button:not(:disabled):hover,
+  .app-shell--ritual .compact-censer--burning .compact-censer__button,
+  .app-shell--ritual .compact-censer--resting .compact-censer__button,
+  .app-shell--ritual .compact-censer--completed .compact-censer__button {
+    border-color: transparent;
+    background: transparent;
+  }
+
+  .app-shell--ritual .compact-censer__status,
+  .app-shell--ritual .compact-censer__hint,
+  .app-shell--ritual .compact-censer strong,
+  .app-shell--ritual .compact-censer p {
+    display: none;
+  }
+
   .compact-censer__button {
     min-height: 136px;
     padding: 10px 8px;
@@ -1512,30 +1580,30 @@ select {
     padding: 10px;
   }
 
-  .compact-stage {
+  .app-shell:not(.app-shell--ritual) .compact-stage {
     grid-template-columns: repeat(auto-fit, minmax(104px, 1fr));
     gap: 8px;
   }
 
-  .compact-censer {
+  .app-shell:not(.app-shell--ritual) .compact-censer {
     gap: 6px;
   }
 
-  .compact-censer__button {
+  .app-shell:not(.app-shell--ritual) .compact-censer__button {
     min-height: 128px;
     gap: 6px;
     padding: 8px 6px;
   }
 
-  .compact-censer__status {
+  .app-shell:not(.app-shell--ritual) .compact-censer__status {
     font-size: 0.76rem;
   }
 
-  .compact-censer__hint {
+  .app-shell:not(.app-shell--ritual) .compact-censer__hint {
     font-size: 0.74rem;
   }
 
-  .compact-censer p {
+  .app-shell:not(.app-shell--ritual) .compact-censer p {
     display: -webkit-box;
     min-height: 2.6em;
     overflow: hidden;

@@ -698,7 +698,7 @@ const App = () => {
   };
 
   return (
-    <div className="app-shell">
+    <div className={`app-shell app-shell--${phase}`}>
       <header className="app-header">
         <div>
           <p className="eyebrow">Intent Timer MVP</p>
