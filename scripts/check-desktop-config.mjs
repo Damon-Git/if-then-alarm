@@ -119,8 +119,8 @@ assert(
   "Tauri bundle target is limited to macOS app",
 );
 assert(
-  tauriConfig.bundle?.icon?.includes("icons/icon.png"),
-  "Tauri bundle uses the placeholder app icon",
+  tauriConfig.bundle?.icon?.includes("icons/app-icon/placeholder-icon.png"),
+  "Tauri bundle uses the placeholder app icon from app-icon",
 );
 
 const mainWindow = tauriConfig.app?.windows?.find(
@@ -266,6 +266,11 @@ await Promise.all(
     "src/lib/notificationAdapter.ts",
     "src/lib/tauriWindow.ts",
     "src-tauri/src/main.rs",
+    "src-tauri/icons/README.md",
+    "src-tauri/icons/app-icon/README.md",
+    "src-tauri/icons/app-icon/placeholder-icon.png",
+    "src-tauri/icons/menubar-icon/README.md",
+    "src-tauri/icons/notification-icon/README.md",
   ].map(assertFileExists),
 );
 

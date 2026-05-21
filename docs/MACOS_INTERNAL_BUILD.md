@@ -48,7 +48,7 @@ src-tauri/target/release/bundle/macos/急急如律令.app
   "bundle": {
     "active": true,
     "targets": ["app"],
-    "icon": ["icons/icon.png"]
+    "icon": ["icons/app-icon/placeholder-icon.png"]
   }
 }
 ```
@@ -72,9 +72,9 @@ src-tauri/target/release/bundle/macos/急急如律令.app
 
 ## 当前仍是占位
 
-- `src-tauri/icons/icon.png` 仍是临时占位应用图标。
+- `src-tauri/icons/app-icon/placeholder-icon.png` 仍是临时占位应用图标。
 - 菜单栏入口仍使用文字“令”，不是正式 template icon。
-- 通知图标不做单独正式验收。
+- `src-tauri/icons/menubar-icon/` 和 `src-tauri/icons/notification-icon/` 只保留接入边界，不放正式素材。
 
 ## 当前不做
 

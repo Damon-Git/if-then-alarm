@@ -85,4 +85,4 @@
 
 当前占位元素只表达结构关系：上方符箓、中间香炉、下方预防性符箓。占位元素不模拟复杂纹样，不制造假的符箓、香炉、线香细节。
 
-当前 `src-tauri/icons/icon.png` 也是占位资产，不代表正式应用图标。macOS 菜单栏右侧的“令”字入口只用于桌面交互验证，不代表正式菜单栏 template icon。
+当前 `src-tauri/icons/app-icon/placeholder-icon.png` 也是占位资产，不代表正式应用图标。macOS 菜单栏右侧的“令”字入口只用于桌面交互验证，不代表正式菜单栏 template icon。
