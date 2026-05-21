@@ -2,9 +2,12 @@
 
 本清单用于每次修改 Tauri 外壳、小窗布局、弹窗、滚动、通知或桌面相关行为后做手动验收。当前阶段不验收真实打包发布。
 
+桌面行为的组合回归顺序见 `docs/DESKTOP_BEHAVIOR_REGRESSION.md`。
+
 ## 验收前准备
 
 - [ ] 当前工作区没有未保存的重要改动。
+- [ ] 执行 `npm run check:desktop-config` 通过。
 - [ ] 执行 `npm run test` 通过。
 - [ ] 执行 `npm run build` 通过。
 - [ ] 执行 `cargo check` 通过。
