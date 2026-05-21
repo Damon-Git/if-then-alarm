@@ -1,5 +1,12 @@
+import { COMPACT_WINDOW_SIZE, FULL_WINDOW_SIZE } from "../constants";
+
 type TauriInternalsWindow = Window & {
   __TAURI_INTERNALS__?: unknown;
+};
+
+type TauriWindowSize = {
+  height: number;
+  width: number;
 };
 
 export const isTauriRuntime = () =>
@@ -39,7 +46,7 @@ export const hideCurrentTauriWindow = async () => {
   return true;
 };
 
-export const expandCurrentTauriWindow = async () => {
+const resizeAndFocusCurrentTauriWindow = async (size: TauriWindowSize) => {
   if (!isTauriRuntime()) {
     return false;
   }
@@ -47,12 +54,16 @@ export const expandCurrentTauriWindow = async () => {
   const { getCurrentWindow, LogicalSize } = await import("@tauri-apps/api/window");
   const currentWindow = getCurrentWindow();
 
-  await currentWindow.setSize(new LogicalSize(960, 760));
+  await currentWindow.setSize(new LogicalSize(size.width, size.height));
   await currentWindow.center();
   await currentWindow.show();
   await currentWindow.setFocus();
   return true;
 };
+
+export const expandCurrentTauriWindow = async () => resizeAndFocusCurrentTauriWindow(FULL_WINDOW_SIZE);
+
+export const compactCurrentTauriWindow = async () => resizeAndFocusCurrentTauriWindow(COMPACT_WINDOW_SIZE);
 
 export const setCurrentTauriWindowAlwaysOnTop = async (isAlwaysOnTop: boolean) => {
   if (!isTauriRuntime()) {

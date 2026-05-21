@@ -1,9 +1,22 @@
-import { mkdir } from "node:fs/promises";
+import { mkdir, readFile } from "node:fs/promises";
 import { chromium } from "playwright";
 
 const targetUrl = process.env.COMPACT_CHECK_URL ?? "http://127.0.0.1:5173/";
-const viewport = { width: 390, height: 620 };
 const screenshotPath = "artifacts/compact-window.png";
+
+const readCompactWindowSize = async () => {
+  const constantsTs = await readFile("src/constants.ts", "utf8");
+  const match = constantsTs.match(/export const COMPACT_WINDOW_SIZE = \{ width: (\d+), height: (\d+) \} as const;/);
+
+  if (!match) {
+    throw new Error("Cannot find COMPACT_WINDOW_SIZE in src/constants.ts.");
+  }
+
+  return {
+    height: Number(match[2]),
+    width: Number(match[1]),
+  };
+};
 
 const assert = (condition, message) => {
   if (!condition) {
@@ -37,6 +50,7 @@ const run = async () => {
 
   await mkdir("artifacts", { recursive: true });
 
+  const viewport = await readCompactWindowSize();
   const browser = await chromium.launch();
   const page = await browser.newPage({ viewport });
 

@@ -26,8 +26,8 @@ import { clearPersistedSession, loadPersistedSession, savePersistedSession } fro
 import { createActiveTimerSegment, formatDurationLabel, getTimerRemainingSeconds } from "./lib/timer";
 import {
   closeCurrentTauriWindow,
+  compactCurrentTauriWindow,
   expandCurrentTauriWindow,
-  hideCurrentTauriWindow,
   isTauriRuntime,
   listenForTauriCloseRequest,
   setCurrentTauriWindowAlwaysOnTop,
@@ -616,7 +616,7 @@ const App = () => {
     setTauriCloseRequest(null);
   };
 
-  const saveCurrentSessionForWindowHide = () => {
+  const saveCurrentSessionForWindowModeChange = () => {
     if (hasUnsavedSession && intentSets.length > 0) {
       savePersistedSession({
         phase: phase as Exclude<AppPhase, "setup">,
@@ -629,13 +629,13 @@ const App = () => {
     }
   };
 
-  const hideTauriWindowWithCurrentSession = async () => {
+  const compactTauriWindowWithCurrentSession = async () => {
     setTauriCloseRequest(null);
-    saveCurrentSessionForWindowHide();
+    saveCurrentSessionForWindowModeChange();
 
-    const didClose = await hideCurrentTauriWindow();
+    const didCompact = await compactCurrentTauriWindow();
 
-    if (!didClose) {
+    if (!didCompact) {
       window.close();
     }
   };
@@ -656,7 +656,7 @@ const App = () => {
     setTauriCloseRequest(null);
 
     if (closeRequest?.type === "active-session") {
-      await hideTauriWindowWithCurrentSession();
+      await compactTauriWindowWithCurrentSession();
       return;
     }
 
@@ -860,13 +860,13 @@ const App = () => {
           description={
             tauriCloseRequest.type === "setup-draft"
               ? "当前填写内容还没有进入仪式台，关闭后不会保存这份草稿。"
-              : "放弃并退出会结束本轮且不写入历史；保留并收起会继续计时，并在本段结束时发送系统通知。"
+              : "放弃并退出会结束本轮且不写入历史；保留并收起会切回小窗继续计时，并在本段结束时发送系统通知。"
           }
           eyebrow="Desktop"
           title={tauriCloseRequest.type === "setup-draft" ? "确定要关闭窗口吗？" : "要关闭当前轮次吗？"}
           variant={tauriCloseRequest.type === "setup-draft" ? "danger" : "default"}
           onCancel={tauriCloseRequest.type === "setup-draft" ? cancelTauriCloseRequest : abandonAndCloseTauriSession}
-          onConfirm={tauriCloseRequest.type === "setup-draft" ? confirmTauriCloseRequest : hideTauriWindowWithCurrentSession}
+          onConfirm={tauriCloseRequest.type === "setup-draft" ? confirmTauriCloseRequest : compactTauriWindowWithCurrentSession}
           onDismiss={cancelTauriCloseRequest}
         />
       ) : null}

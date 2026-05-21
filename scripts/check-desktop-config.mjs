@@ -69,12 +69,30 @@ function assertPermission(capability, permission) {
   );
 }
 
+function readWindowSizeConstant(source, name) {
+  const match = source.match(
+    new RegExp(`export const ${name} = \\{ width: (\\d+), height: (\\d+) \\} as const;`),
+  );
+
+  if (!match) {
+    assert(false, `src/constants.ts exports ${name}`);
+    return null;
+  }
+
+  assert(true, `src/constants.ts exports ${name}`);
+  return {
+    height: Number(match[2]),
+    width: Number(match[1]),
+  };
+}
+
 const packageJson = await readJson("package.json");
 const tauriConfig = await readJson("src-tauri/tauri.conf.json");
 const capability = await readJson("src-tauri/capabilities/default.json");
 const cargoToml = await readText("src-tauri/Cargo.toml");
 const mainRust = await readText("src-tauri/src/main.rs");
 const appTsx = await readText("src/App.tsx");
+const constantsTs = await readText("src/constants.ts");
 const desktopPersistenceSchema = await readText(
   "src/lib/desktopPersistenceSchema.ts",
 );
@@ -126,12 +144,30 @@ assert(
 const mainWindow = tauriConfig.app?.windows?.find(
   (windowConfig) => windowConfig.label === "main",
 );
+const compactWindowSize = readWindowSizeConstant(constantsTs, "COMPACT_WINDOW_SIZE");
+const compactWindowMinSize = readWindowSizeConstant(constantsTs, "COMPACT_WINDOW_MIN_SIZE");
+const fullWindowSize = readWindowSizeConstant(constantsTs, "FULL_WINDOW_SIZE");
+
 assert(Boolean(mainWindow), "Tauri main window is configured");
 assert(mainWindow?.title === "急急如律令", "Tauri main window title is 急急如律令");
-assert(mainWindow?.width === 390, "Tauri main window width is 390");
-assert(mainWindow?.height === 620, "Tauri main window height is 620");
-assert(mainWindow?.minWidth === 360, "Tauri main window minWidth is 360");
-assert(mainWindow?.minHeight === 520, "Tauri main window minHeight is 520");
+assert(mainWindow?.width === compactWindowSize?.width, "Tauri main window width matches COMPACT_WINDOW_SIZE");
+assert(mainWindow?.height === compactWindowSize?.height, "Tauri main window height matches COMPACT_WINDOW_SIZE");
+assert(mainWindow?.minWidth === compactWindowMinSize?.width, "Tauri main window minWidth matches COMPACT_WINDOW_MIN_SIZE");
+assert(mainWindow?.minHeight === compactWindowMinSize?.height, "Tauri main window minHeight matches COMPACT_WINDOW_MIN_SIZE");
+assertTextIncludes(
+  tauriWindow,
+  `FULL_WINDOW_SIZE`,
+  "Tauri window adapter uses FULL_WINDOW_SIZE",
+);
+assertTextIncludes(
+  tauriWindow,
+  `COMPACT_WINDOW_SIZE`,
+  "Tauri window adapter uses COMPACT_WINDOW_SIZE",
+);
+assert(
+  fullWindowSize?.width === 960 && fullWindowSize.height === 760,
+  "FULL_WINDOW_SIZE is 960 x 760",
+);
 
 assert(
   capability.windows?.includes("main"),

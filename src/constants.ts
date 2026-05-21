@@ -10,6 +10,10 @@ export const MAX_INTENT_SETS = 3;
 export const MAX_PREVENTION_INTENTS = 3;
 export const FOCUS_MINUTES_PER_INCENSE = 25;
 
+export const COMPACT_WINDOW_SIZE = { width: 390, height: 620 } as const;
+export const COMPACT_WINDOW_MIN_SIZE = { width: 360, height: 520 } as const;
+export const FULL_WINDOW_SIZE = { width: 960, height: 760 } as const;
+
 export const DEFAULT_TIMER_MODE: TimerMode = "dev";
 
 export const TIMER_MODE_CONFIG: Record<
