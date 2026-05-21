@@ -279,6 +279,11 @@ assertTextIncludes(
   "Tauri window adapter exposes full-window expansion control",
 );
 assertTextIncludes(
+  tauriWindow,
+  "compactCurrentTauriWindow",
+  "Tauri window adapter exposes compact-window control",
+);
+assertTextIncludes(
   appTsx,
   "consumeDesktopPersistenceInitializationResult",
   "App consumes desktop persistence initialization status",
