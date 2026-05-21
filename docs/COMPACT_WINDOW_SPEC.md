@@ -1,8 +1,8 @@
 # 小窗规格
 
-当前小窗目标是为未来 macOS 菜单栏弹窗准备窄窗口体验。现阶段已经提供 Tauri 外壳和菜单栏入口；主要验收仍以 Web 窄窗口和 Tauri 固定小窗尺寸为准。
+当前小窗目标是为未来 macOS 菜单栏弹窗准备窄窗口体验。现阶段已经提供 Tauri 外壳、菜单栏入口和 `390px × 620px` 固定小窗基线；Web 窄窗口仍作为快速调试和自动检查入口。
 
-Tauri 桌面窗口的完整手动验收路径见 `docs/TAURI_DESKTOP_CHECKLIST.md`。
+Tauri 桌面窗口的完整手动验收路径见 `docs/TAURI_DESKTOP_CHECKLIST.md`。桌面行为组合回归顺序见 `docs/DESKTOP_BEHAVIOR_REGRESSION.md`。
 
 ## 目标尺寸
 
@@ -95,7 +95,7 @@ npm run check:compact
 
 ## 当前不做
 
-- 不做真实 macOS 菜单栏弹窗。
+- 不做真正贴附菜单栏图标的 popover 窗口；当前是由菜单栏入口显示或隐藏普通 Tauri 小窗。
 - 不默认隐藏 Dock；Tauri 桌面版提供用户可选的“在 Dock 中显示”设置。
 - 不默认置顶窗口；Tauri 桌面版提供用户可选的“窗口置顶”设置。
 - 不接真实 Q 版香炉素材。
