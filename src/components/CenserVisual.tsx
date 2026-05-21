@@ -4,10 +4,25 @@ import type { IntentSetStatus } from "../types";
 import IncenseVisual from "./IncenseVisual";
 
 type CenserVisualProps = {
+  /**
+   * 1-based index of the active incense stick. Keep business state derivation in callers.
+   */
   currentIncenseIndex: number;
+  /**
+   * Total incense sticks selected for this intent set. Valid product range is 1-3.
+   */
   incenseCount: number;
+  /**
+   * Progress for the current stick only, normalized to 0-1 before rendering.
+   */
   incenseProgress: number;
+  /**
+   * Visual asset family. Stage and compact may use different future artwork.
+   */
   size: "stage" | "compact";
+  /**
+   * Minimal intent status needed to derive visual state. Do not pass full session data.
+   */
   status: IntentSetStatus;
 };
 

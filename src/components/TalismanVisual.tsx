@@ -3,12 +3,33 @@ import { getTalismanVisualState } from "../lib/visualState";
 import type { IntentSetStatus } from "../types";
 
 type TalismanVisualProps = {
+  /**
+   * Prevents interaction and maps to a disabled visual state.
+   */
   disabled?: boolean;
+  /**
+   * Renders as a button only when true. Non-interactive talismans stay presentational.
+   */
   interactive?: boolean;
+  /**
+   * Minimal intent status needed for visual state. Do not pass full intent/session data.
+   */
   intentStatus?: IntentSetStatus;
+  /**
+   * Short UI label outside the user-authored intent text.
+   */
   label: string;
+  /**
+   * Optional click handler for the situation talisman entry point.
+   */
   onClick?: () => void;
+  /**
+   * User-authored text rendered over the talisman template layer.
+   */
   text: string;
+  /**
+   * Selects the future talisman template family.
+   */
   variant: "situation" | "prevention";
 };
 

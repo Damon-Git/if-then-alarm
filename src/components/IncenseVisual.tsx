@@ -4,10 +4,25 @@ import { getIncenseVisualState, type IncenseVisualState } from "../lib/visualSta
 import type { IntentSetStatus } from "../types";
 
 type IncenseVisualProps = {
+  /**
+   * 1-based index of the stick currently controlled by timer state.
+   */
   currentIncenseIndex: number;
+  /**
+   * Total sticks to render. This mirrors the user's selected incense count.
+   */
   incenseCount: number;
+  /**
+   * Current stick progress from 0-1. This component clamps but does not compute time.
+   */
   progress: number;
+  /**
+   * Visual asset family. Stage and compact may use different future artwork.
+   */
   size: "stage" | "compact";
+  /**
+   * Minimal status used to map each stick to pending, burning, burned, or resting.
+   */
   status: IntentSetStatus;
 };
 

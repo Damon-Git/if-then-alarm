@@ -2,7 +2,7 @@
 
 当前阶段只使用占位元素，不制作复杂视觉和动画。后续视觉迭代必须围绕真实素材替换，而不是用 CSS 或 SVG 临时重画复杂对象。
 
-素材目录、命名、插槽和接入边界见 `docs/ASSET_PIPELINE.md`。
+素材目录、命名、插槽和接入边界见 `docs/ASSET_PIPELINE.md`。视觉组件 props 契约见 `docs/VISUAL_COMPONENT_CONTRACTS.md`。
 
 桌面小窗和 Tauri 外壳迁移见 `docs/TAURI_MIGRATION_PLAN.md`。视觉组件应继续保持平台无关，避免直接依赖 Tauri API。
 

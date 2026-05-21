@@ -1,0 +1,172 @@
+# 视觉组件接口契约
+
+本文冻结当前视觉组件的输入边界，供未来接入真实符箓模板、主祭台香炉、小窗 Q 版香炉和线香素材时遵守。
+
+当前不接真实素材，不做动画，不改变业务状态机。
+
+## 总原则
+
+- 视觉组件只接收渲染所需的最小语义字段。
+- 业务状态先经过 `src/lib/visualState.ts` 映射，再进入视觉组件。
+- 素材槽位通过 `src/lib/visualAssets.ts` 生成，组件内部通过 `data-visual-slot` 暴露。
+- 视觉组件不能直接读取完整 session、history、settings、timer interval、localStorage、Tauri API 或桌面平台 API。
+- 接入真实图片、动画或图层时，优先改视觉组件内部结构和 CSS，不改计时、复盘、历史、导入导出、桌面持久化等业务逻辑。
+
+## 共享输入
+
+### size
+
+`size: "stage" | "compact"`
+
+- `stage` 用于主祭台。
+- `compact` 用于 macOS 小窗香炉舞台。
+- 两种尺寸可以接入不同素材，但业务含义必须一致。
+
+### status
+
+`status: IntentSetStatus`
+
+这是视觉组件允许接收的最小业务状态。组件内部只能用它推导视觉状态，不应依赖完整 `IntentSet` 或 `PersistedSession`。
+
+## CenserVisual
+
+文件：`src/components/CenserVisual.tsx`
+
+当前 props：
+
+```ts
+type CenserVisualProps = {
+  currentIncenseIndex: number;
+  incenseCount: number;
+  incenseProgress: number;
+  size: "stage" | "compact";
+  status: IntentSetStatus;
+};
+```
+
+### 字段含义
+
+- `currentIncenseIndex`：当前第几炷香，1-based，由业务状态或恢复逻辑在外部计算。
+- `incenseCount`：本套执行意图总香数，产品范围是 1-3。
+- `incenseProgress`：当前炷香进度，范围 0-1。
+- `size`：选择主祭台或小窗素材族。
+- `status`：最小业务状态，用于映射香炉视觉状态。
+
+### 预留图层
+
+- `data-censer-layer="body"`：香炉主体。
+- `data-censer-layer="lid"`：香炉盖。
+- `data-censer-layer="mouth"`：炉口。
+- `data-censer-layer="ash"`：香灰层。
+- `data-censer-layer="feet"`：底足。
+
+### 未来素材接入规则
+
+- 主祭台香炉和小窗 Q 版香炉可以使用两套素材。
+- 香炉开盖动画未来只能移动已有盖子素材，不重新画一个临时盖子。
+- 香炉组件可以组合 `IncenseVisual`，但不负责计算倒计时。
+- 不在 `CenserVisual` 内判断“是否所有套组完成”“是否进入复盘”等业务流程。
+
+## IncenseVisual
+
+文件：`src/components/IncenseVisual.tsx`
+
+当前 props：
+
+```ts
+type IncenseVisualProps = {
+  currentIncenseIndex: number;
+  incenseCount: number;
+  progress: number;
+  size: "stage" | "compact";
+  status: IntentSetStatus;
+};
+```
+
+### 字段含义
+
+- `currentIncenseIndex`：当前由计时器驱动的线香编号，1-based。
+- `incenseCount`：需要渲染的线香数量，必须与用户选择的香数一致。
+- `progress`：当前线香进度，范围 0-1；组件可以 clamp，但不能计算时间。
+- `size`：选择主祭台或小窗素材族。
+- `status`：用于把每根线香映射为 `pending`、`burning`、`burned` 或 `resting`。
+
+### 预留图层
+
+- `data-incense-layer="stick"`：香体。
+- `data-incense-layer="ash"`：香灰。
+- `data-incense-layer="ember"`：火星。
+- `data-incense-layer="smoke"`：烟雾。
+
+### 未来素材接入规则
+
+- 用户选择 1 / 2 / 3 炷香时，必须分别渲染 1 / 2 / 3 根线香。
+- 进入计时后，从左侧第一根开始显示当前进度；续香后依次推进。
+- 火星、烟雾和香灰可以由视觉状态和 `progress` 驱动，但不能改变计时结果。
+- 不在 `IncenseVisual` 内启动、暂停或清理 timer。
+
+## TalismanVisual
+
+文件：`src/components/TalismanVisual.tsx`
+
+当前 props：
+
+```ts
+type TalismanVisualProps = {
+  disabled?: boolean;
+  interactive?: boolean;
+  intentStatus?: IntentSetStatus;
+  label: string;
+  onClick?: () => void;
+  text: string;
+  variant: "situation" | "prevention";
+};
+```
+
+### 字段含义
+
+- `variant`：选择情境性符箓或预防性符箓模板。
+- `text`：用户输入的执行意图文本，作为图片模板上的覆盖文本层。
+- `label`：短标签，不替代用户意图文本。
+- `interactive`：为 `true` 时渲染为按钮；当前主要用于情境性符箓启动入口。
+- `disabled`：禁用交互并映射为禁用视觉状态。
+- `intentStatus`：用于映射完成状态。
+- `onClick`：只负责把点击交给外层流程，例如打开开始确认弹窗。
+
+### 预留图层
+
+- `data-talisman-layer="template"`：符箓背景模板层。
+- `data-talisman-layer="text"`：文字覆盖层。
+- `data-talisman-layer="state"`：状态层，未来可用于燃烧、消失或禁用效果。
+
+### 未来素材接入规则
+
+- 真实符箓必须使用上传好的图片模板作为背景。
+- 不允许用 CSS 或 SVG 随便重新画一个假的符箓。
+- 用户文本必须保持为覆盖在模板上的文本层。
+- 符箓燃烧或消失动画只能改变视觉状态，不应直接推进计时状态。
+
+## 不允许的耦合
+
+视觉组件内不要引入或调用：
+
+- `src/lib/storage.ts`
+- `src/lib/sessionStorage.ts`
+- `src/lib/settingsStorage.ts`
+- `src/lib/timer.ts`
+- `src/lib/desktopPersistenceAdapter.ts`
+- `src/lib/notificationAdapter.ts`
+- Tauri API
+- `localStorage`
+- `window.setInterval`
+
+这些逻辑属于应用状态、平台适配或副作用层，不属于视觉组件。
+
+## 修改接口的规则
+
+如果未来确实需要新增视觉 props，必须满足：
+
+- 字段是视觉语义，不是完整业务对象。
+- 字段能同时解释主祭台和小窗场景，或明确只属于某个 `size`。
+- 字段不会让组件承担计时、历史、复盘、持久化或桌面平台职责。
+- 同步更新 `docs/FUTURE_VISUAL_SPEC.md` 和本文件。
