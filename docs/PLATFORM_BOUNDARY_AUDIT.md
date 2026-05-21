@@ -16,6 +16,7 @@
 | 历史、session、设置持久化 | `src/lib/persistenceAdapter.ts` | `window.localStorage` | 已封装 | 迁移计划见 `docs/PERSISTENCE_MIGRATION_PLAN.md`；JSON 规格见 `docs/DESKTOP_PERSISTENCE_JSON_SPEC.md` |
 | 历史删除/清空确认 | `src/components/ConfirmModal.tsx` | React 应用内弹窗 | 已封装 | 继续复用应用内弹窗 |
 | Tauri 窗口关闭拦截 | `src/lib/tauriWindow.ts` | `@tauri-apps/api/window` | 已封装 | 桌面端监听关闭事件，业务层只接收确认请求 |
+| Tauri 窗口置顶 | `src/lib/tauriWindow.ts` | `@tauri-apps/api/window` | 已封装 | 桌面端按用户设置调用 `setAlwaysOnTop` |
 | 桌面计时通知 | `src/lib/notificationAdapter.ts` | `@tauri-apps/plugin-notification`、`window.setTimeout` | 已封装 | 通过 adapter 延迟发送和取消当前计时段通知 |
 | 菜单栏入口 | `src-tauri/src/main.rs` | Tauri `TrayIconBuilder` | 已封装 | Rust 侧创建菜单栏入口并切换主窗口显示/隐藏 |
 | 历史导出 | `src/lib/fileTransferAdapter.ts` | Web：`Blob`、临时下载链接；Tauri：系统保存面板和 `write_user_text_file` command | 已封装 | 浏览器保留 Web 下载；桌面端使用原生保存面板 |
@@ -61,6 +62,6 @@
 
 1. 按 `docs/DESKTOP_PERSISTENCE_JSON_SPEC.md` 实现 app data JSON 持久化 adapter 和旧 `localStorage` 首次迁移。
 2. 继续保留 Web 版 `beforeunload`，桌面端关闭拦截已先接入。
-3. 后续继续接置顶、Dock 隐藏和更完整的小窗隐藏策略。
+3. 后续继续接 Dock 隐藏和更完整的小窗隐藏策略。
 
 当前不建议继续抽象 `Date`、`crypto.randomUUID` 或 UI 刷新 interval；这些不是迁移阻塞点。

@@ -1,4 +1,3 @@
-import { DEFAULT_TIMER_MODE } from "../constants";
 import {
   HISTORY_STORAGE_KEY,
   SESSION_STORAGE_KEY,
@@ -6,7 +5,7 @@ import {
   type PersistenceSnapshot,
 } from "./persistenceAdapter";
 import { normalizePersistedSession } from "./sessionStorage";
-import { normalizeAppSettings } from "./settingsStorage";
+import { createDefaultAppSettings, normalizeAppSettings } from "./settingsStorage";
 import { isHistoryRecord } from "./storage";
 import type { AppSettings, HistoryRecord, PersistedSession } from "../types";
 
@@ -86,9 +85,7 @@ export const createDefaultDesktopPersistenceJson = ({
   history: [],
   migratedAt,
   migrationSource,
-  settings: {
-    timerMode: DEFAULT_TIMER_MODE,
-  },
+  settings: createDefaultAppSettings(),
   updatedAt: now,
   version: DESKTOP_PERSISTENCE_VERSION,
 });

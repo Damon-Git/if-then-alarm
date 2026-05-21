@@ -24,7 +24,13 @@ import {
 import { cancelTimerNotification, scheduleTimerNotification } from "./lib/notificationAdapter";
 import { clearPersistedSession, loadPersistedSession, savePersistedSession } from "./lib/sessionStorage";
 import { createActiveTimerSegment, formatDurationLabel, getTimerRemainingSeconds } from "./lib/timer";
-import { closeCurrentTauriWindow, hideCurrentTauriWindow, listenForTauriCloseRequest } from "./lib/tauriWindow";
+import {
+  closeCurrentTauriWindow,
+  hideCurrentTauriWindow,
+  isTauriRuntime,
+  listenForTauriCloseRequest,
+  setCurrentTauriWindowAlwaysOnTop,
+} from "./lib/tauriWindow";
 import { loadAppSettings, saveAppSettings } from "./lib/settingsStorage";
 import {
   canChangeTimerSettings,
@@ -183,6 +189,12 @@ const App = () => {
       isCloseConfirmOpen: Boolean(tauriCloseRequest),
     };
   }, [hasUnsavedSession, hasUnsavedSetupDraft, tauriCloseRequest]);
+
+  useEffect(() => {
+    setCurrentTauriWindowAlwaysOnTop(settings.isAlwaysOnTop).catch(() => {
+      showToast("error", "窗口置顶设置未能生效。");
+    });
+  }, [settings.isAlwaysOnTop]);
 
   const showToast = (type: ToastMessage["type"], message: string) => {
     const id = createId();
@@ -495,7 +507,7 @@ const App = () => {
     setActiveModal(resolvedSession.activeModal);
     setPendingStartIntentId(null);
     setIsAbandonConfirmOpen(false);
-    setSettings(saveAppSettings({ timerMode: resolvedSession.timerMode }));
+    setSettings((currentSettings) => saveAppSettings({ ...currentSettings, timerMode: resolvedSession.timerMode }));
     setActiveUtilityPanel(null);
     setPhase(resolvedSession.phase);
     setPendingSession(null);
@@ -652,7 +664,11 @@ const App = () => {
       return;
     }
 
-    setSettings(saveAppSettings({ timerMode }));
+    setSettings((currentSettings) => saveAppSettings({ ...currentSettings, timerMode }));
+  };
+
+  const updateAlwaysOnTop = (isAlwaysOnTop: boolean) => {
+    setSettings((currentSettings) => saveAppSettings({ ...currentSettings, isAlwaysOnTop }));
   };
 
   const updateSetupDraftState = useCallback((nextHasUnsavedDraft: boolean) => {
@@ -729,9 +745,12 @@ const App = () => {
         {activeUtilityPanel === "settings" ? (
           <SettingsPanel
             disabled={isSettingsDisabled}
+            isAlwaysOnTop={settings.isAlwaysOnTop}
+            onAlwaysOnTopChange={updateAlwaysOnTop}
             timerMode={settings.timerMode}
             onDevSessionFixtureSaved={(message) => showToast("info", message)}
             onTimerModeChange={updateTimerMode}
+            supportsWindowAlwaysOnTop={isTauriRuntime()}
           />
         ) : null}
 

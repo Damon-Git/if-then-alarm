@@ -60,6 +60,7 @@ describe("desktop persistence schema", () => {
       migratedAt: undefined,
       migrationSource: "empty",
       settings: {
+        isAlwaysOnTop: false,
         timerMode: DEFAULT_TIMER_MODE,
       },
       updatedAt: NOW,
@@ -90,7 +91,10 @@ describe("desktop persistence schema", () => {
     expect(manifest.history.map((record) => record.id)).toEqual(["newer", "older"]);
     expect(manifest.currentSession?.activeTimerSegment).toBeNull();
     expect(manifest.currentSession?.timerMode).toBe(DEFAULT_TIMER_MODE);
-    expect(manifest.settings.timerMode).toBe("prod");
+    expect(manifest.settings).toEqual({
+      isAlwaysOnTop: false,
+      timerMode: "prod",
+    });
     expect(manifest.migrationSource).toBe("localStorage");
     expect(manifest.migratedAt).toBe(NOW);
   });
@@ -118,7 +122,10 @@ describe("desktop persistence schema", () => {
     expect(normalized.updatedAt).toBe("2026-05-19T07:00:00.000Z");
     expect(normalized.history).toEqual([validRecord]);
     expect(normalized.currentSession).toBeNull();
-    expect(normalized.settings.timerMode).toBe(DEFAULT_TIMER_MODE);
+    expect(normalized.settings).toEqual({
+      isAlwaysOnTop: false,
+      timerMode: DEFAULT_TIMER_MODE,
+    });
     expect(normalized.migrationSource).toBeUndefined();
   });
 
@@ -129,6 +136,7 @@ describe("desktop persistence schema", () => {
       currentSession: createPersistedSession(),
       history: [record],
       settings: {
+        isAlwaysOnTop: true,
         timerMode: "prod" as const,
       },
     };
@@ -137,7 +145,10 @@ describe("desktop persistence schema", () => {
 
     expect(JSON.parse(snapshot[HISTORY_STORAGE_KEY] ?? "")).toEqual([record]);
     expect(JSON.parse(snapshot[SESSION_STORAGE_KEY] ?? "")).toEqual(manifest.currentSession);
-    expect(JSON.parse(snapshot[SETTINGS_STORAGE_KEY] ?? "")).toEqual({ timerMode: "prod" });
+    expect(JSON.parse(snapshot[SETTINGS_STORAGE_KEY] ?? "")).toEqual({
+      isAlwaysOnTop: true,
+      timerMode: "prod",
+    });
   });
 
   it("omits the current session snapshot when no session is active", () => {
@@ -161,7 +172,7 @@ describe("desktop persistence schema", () => {
       currentManifest,
       {
         [HISTORY_STORAGE_KEY]: JSON.stringify([nextRecord]),
-        [SETTINGS_STORAGE_KEY]: JSON.stringify({ timerMode: "prod" }),
+        [SETTINGS_STORAGE_KEY]: JSON.stringify({ isAlwaysOnTop: true, timerMode: "prod" }),
       },
       { now: NOW },
     );
@@ -172,6 +183,9 @@ describe("desktop persistence schema", () => {
     expect(nextManifest.migrationSource).toBe("localStorage");
     expect(nextManifest.history).toEqual([nextRecord]);
     expect(nextManifest.currentSession).toBeNull();
-    expect(nextManifest.settings.timerMode).toBe("prod");
+    expect(nextManifest.settings).toEqual({
+      isAlwaysOnTop: true,
+      timerMode: "prod",
+    });
   });
 });

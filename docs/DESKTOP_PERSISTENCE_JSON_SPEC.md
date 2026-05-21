@@ -81,6 +81,7 @@ const defaultDesktopPersistenceJson: DesktopPersistenceJson = {
   history: [],
   currentSession: null,
   settings: {
+    isAlwaysOnTop: false,
     timerMode: DEFAULT_TIMER_MODE,
   },
 };
@@ -167,7 +168,8 @@ persistence.v1.json.tmp -> persistence.v1.json
 
 设置：
 
-- 无效则回退到 `{ timerMode: DEFAULT_TIMER_MODE }`。
+- 无效则回退到 `{ timerMode: DEFAULT_TIMER_MODE, isAlwaysOnTop: false }`。
+- 旧设置缺失 `isAlwaysOnTop` 时补为 `false`。
 - 不把开发 fixture 状态写入设置。
 
 ## localStorage 首次迁移

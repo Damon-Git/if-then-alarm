@@ -38,3 +38,13 @@ export const hideCurrentTauriWindow = async () => {
   await getCurrentWindow().hide();
   return true;
 };
+
+export const setCurrentTauriWindowAlwaysOnTop = async (isAlwaysOnTop: boolean) => {
+  if (!isTauriRuntime()) {
+    return false;
+  }
+
+  const { getCurrentWindow } = await import("@tauri-apps/api/window");
+  await getCurrentWindow().setAlwaysOnTop(isAlwaysOnTop);
+  return true;
+};

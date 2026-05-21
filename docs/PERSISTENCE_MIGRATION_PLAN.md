@@ -47,7 +47,7 @@ type PersistenceAdapter = {
 | --- | --- | --- |
 | 历史记录 | `jiji-rululing.history` | `HistoryRecord[]`，数组本身没有外层 version |
 | 当前轮次 | `jiji-rululing.current-session` | `PersistedSession`，内部 `version: 1` |
-| 设置 | `jiji-rululing.settings` | `AppSettings`，当前只有 `timerMode` |
+| 设置 | `jiji-rululing.settings` | `AppSettings`，当前包含 `timerMode` 和 `isAlwaysOnTop` |
 
 历史导入导出 payload 另有 `HistoryExportPayload.version = 1`，这是备份和跨版本迁移路径，不等同于内部存储 schema。
 
@@ -165,10 +165,11 @@ type PersistedHistory = {
 
 ## 设置迁移
 
-当前 `jiji-rululing.settings` 只有：
+当前 `jiji-rululing.settings` 包含：
 
 ```ts
 type AppSettings = {
+  isAlwaysOnTop: boolean;
   timerMode: "dev" | "prod";
 };
 ```
@@ -176,8 +177,9 @@ type AppSettings = {
 迁移时应：
 
 - 无有效设置时回退到 `DEFAULT_TIMER_MODE`。
+- 旧设置缺失 `isAlwaysOnTop` 时补为 `false`。
 - 不把开发 fixture 开关写进正式设置。
-- 后续如果加入声音、通知、窗口行为等设置，需要给设置加 version 或外层 persisted settings。
+- 后续如果加入声音、通知等更多设置，需要评估给设置加 version 或外层 persisted settings。
 
 ## 手动验收清单
 
@@ -206,7 +208,6 @@ cat ~/Library/Application\ Support/com.damon.jijirululing/persistence.v1.json
 
 - 不引入 Tauri Store 插件。
 - 不引入 SQLite。
-- 不改 `HistoryRecord`、`PersistedSession`、`AppSettings` 类型。
 - 不清理旧 `localStorage` 数据。
 - 不提供用户可见的“重新从旧 Web 数据导入”按钮。
 - 不提供完整 manifest 导入导出。

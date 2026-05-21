@@ -5,14 +5,25 @@ import DevSessionFixturesPanel from "./DevSessionFixturesPanel";
 
 type SettingsPanelProps = {
   disabled: boolean;
+  isAlwaysOnTop: boolean;
+  onAlwaysOnTopChange: (isAlwaysOnTop: boolean) => void;
   onDevSessionFixtureSaved?: (message: string) => void;
   timerMode: TimerMode;
   onTimerModeChange: (timerMode: TimerMode) => void;
+  supportsWindowAlwaysOnTop: boolean;
 };
 
 const timerModes: TimerMode[] = ["dev", "prod"];
 
-const SettingsPanel = ({ disabled, onDevSessionFixtureSaved, timerMode, onTimerModeChange }: SettingsPanelProps) => {
+const SettingsPanel = ({
+  disabled,
+  isAlwaysOnTop,
+  onAlwaysOnTopChange,
+  onDevSessionFixtureSaved,
+  onTimerModeChange,
+  supportsWindowAlwaysOnTop,
+  timerMode,
+}: SettingsPanelProps) => {
   const currentConfig = TIMER_MODE_CONFIG[timerMode];
 
   return (
@@ -44,6 +55,20 @@ const SettingsPanel = ({ disabled, onDevSessionFixtureSaved, timerMode, onTimerM
         {formatDurationLabel(currentConfig.breakSeconds)}
         {disabled ? "。当前轮次进行中，完成或放弃后可切换。" : ""}
       </p>
+
+      {supportsWindowAlwaysOnTop ? (
+        <label className="settings-toggle">
+          <span>
+            <strong>窗口置顶</strong>
+            <small>开启后，小窗会保持在其他窗口上方。</small>
+          </span>
+          <input
+            checked={isAlwaysOnTop}
+            onChange={(event) => onAlwaysOnTopChange(event.target.checked)}
+            type="checkbox"
+          />
+        </label>
+      ) : null}
 
       {import.meta.env.DEV && onDevSessionFixtureSaved ? (
         <DevSessionFixturesPanel disabled={disabled} onFixtureSaved={onDevSessionFixtureSaved} />

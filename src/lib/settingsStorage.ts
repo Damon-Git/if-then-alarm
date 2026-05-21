@@ -4,19 +4,21 @@ import type { AppSettings, TimerMode } from "../types";
 
 export const isTimerMode = (value: unknown): value is TimerMode => value === "dev" || value === "prod";
 
+export const createDefaultAppSettings = (): AppSettings => ({
+  isAlwaysOnTop: false,
+  timerMode: DEFAULT_TIMER_MODE,
+});
+
 export const normalizeAppSettings = (value: unknown): AppSettings => {
   if (!value || typeof value !== "object") {
-    return { timerMode: DEFAULT_TIMER_MODE };
+    return createDefaultAppSettings();
   }
 
   const settings = value as Partial<AppSettings>;
 
-  if (!isTimerMode(settings.timerMode)) {
-    return { timerMode: DEFAULT_TIMER_MODE };
-  }
-
   return {
-    timerMode: settings.timerMode,
+    isAlwaysOnTop: settings.isAlwaysOnTop === true,
+    timerMode: isTimerMode(settings.timerMode) ? settings.timerMode : DEFAULT_TIMER_MODE,
   };
 };
 
@@ -25,12 +27,12 @@ export const loadAppSettings = (): AppSettings => {
     const rawValue = persistenceAdapter.getItem(SETTINGS_STORAGE_KEY);
 
     if (!rawValue) {
-      return { timerMode: DEFAULT_TIMER_MODE };
+      return createDefaultAppSettings();
     }
 
     return normalizeAppSettings(JSON.parse(rawValue));
   } catch {
-    return { timerMode: DEFAULT_TIMER_MODE };
+    return createDefaultAppSettings();
   }
 };
 

@@ -14,6 +14,7 @@ export type AppPhase = "setup" | "ritual" | "review";
 export type TimerMode = "dev" | "prod";
 
 export type AppSettings = {
+  isAlwaysOnTop: boolean;
   timerMode: TimerMode;
 };
 
