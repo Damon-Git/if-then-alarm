@@ -53,6 +53,33 @@ const assertTransparentBackground = async (locator, label) => {
   assert(backgroundColor === "rgba(0, 0, 0, 0)", `${label} should not draw a background: ${backgroundColor}`);
 };
 
+const compactCenserAssetLayers = ["lid", "mouth", "ash", "body", "feet"];
+
+const assertCompactCenserUsesAssetLayers = async (page) => {
+  for (const layer of compactCenserAssetLayers) {
+    const layerLocator = page.locator(`.compact-censer .censer-visual__${layer}.visual-layer--with-asset`);
+    const imageLocator = layerLocator.locator("img.visual-layer__asset");
+
+    assert(
+      (await layerLocator.count()) === 3,
+      `compact ${layer} layer should use image assets for all three censers`,
+    );
+    assert(
+      (await imageLocator.count()) === 3,
+      `compact ${layer} layer should render three asset images`,
+    );
+
+    const imageSources = await imageLocator.evaluateAll((images) =>
+      images.map((image) => image.getAttribute("src") ?? ""),
+    );
+
+    assert(
+      imageSources.every((src) => src.includes(`${layer}`)),
+      `compact ${layer} asset image sources should reference ${layer}: ${JSON.stringify(imageSources)}`,
+    );
+  }
+};
+
 const run = async () => {
   await fetch(targetUrl, { method: "HEAD" }).catch(() => {
     throw new Error(`Cannot reach ${targetUrl}. Start the dev server with npm run dev first.`);
@@ -105,6 +132,7 @@ const run = async () => {
     await assertHidden(page.getByRole("heading", { name: "仪式台" }), "ritual title in compact ritual scene");
     await assertHidden(page.locator(".stage-grid--full"), "full ritual stage in compact window mode");
     assert((await page.locator(".compact-censer").count()) === 3, "compact stage should show three censer slots");
+    await assertCompactCenserUsesAssetLayers(page);
     assert((await page.locator(".compact-censer p:visible").count()) === 0, "compact ritual scene should hide intent summaries");
     assert((await page.locator(".compact-censer__status:visible").count()) === 0, "compact ritual scene should hide status labels");
     assert((await page.locator(".compact-censer__hint:visible").count()) === 0, "compact ritual scene should hide interaction hints");

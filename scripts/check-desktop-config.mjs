@@ -103,6 +103,7 @@ const fileTransferAdapter = await readText("src/lib/fileTransferAdapter.ts");
 const notificationAdapter = await readText("src/lib/notificationAdapter.ts");
 const soundReminder = await readText("src/lib/soundReminder.ts");
 const tauriWindow = await readText("src/lib/tauriWindow.ts");
+const visualAssetManifest = await readText("src/lib/visualAssetManifest.ts");
 
 assertPackageScript(packageJson, "dev:tauri-frontend", "node scripts/start-tauri-frontend.mjs");
 assertPackageScript(packageJson, "check:compact", "node scripts/check-compact-window.mjs");
@@ -365,6 +366,24 @@ assertTextIncludes(
   "setTauriDockVisibility",
   "App applies Dock visibility setting",
 );
+[
+  "compactCenserAshUrl",
+  "compactCenserBodyUrl",
+  "compactCenserFeetUrl",
+  "compactCenserLidUrl",
+  "compactCenserMouthUrl",
+  '"censer/compact/ash"',
+  '"censer/compact/body"',
+  '"censer/compact/feet"',
+  '"censer/compact/lid"',
+  '"censer/compact/mouth"',
+].forEach((manifestToken) =>
+  assertTextIncludes(
+    visualAssetManifest,
+    manifestToken,
+    `Visual asset manifest includes ${manifestToken}`,
+  ),
+);
 
 await Promise.all(
   [
@@ -392,6 +411,11 @@ await Promise.all(
     "src/assets/visuals/talisman/prevention/README.md",
     "src/assets/visuals/censer/stage/README.md",
     "src/assets/visuals/censer/compact/README.md",
+    "src/assets/visuals/censer/compact/ash.png",
+    "src/assets/visuals/censer/compact/body.png",
+    "src/assets/visuals/censer/compact/feet.png",
+    "src/assets/visuals/censer/compact/lid.png",
+    "src/assets/visuals/censer/compact/mouth.png",
     "src/assets/visuals/incense/stage/README.md",
     "src/assets/visuals/incense/compact/README.md",
   ].map(assertFileExists),
