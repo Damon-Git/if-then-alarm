@@ -28,6 +28,7 @@ import {
   closeCurrentTauriWindow,
   compactCurrentTauriWindow,
   expandCurrentTauriWindow,
+  isCurrentDocumentWindowCompact,
   isTauriRuntime,
   listenForTauriCloseRequest,
   setCurrentTauriWindowAlwaysOnTop,
@@ -35,11 +36,13 @@ import {
 } from "./lib/tauriWindow";
 import { loadAppSettings, saveAppSettings } from "./lib/settingsStorage";
 import {
+  areAllIntentSetsCompleted,
   canChangeTimerSettings,
   getActiveIntentSet,
   hasBlockingRitualAction,
   hasUnsavedRitualSession,
   isTimerRestorable,
+  shouldEnterReviewPhase,
 } from "./lib/sessionGuards";
 import {
   clearHistoryRecords,
@@ -310,7 +313,13 @@ const App = () => {
   }, [activeIntentSet, activeIntentSetKey, activeModal, pendingStartIntentId, isAbandonConfirmOpen, timerRemaining]);
 
   useEffect(() => {
-    if (phase === "ritual" && intentSets.length > 0 && intentSets.every((intentSet) => intentSet.status === "completed")) {
+    if (
+      shouldEnterReviewPhase({
+        intentSets,
+        isCompactWindow: isCurrentDocumentWindowCompact(),
+        phase,
+      })
+    ) {
       setPhase("review");
     }
   }, [intentSets, phase]);
@@ -411,9 +420,17 @@ const App = () => {
   };
 
   const requestFullRitualView = () => {
-    expandCurrentTauriWindow().catch(() => {
-      showToast("error", "完整窗口未能打开。");
-    });
+    const shouldEnterReview = phase === "ritual" && areAllIntentSetsCompleted(intentSets);
+
+    expandCurrentTauriWindow()
+      .catch(() => {
+        showToast("error", "完整窗口未能打开。");
+      })
+      .finally(() => {
+        if (shouldEnterReview) {
+          setPhase("review");
+        }
+      });
   };
 
   const cancelStartIntent = () => {

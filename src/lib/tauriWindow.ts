@@ -23,6 +23,9 @@ const setDocumentWindowMode = (mode: TauriWindowShell["mode"]) => {
   document.documentElement.dataset.windowMode = mode;
 };
 
+export const isCurrentDocumentWindowCompact = () =>
+  typeof document !== "undefined" && document.documentElement.dataset.windowMode === "compact";
+
 const runCompatibleWindowAction = async (action: () => Promise<void>) => {
   try {
     await action();

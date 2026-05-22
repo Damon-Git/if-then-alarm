@@ -1,11 +1,13 @@
 import { describe, expect, it } from "vitest";
 import {
+  areAllIntentSetsCompleted,
   canChangeTimerSettings,
   getActiveIntentSet,
   hasBlockingRitualAction,
   hasUnsavedRitualSession,
   hasUnsavedSetupDraft,
   isTimerRestorable,
+  shouldEnterReviewPhase,
 } from "./sessionGuards";
 import type { IntentSet, IntentSetDraft, PersistedSession } from "../types";
 
@@ -57,6 +59,38 @@ describe("session guards", () => {
     expect(hasUnsavedRitualSession("setup")).toBe(false);
     expect(hasUnsavedRitualSession("ritual")).toBe(true);
     expect(hasUnsavedRitualSession("review")).toBe(true);
+  });
+
+  it("detects when all intent sets are completed", () => {
+    expect(areAllIntentSetsCompleted([])).toBe(false);
+    expect(areAllIntentSetsCompleted([createIntentSet("completed")])).toBe(true);
+    expect(areAllIntentSetsCompleted([createIntentSet("completed"), createIntentSet("idle")])).toBe(false);
+  });
+
+  it("does not auto-enter review from compact window mode", () => {
+    const completedIntentSets = [createIntentSet("completed")];
+
+    expect(
+      shouldEnterReviewPhase({
+        intentSets: completedIntentSets,
+        isCompactWindow: false,
+        phase: "ritual",
+      }),
+    ).toBe(true);
+    expect(
+      shouldEnterReviewPhase({
+        intentSets: completedIntentSets,
+        isCompactWindow: true,
+        phase: "ritual",
+      }),
+    ).toBe(false);
+    expect(
+      shouldEnterReviewPhase({
+        intentSets: completedIntentSets,
+        isCompactWindow: false,
+        phase: "review",
+      }),
+    ).toBe(false);
   });
 
   it("detects whether a persisted timer can be restored directly", () => {

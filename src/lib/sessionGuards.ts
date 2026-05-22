@@ -15,6 +15,19 @@ export const hasUnsavedSetupDraft = (drafts: IntentSetDraft[]) =>
 
 export const hasUnsavedRitualSession = (phase: AppPhase) => phase === "ritual" || phase === "review";
 
+export const areAllIntentSetsCompleted = (intentSets: IntentSet[]) =>
+  intentSets.length > 0 && intentSets.every((intentSet) => intentSet.status === "completed");
+
+export const shouldEnterReviewPhase = ({
+  intentSets,
+  isCompactWindow,
+  phase,
+}: {
+  intentSets: IntentSet[];
+  isCompactWindow: boolean;
+  phase: AppPhase;
+}) => phase === "ritual" && areAllIntentSetsCompleted(intentSets) && !isCompactWindow;
+
 export const isTimerRestorable = (session: PersistedSession) =>
   Boolean(getActiveIntentSet(session.intentSets) && !session.activeModal && session.timerRemaining > 0);
 
