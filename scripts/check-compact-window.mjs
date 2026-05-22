@@ -43,6 +43,16 @@ const assertVisible = async (locator, label) => {
   assert(await locator.isVisible(), `${label} is not visible`);
 };
 
+const assertHidden = async (locator, label) => {
+  assert(!(await locator.isVisible()), `${label} should be hidden`);
+};
+
+const assertTransparentBackground = async (locator, label) => {
+  const backgroundColor = await locator.evaluate((element) => window.getComputedStyle(element).backgroundColor);
+
+  assert(backgroundColor === "rgba(0, 0, 0, 0)", `${label} should not draw a background: ${backgroundColor}`);
+};
+
 const run = async () => {
   await fetch(targetUrl, { method: "HEAD" }).catch(() => {
     throw new Error(`Cannot reach ${targetUrl}. Start the dev server with npm run dev first.`);
@@ -89,21 +99,33 @@ const run = async () => {
     });
 
     await assertVisible(page.locator(".compact-stage"), "compact stage");
-    assert(!(await page.getByRole("heading", { name: "急急如律令" }).isVisible()), "app title should be hidden in compact ritual scene");
-    assert(!(await page.getByRole("button", { name: "历史" }).isVisible()), "history button should be hidden in compact ritual scene");
-    assert(!(await page.getByRole("button", { name: "设置" }).isVisible()), "settings button should be hidden in compact ritual scene");
-    assert(!(await page.getByRole("heading", { name: "仪式台" }).isVisible()), "ritual title should be hidden in compact ritual scene");
-    assert(!(await page.locator(".stage-grid--full").isVisible()), "full ritual stage should be hidden in compact window mode");
+    await assertHidden(page.getByRole("heading", { name: "急急如律令" }), "app title in compact ritual scene");
+    await assertHidden(page.getByRole("button", { name: "历史" }), "history button in compact ritual scene");
+    await assertHidden(page.getByRole("button", { name: "设置" }), "settings button in compact ritual scene");
+    await assertHidden(page.getByRole("heading", { name: "仪式台" }), "ritual title in compact ritual scene");
+    await assertHidden(page.locator(".stage-grid--full"), "full ritual stage in compact window mode");
     assert((await page.locator(".compact-censer").count()) === 3, "compact stage should show three censer slots");
     assert((await page.locator(".compact-censer p:visible").count()) === 0, "compact ritual scene should hide intent summaries");
+    assert((await page.locator(".compact-censer__status:visible").count()) === 0, "compact ritual scene should hide status labels");
+    assert((await page.locator(".compact-censer__hint:visible").count()) === 0, "compact ritual scene should hide interaction hints");
+    assert((await page.locator(".compact-censer strong:visible").count()) === 0, "compact ritual scene should hide timer text");
     const firstCompactCenserLabel = await page.locator(".compact-censer__button").first().getAttribute("aria-label");
     assert(
       firstCompactCenserLabel?.includes("点击展开完整窗口"),
       `compact censer should expand full window instead of starting directly: ${firstCompactCenserLabel}`,
     );
+    await assertTransparentBackground(page.locator("html"), "compact ritual html");
+    await assertTransparentBackground(page.locator("body"), "compact ritual body");
+    await assertTransparentBackground(page.locator("#root"), "compact ritual root");
+    await assertTransparentBackground(page.locator(".app-shell--ritual"), "compact ritual shell");
+    await assertTransparentBackground(page.locator(".app-shell--ritual .app-main"), "compact ritual main");
+    await assertTransparentBackground(page.locator(".ritual-panel"), "compact ritual panel");
+    await assertTransparentBackground(page.locator(".compact-censer__button").first(), "compact ritual censer button");
     const ritualSceneStyle = await page.locator(".compact-stage").evaluate((element) => {
       const style = window.getComputedStyle(element);
       return {
+        borderStyle: style.borderStyle,
+        borderWidth: style.borderWidth,
         backgroundColor: style.backgroundColor,
         flexWrap: style.flexWrap,
       };
@@ -112,6 +134,10 @@ const run = async () => {
     assert(
       ritualSceneStyle.backgroundColor === "rgba(0, 0, 0, 0)",
       `compact ritual scene should not draw a background: ${ritualSceneStyle.backgroundColor}`,
+    );
+    assert(
+      ritualSceneStyle.borderStyle === "none" || ritualSceneStyle.borderWidth === "0px",
+      `compact ritual scene should not draw a frame: ${JSON.stringify(ritualSceneStyle)}`,
     );
     const censerBoxes = await page.locator(".compact-censer").evaluateAll((elements) =>
       elements.map((element) => {

@@ -101,6 +101,7 @@ const desktopPersistenceAdapter = await readText(
 );
 const fileTransferAdapter = await readText("src/lib/fileTransferAdapter.ts");
 const notificationAdapter = await readText("src/lib/notificationAdapter.ts");
+const soundReminder = await readText("src/lib/soundReminder.ts");
 const tauriWindow = await readText("src/lib/tauriWindow.ts");
 
 assertPackageScript(packageJson, "dev:tauri-frontend", "node scripts/start-tauri-frontend.mjs");
@@ -305,6 +306,26 @@ assertTextIncludes(
   "Notification adapter uses the Tauri notification plugin",
 );
 assertTextIncludes(
+  soundReminder,
+  "loadAppSettings().isSoundReminderEnabled",
+  "Sound reminder respects the saved setting",
+);
+assertTextIncludes(
+  soundReminder,
+  "createOscillator",
+  "Sound reminder uses generated Web Audio bell",
+);
+assertTextIncludes(
+  appTsx,
+  "scheduleTimerSoundReminder",
+  "App schedules timer sound reminders",
+);
+assertTextIncludes(
+  appTsx,
+  "cancelTimerSoundReminder",
+  "App cancels stale timer sound reminders",
+);
+assertTextIncludes(
   tauriWindow,
   "setCurrentTauriWindowAlwaysOnTop",
   "Tauri window adapter exposes always-on-top control",
@@ -356,6 +377,7 @@ await Promise.all(
     "src/lib/desktopPersistenceSchema.ts",
     "src/lib/fileTransferAdapter.ts",
     "src/lib/notificationAdapter.ts",
+    "src/lib/soundReminder.ts",
     "src/lib/tauriWindow.ts",
     "src/lib/visualAssetManifest.ts",
     "src/lib/visualAssetManifest.test.ts",
