@@ -621,14 +621,26 @@ select {
   width: 48px;
 }
 
+.censer-visual--compact .censer-visual__lid.visual-layer--with-asset {
+  height: 10px;
+}
+
 .censer-visual--compact .censer-visual__mouth {
   top: 37px;
   width: 78px;
 }
 
+.censer-visual--compact .censer-visual__mouth.visual-layer--with-asset {
+  height: 24px;
+}
+
 .censer-visual--compact .censer-visual__ash {
   top: 43px;
   width: 54px;
+}
+
+.censer-visual--compact .censer-visual__ash.visual-layer--with-asset {
+  height: 14px;
 }
 
 .censer-visual--compact .censer-visual__body {
@@ -637,9 +649,20 @@ select {
   height: 32px;
 }
 
+.censer-visual--compact .censer-visual__body.visual-layer--with-asset {
+  top: 45px;
+  width: 70px;
+  height: 46px;
+}
+
 .censer-visual--compact .censer-visual__feet {
   top: 77px;
   width: 50px;
+}
+
+.censer-visual--compact .censer-visual__feet.visual-layer--with-asset {
+  top: 79px;
+  height: 12px;
 }
 
 .censer-visual--active .censer-visual__body {

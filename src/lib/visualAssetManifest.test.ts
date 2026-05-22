@@ -15,10 +15,17 @@ import {
 } from "./visualAssets";
 
 describe("visual asset manifest", () => {
-  it("returns undefined for the default empty manifest", () => {
+  it("keeps non-compact default slots empty when only compact test assets are configured", () => {
     expect(getVisualAssetUrl("censer/stage/body")).toBeUndefined();
     expect(getCenserAssetUrl("stage", "body")).toBeUndefined();
-    expect(Object.keys(visualAssetManifest)).toHaveLength(0);
+    expect(Object.keys(visualAssetManifest).sort()).toEqual([
+      "censer/compact/ash",
+      "censer/compact/body",
+      "censer/compact/feet",
+      "censer/compact/lid",
+      "censer/compact/mouth",
+    ]);
+    expect(getCenserAssetUrl("compact", "body")).toEqual(expect.stringContaining("body"));
   });
 
   it("returns configured asset URLs by visual slot", () => {

@@ -1,6 +1,6 @@
 # 视觉素材清单
 
-本目录用于未来接入真实符箓、香炉和线香素材。当前阶段只保留目录、README 和 `.gitkeep`，不放真实图片，不生成假素材。
+本目录用于未来接入真实符箓、香炉和线香素材。当前阶段只接入一组小窗 Q 版香炉测试 PNG，用于验证素材管线；其他素材仍保留目录、README 和 `.gitkeep`。
 
 ## 目录与用途
 
@@ -83,9 +83,13 @@
 
 代码层规格见 `src/lib/visualAssets.ts` 的 `VISUAL_ASSET_FAMILY_SPECS` 和 `COMPACT_CENSER_ASSET_REQUIREMENTS`。
 
+## 当前测试素材
+
+`censer/compact/` 中的 `body.png`、`lid.png`、`mouth.png`、`ash.png`、`feet.png` 是 AI 生成的临时测试素材，使用绿色背景生成后本地移除背景并裁切为透明 PNG。它们只用于验证真实图片接入、manifest 引用和小窗渲染链路，不代表最终 Q 版香炉设计。
+
 ## 当前不做
 
-- 不导入真实图片。
+- 不导入正式视觉素材。
 - 不生成复杂假符箓、假香炉或假线香。
 - 不做燃烧、开盖、烟雾或香灰动画。
 - 不把桌面应用图标放进本目录。
