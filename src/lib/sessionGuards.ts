@@ -38,6 +38,29 @@ export const getPhaseAfterFullWindowOpen = ({
   phase: AppPhase;
 }): AppPhase => (didOpenFullWindow && phase === "ritual" && areAllIntentSetsCompleted(intentSets) ? "review" : phase);
 
+export const getFocusTimerNotificationKind = ({
+  intentSetId,
+  intentSets,
+  nextIncenseIndex,
+}: {
+  intentSetId: string;
+  intentSets: IntentSet[];
+  nextIncenseIndex: number;
+}) => {
+  const targetIntentSet = intentSets.find((intentSet) => intentSet.id === intentSetId);
+
+  if (!targetIntentSet) {
+    return "incense-finished";
+  }
+
+  const isTargetFinalIncense = nextIncenseIndex >= targetIntentSet.incenseCount;
+  const areOtherIntentSetsCompleted = intentSets.every(
+    (intentSet) => intentSet.id === intentSetId || intentSet.status === "completed",
+  );
+
+  return isTargetFinalIncense && areOtherIntentSetsCompleted ? "ritual-completed" : "incense-finished";
+};
+
 export const isTimerRestorable = (session: PersistedSession) =>
   Boolean(getActiveIntentSet(session.intentSets) && !session.activeModal && session.timerRemaining > 0);
 

@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   areAllIntentSetsCompleted,
   canChangeTimerSettings,
+  getFocusTimerNotificationKind,
   getActiveIntentSet,
   getPhaseAfterFullWindowOpen,
   hasBlockingRitualAction,
@@ -123,6 +124,30 @@ describe("session guards", () => {
         phase: "ritual",
       }),
     ).toBe("ritual");
+  });
+
+  it("uses a completion notification only for the final incense of the final remaining set", () => {
+    expect(
+      getFocusTimerNotificationKind({
+        intentSetId: "intent-burning",
+        intentSets: [createIntentSet("burning")],
+        nextIncenseIndex: 2,
+      }),
+    ).toBe("ritual-completed");
+    expect(
+      getFocusTimerNotificationKind({
+        intentSetId: "intent-burning",
+        intentSets: [createIntentSet("burning")],
+        nextIncenseIndex: 1,
+      }),
+    ).toBe("incense-finished");
+    expect(
+      getFocusTimerNotificationKind({
+        intentSetId: "intent-burning",
+        intentSets: [createIntentSet("burning"), { ...createIntentSet("idle"), id: "intent-idle" }],
+        nextIncenseIndex: 2,
+      }),
+    ).toBe("incense-finished");
   });
 
   it("detects whether a persisted timer can be restored directly", () => {

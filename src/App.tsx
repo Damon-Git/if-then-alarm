@@ -22,6 +22,7 @@ import {
   shouldUseDesktopFileDialog,
 } from "./lib/fileTransferAdapter";
 import { cancelTimerNotification, scheduleTimerNotification } from "./lib/notificationAdapter";
+import type { TimerNotificationKind } from "./lib/notificationAdapter";
 import { clearPersistedSession, loadPersistedSession, savePersistedSession } from "./lib/sessionStorage";
 import { createActiveTimerSegment, formatDurationLabel, getTimerRemainingSeconds } from "./lib/timer";
 import {
@@ -37,6 +38,7 @@ import {
 import { loadAppSettings, saveAppSettings } from "./lib/settingsStorage";
 import {
   canChangeTimerSettings,
+  getFocusTimerNotificationKind,
   getActiveIntentSet,
   getPhaseAfterFullWindowOpen,
   hasBlockingRitualAction,
@@ -259,7 +261,7 @@ const App = () => {
     };
   }, []);
 
-  const beginTimer = (durationSeconds: number, notificationKind: ActiveModal["type"]) => {
+  const beginTimer = (durationSeconds: number, notificationKind: TimerNotificationKind) => {
     setTimerRemaining(durationSeconds);
     setActiveTimerSegment(createActiveTimerSegment(durationSeconds));
     void scheduleTimerNotification({ delaySeconds: durationSeconds, kind: notificationKind });
@@ -460,6 +462,12 @@ const App = () => {
       return;
     }
 
+    const notificationKind = getFocusTimerNotificationKind({
+      intentSetId: pendingStartIntentId,
+      intentSets,
+      nextIncenseIndex: 1,
+    });
+
     setIntentSets((currentIntentSets) =>
       currentIntentSets.map((intentSet) =>
         intentSet.id === pendingStartIntentId && intentSet.status === "idle"
@@ -467,7 +475,7 @@ const App = () => {
           : intentSet,
       ),
     );
-    beginTimer(timerConfig.focusSeconds, "incense-finished");
+    beginTimer(timerConfig.focusSeconds, notificationKind);
     setPendingStartIntentId(null);
   };
 
@@ -496,6 +504,13 @@ const App = () => {
       return;
     }
 
+    const nextIncenseIndex = targetIntentSet.currentIncenseIndex + 1;
+    const notificationKind = getFocusTimerNotificationKind({
+      intentSetId,
+      intentSets,
+      nextIncenseIndex,
+    });
+
     setIntentSets((currentIntentSets) =>
       currentIntentSets.map((intentSet) => {
         if (intentSet.id !== intentSetId) {
@@ -509,7 +524,7 @@ const App = () => {
         };
       }),
     );
-    beginTimer(timerConfig.focusSeconds, "incense-finished");
+    beginTimer(timerConfig.focusSeconds, notificationKind);
     setActiveModal(null);
   };
 
@@ -579,11 +594,20 @@ const App = () => {
     });
 
     if (restoredTimerSegment) {
+      const restoredActiveIntentSet = getActiveIntentSet(resolvedSession.intentSets);
+
       void scheduleTimerNotification({
         delaySeconds: resolvedSession.timerRemaining,
-        kind: resolvedSession.intentSets.some((intentSet) => intentSet.status === "resting")
-          ? "rest-finished"
-          : "incense-finished",
+        kind:
+          restoredActiveIntentSet?.status === "resting"
+            ? "rest-finished"
+            : restoredActiveIntentSet
+              ? getFocusTimerNotificationKind({
+                  intentSetId: restoredActiveIntentSet.id,
+                  intentSets: resolvedSession.intentSets,
+                  nextIncenseIndex: restoredActiveIntentSet.currentIncenseIndex,
+                })
+              : "incense-finished",
       });
     }
   };

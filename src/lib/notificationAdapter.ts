@@ -1,8 +1,8 @@
-import { isTauriRuntime } from "./tauriWindow";
+import { isCurrentDocumentWindowCompact, isTauriRuntime } from "./tauriWindow";
 
 const TIMER_NOTIFICATION_ID = 20260516;
 
-type TimerNotificationKind = "incense-finished" | "rest-finished";
+export type TimerNotificationKind = "incense-finished" | "rest-finished" | "ritual-completed";
 
 type ScheduleTimerNotificationInput = {
   delaySeconds: number;
@@ -14,6 +14,10 @@ let timerNotificationTimeoutId: number | null = null;
 const getNotificationCopy = (kind: TimerNotificationKind) => {
   if (kind === "rest-finished") {
     return "休息结束，是否继续下一炷香？";
+  }
+
+  if (kind === "ritual-completed") {
+    return isCurrentDocumentWindowCompact() ? "本轮已完成，点击香炉回到完整窗口复盘。" : "本轮已完成，请填写复盘。";
   }
 
   return "这一炷香已经烧完。";
