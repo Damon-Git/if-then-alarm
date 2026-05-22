@@ -68,7 +68,7 @@ const SettingsPanel = ({
         <label className="settings-toggle">
           <span>
             <strong>声音提醒</strong>
-            <small>预留给下一版钟声提醒；当前只保存设置，不播放声音。</small>
+            <small>开启后，专注、休息或整轮结束时播放一次临时钟声。</small>
           </span>
           <input
             checked={isSoundReminderEnabled}

@@ -24,6 +24,7 @@ import {
 import { cancelTimerNotification, scheduleTimerNotification } from "./lib/notificationAdapter";
 import type { TimerNotificationKind } from "./lib/notificationAdapter";
 import { clearPersistedSession, loadPersistedSession, savePersistedSession } from "./lib/sessionStorage";
+import { cancelTimerSoundReminder, prepareTimerSoundReminder, scheduleTimerSoundReminder } from "./lib/soundReminder";
 import { createActiveTimerSegment, formatDurationLabel, getTimerRemainingSeconds } from "./lib/timer";
 import {
   closeCurrentTauriWindow,
@@ -265,6 +266,7 @@ const App = () => {
     setTimerRemaining(durationSeconds);
     setActiveTimerSegment(createActiveTimerSegment(durationSeconds));
     void scheduleTimerNotification({ delaySeconds: durationSeconds, kind: notificationKind });
+    scheduleTimerSoundReminder({ delaySeconds: durationSeconds, kind: notificationKind });
   };
 
   useEffect(() => {
@@ -407,6 +409,7 @@ const App = () => {
     setIsAbandonConfirmOpen(false);
     setActiveUtilityPanel(null);
     void cancelTimerNotification();
+    cancelTimerSoundReminder();
     setHasUnsavedSetupDraft(false);
     setPhase("ritual");
     expandCurrentTauriWindow().catch(() => {
@@ -554,6 +557,7 @@ const App = () => {
     setIsAbandonConfirmOpen(false);
     setActiveUtilityPanel(null);
     void cancelTimerNotification();
+    cancelTimerSoundReminder();
     setPhase("setup");
     clearPersistedSession();
 
@@ -595,19 +599,24 @@ const App = () => {
 
     if (restoredTimerSegment) {
       const restoredActiveIntentSet = getActiveIntentSet(resolvedSession.intentSets);
+      const restoredNotificationKind =
+        restoredActiveIntentSet?.status === "resting"
+          ? "rest-finished"
+          : restoredActiveIntentSet
+            ? getFocusTimerNotificationKind({
+                intentSetId: restoredActiveIntentSet.id,
+                intentSets: resolvedSession.intentSets,
+                nextIncenseIndex: restoredActiveIntentSet.currentIncenseIndex,
+              })
+            : "incense-finished";
 
       void scheduleTimerNotification({
         delaySeconds: resolvedSession.timerRemaining,
-        kind:
-          restoredActiveIntentSet?.status === "resting"
-            ? "rest-finished"
-            : restoredActiveIntentSet
-              ? getFocusTimerNotificationKind({
-                  intentSetId: restoredActiveIntentSet.id,
-                  intentSets: resolvedSession.intentSets,
-                  nextIncenseIndex: restoredActiveIntentSet.currentIncenseIndex,
-                })
-              : "incense-finished",
+        kind: restoredNotificationKind,
+      });
+      scheduleTimerSoundReminder({
+        delaySeconds: resolvedSession.timerRemaining,
+        kind: restoredNotificationKind,
       });
     }
   };
@@ -615,6 +624,7 @@ const App = () => {
   const discardPendingSession = () => {
     clearPersistedSession();
     void cancelTimerNotification();
+    cancelTimerSoundReminder();
     setPendingSession(null);
   };
 
@@ -645,6 +655,7 @@ const App = () => {
     setIsAbandonConfirmOpen(false);
     setActiveUtilityPanel(null);
     void cancelTimerNotification();
+    cancelTimerSoundReminder();
     setPhase("setup");
     clearPersistedSession();
     expandCurrentTauriWindow().catch(() => {
@@ -797,6 +808,10 @@ const App = () => {
 
   const updateSoundReminder = (isSoundReminderEnabled: boolean) => {
     setSettings((currentSettings) => saveAppSettings({ ...currentSettings, isSoundReminderEnabled }));
+
+    if (isSoundReminderEnabled) {
+      void prepareTimerSoundReminder();
+    }
   };
 
   const updateSetupDraftState = useCallback((nextHasUnsavedDraft: boolean) => {
