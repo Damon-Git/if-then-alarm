@@ -52,6 +52,9 @@ const CenserVisual = ({ currentIncenseIndex, incenseCount, incenseProgress, size
       aria-hidden={size === "compact" ? true : undefined}
       aria-label={size === "stage" ? `香炉占位，${incenseLabel}` : undefined}
       className={`censer-visual censer-visual--${size} censer-visual--${visualState}`}
+      data-censer-current={currentIncenseIndex}
+      data-censer-incense-count={incenseCount}
+      data-censer-progress={incenseProgressPercent}
       data-censer-size={size}
       data-censer-state={visualState}
       role={size === "stage" ? "img" : undefined}

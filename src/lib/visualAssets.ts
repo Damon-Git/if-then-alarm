@@ -16,7 +16,54 @@ export type IncenseVisualSlot = `incense/${VisualAssetSize}/${IncenseAssetLayer}
 
 export type VisualAssetSlot = TalismanVisualSlot | CenserVisualSlot | IncenseVisualSlot;
 
+type VisualAssetPixelSize = {
+  height: number;
+  width: number;
+};
+
+type VisualAssetFamilySpec = {
+  /**
+   * Expected transparent canvas size for exported source assets.
+   */
+  sourceCanvas: VisualAssetPixelSize;
+  /**
+   * Approximate CSS render box used by the current placeholder.
+   */
+  renderBox: VisualAssetPixelSize;
+};
+
 export const VISUAL_ASSET_ROOT = "src/assets/visuals";
+
+export const VISUAL_ASSET_FAMILY_SPECS = {
+  censer: {
+    compact: {
+      renderBox: { height: 84, width: 74 },
+      sourceCanvas: { height: 256, width: 256 },
+    },
+    stage: {
+      renderBox: { height: 104, width: 96 },
+      sourceCanvas: { height: 320, width: 320 },
+    },
+  },
+  incense: {
+    compact: {
+      renderBox: { height: 50, width: 72 },
+      sourceCanvas: { height: 192, width: 192 },
+    },
+    stage: {
+      renderBox: { height: 62, width: 92 },
+      sourceCanvas: { height: 240, width: 240 },
+    },
+  },
+} as const satisfies Record<"censer" | "incense", Record<VisualAssetSize, VisualAssetFamilySpec>>;
+
+export const COMPACT_CENSER_ASSET_REQUIREMENTS = {
+  background: "transparent",
+  maxCenserSlots: 3,
+  maxIncenseCount: 3,
+  minIncenseCount: 1,
+  tone: "restrained-cute",
+} as const;
 
 export const VISUAL_ASSET_DIRECTORIES = {
   censerCompact: `${VISUAL_ASSET_ROOT}/censer/compact`,

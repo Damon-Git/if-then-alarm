@@ -53,6 +53,18 @@ type CenserVisualProps = {
 - `size`：选择主祭台或小窗素材族。
 - `status`：最小业务状态，用于映射香炉视觉状态。
 
+### DOM 语义
+
+`CenserVisual` 会在根节点暴露：
+
+- `data-censer-size`：`stage` 或 `compact`。
+- `data-censer-state`：由 `status` 映射出的视觉状态。
+- `data-censer-incense-count`：当前套组总香数。
+- `data-censer-current`：当前第几炷香。
+- `data-censer-progress`：当前炷香进度百分比。
+
+这些属性用于未来真实素材、截图检查和 CSS 状态选择，不应用来反推业务状态。
+
 ### 预留图层
 
 - `data-censer-layer="body"`：香炉主体。
@@ -67,6 +79,8 @@ type CenserVisualProps = {
 - 香炉开盖动画未来只能移动已有盖子素材，不重新画一个临时盖子。
 - 香炉组件可以组合 `IncenseVisual`，但不负责计算倒计时。
 - 不在 `CenserVisual` 内判断“是否所有套组完成”“是否进入复盘”等业务流程。
+- 小窗 Q 版香炉素材必须透明，不包含背景面板、符箓或文字。
+- 小窗 Q 版香炉素材以 `src/lib/visualAssets.ts` 中的 `VISUAL_ASSET_FAMILY_SPECS.censer.compact` 为尺寸锚点。
 
 ## IncenseVisual
 
@@ -105,6 +119,8 @@ type IncenseVisualProps = {
 - 进入计时后，从左侧第一根开始显示当前进度；续香后依次推进。
 - 火星、烟雾和香灰可以由视觉状态和 `progress` 驱动，但不能改变计时结果。
 - 不在 `IncenseVisual` 内启动、暂停或清理 timer。
+- 小窗线香素材以 `src/lib/visualAssets.ts` 中的 `VISUAL_ASSET_FAMILY_SPECS.incense.compact` 为尺寸锚点。
+- 小窗不同香数不能烘焙成 1 / 2 / 3 张整图，必须由组件重复渲染同一套线香图层。
 
 ## TalismanVisual
 

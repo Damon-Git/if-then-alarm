@@ -71,6 +71,18 @@
 - `ember.png`
 - `smoke.png`
 
+## 小窗 Q 版香炉规格
+
+小窗真实素材接入优先从 `censer/compact/` 和 `incense/compact/` 开始：
+
+- 小窗香炉推荐源画布为 `256px × 256px`，透明背景。
+- 小窗线香推荐源画布为 `192px × 192px`，透明背景。
+- 小窗最终只显示用户创建的 1-3 个香炉，单行并排。
+- 香炉和线香必须保持分层，不把 1 / 2 / 3 炷香烘焙成整张香炉图。
+- 视觉风格为克制可爱，避免加入背景板、说明文字或符箓元素。
+
+代码层规格见 `src/lib/visualAssets.ts` 的 `VISUAL_ASSET_FAMILY_SPECS` 和 `COMPACT_CENSER_ASSET_REQUIREMENTS`。
+
 ## 当前不做
 
 - 不导入真实图片。
