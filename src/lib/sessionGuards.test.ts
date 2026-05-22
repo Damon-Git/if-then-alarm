@@ -97,22 +97,32 @@ describe("session guards", () => {
   it("enters review after opening the full window only when the ritual is complete", () => {
     expect(
       getPhaseAfterFullWindowOpen({
+        didOpenFullWindow: true,
         intentSets: [createIntentSet("completed")],
         phase: "ritual",
       }),
     ).toBe("review");
     expect(
       getPhaseAfterFullWindowOpen({
+        didOpenFullWindow: true,
         intentSets: [createIntentSet("completed"), createIntentSet("idle")],
         phase: "ritual",
       }),
     ).toBe("ritual");
     expect(
       getPhaseAfterFullWindowOpen({
+        didOpenFullWindow: true,
         intentSets: [createIntentSet("completed")],
         phase: "setup",
       }),
     ).toBe("setup");
+    expect(
+      getPhaseAfterFullWindowOpen({
+        didOpenFullWindow: false,
+        intentSets: [createIntentSet("completed")],
+        phase: "ritual",
+      }),
+    ).toBe("ritual");
   });
 
   it("detects whether a persisted timer can be restored directly", () => {

@@ -426,14 +426,27 @@ const App = () => {
     }
 
     isOpeningFullWindowRef.current = true;
-    const nextPhase = getPhaseAfterFullWindowOpen({ intentSets, phase });
+    const currentIntentSets = intentSets;
+    const currentPhase = phase;
 
     expandCurrentTauriWindow()
+      .then((didOpenFullWindow) => {
+        setPhase(
+          getPhaseAfterFullWindowOpen({
+            didOpenFullWindow,
+            intentSets: currentIntentSets,
+            phase: currentPhase,
+          }),
+        );
+
+        if (!didOpenFullWindow) {
+          showToast("error", "完整窗口未能打开。");
+        }
+      })
       .catch(() => {
-        showToast("error", "完整窗口未能打开。");
+        showToast("error", "完整窗口未能打开，请再次点击香炉重试。");
       })
       .finally(() => {
-        setPhase(nextPhase);
         isOpeningFullWindowRef.current = false;
       });
   };
