@@ -47,7 +47,7 @@ type PersistenceAdapter = {
 | --- | --- | --- |
 | 历史记录 | `jiji-rululing.history` | `HistoryRecord[]`，数组本身没有外层 version |
 | 当前轮次 | `jiji-rululing.current-session` | `PersistedSession`，内部 `version: 1` |
-| 设置 | `jiji-rululing.settings` | `AppSettings`，当前包含 `timerMode`、`isAlwaysOnTop` 和 `isDockVisible` |
+| 设置 | `jiji-rululing.settings` | `AppSettings`，当前包含 `timerMode`、`isAlwaysOnTop`、`isDockVisible` 和 `isSoundReminderEnabled` |
 
 历史导入导出 payload 另有 `HistoryExportPayload.version = 1`，这是备份和跨版本迁移路径，不等同于内部存储 schema。
 
@@ -171,6 +171,7 @@ type PersistedHistory = {
 type AppSettings = {
   isAlwaysOnTop: boolean;
   isDockVisible: boolean;
+  isSoundReminderEnabled: boolean;
   timerMode: "dev" | "prod";
 };
 ```
@@ -180,8 +181,9 @@ type AppSettings = {
 - 无有效设置时回退到 `DEFAULT_TIMER_MODE`。
 - 旧设置缺失 `isAlwaysOnTop` 时补为 `false`。
 - 旧设置缺失 `isDockVisible` 时补为 `true`。
+- 旧设置缺失 `isSoundReminderEnabled` 时补为 `false`，避免升级后默认发声。
 - 不把开发 fixture 开关写进正式设置。
-- 后续如果加入声音、通知等更多设置，需要评估给设置加 version 或外层 persisted settings。
+- 后续如果继续加入更复杂的通知策略，需要评估给设置加 version 或外层 persisted settings。
 
 ## 手动验收清单
 

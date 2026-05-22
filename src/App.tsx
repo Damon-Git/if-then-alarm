@@ -795,6 +795,10 @@ const App = () => {
     setSettings((currentSettings) => saveAppSettings({ ...currentSettings, isDockVisible }));
   };
 
+  const updateSoundReminder = (isSoundReminderEnabled: boolean) => {
+    setSettings((currentSettings) => saveAppSettings({ ...currentSettings, isSoundReminderEnabled }));
+  };
+
   const updateSetupDraftState = useCallback((nextHasUnsavedDraft: boolean) => {
     setHasUnsavedSetupDraft(nextHasUnsavedDraft);
   }, []);
@@ -872,8 +876,10 @@ const App = () => {
             disabled={isSettingsDisabled}
             isAlwaysOnTop={settings.isAlwaysOnTop}
             isDockVisible={settings.isDockVisible}
+            isSoundReminderEnabled={settings.isSoundReminderEnabled}
             onAlwaysOnTopChange={updateAlwaysOnTop}
             onDockVisibleChange={updateDockVisible}
+            onSoundReminderChange={updateSoundReminder}
             timerMode={settings.timerMode}
             onDevSessionFixtureSaved={(message) => showToast("info", message)}
             onTimerModeChange={updateTimerMode}

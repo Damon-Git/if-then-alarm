@@ -16,6 +16,7 @@ export type TimerMode = "dev" | "prod";
 export type AppSettings = {
   isAlwaysOnTop: boolean;
   isDockVisible: boolean;
+  isSoundReminderEnabled: boolean;
   timerMode: TimerMode;
 };
 

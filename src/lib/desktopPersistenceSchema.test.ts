@@ -62,6 +62,7 @@ describe("desktop persistence schema", () => {
       settings: {
         isAlwaysOnTop: false,
         isDockVisible: true,
+        isSoundReminderEnabled: false,
         timerMode: DEFAULT_TIMER_MODE,
       },
       updatedAt: NOW,
@@ -95,6 +96,7 @@ describe("desktop persistence schema", () => {
     expect(manifest.settings).toEqual({
       isAlwaysOnTop: false,
       isDockVisible: true,
+      isSoundReminderEnabled: false,
       timerMode: "prod",
     });
     expect(manifest.migrationSource).toBe("localStorage");
@@ -127,6 +129,7 @@ describe("desktop persistence schema", () => {
     expect(normalized.settings).toEqual({
       isAlwaysOnTop: false,
       isDockVisible: true,
+      isSoundReminderEnabled: false,
       timerMode: DEFAULT_TIMER_MODE,
     });
     expect(normalized.migrationSource).toBeUndefined();
@@ -141,6 +144,7 @@ describe("desktop persistence schema", () => {
       settings: {
         isAlwaysOnTop: true,
         isDockVisible: false,
+        isSoundReminderEnabled: true,
         timerMode: "prod" as const,
       },
     };
@@ -152,6 +156,7 @@ describe("desktop persistence schema", () => {
     expect(JSON.parse(snapshot[SETTINGS_STORAGE_KEY] ?? "")).toEqual({
       isAlwaysOnTop: true,
       isDockVisible: false,
+      isSoundReminderEnabled: true,
       timerMode: "prod",
     });
   });
@@ -177,7 +182,12 @@ describe("desktop persistence schema", () => {
       currentManifest,
       {
         [HISTORY_STORAGE_KEY]: JSON.stringify([nextRecord]),
-        [SETTINGS_STORAGE_KEY]: JSON.stringify({ isAlwaysOnTop: true, isDockVisible: false, timerMode: "prod" }),
+        [SETTINGS_STORAGE_KEY]: JSON.stringify({
+          isAlwaysOnTop: true,
+          isDockVisible: false,
+          isSoundReminderEnabled: true,
+          timerMode: "prod",
+        }),
       },
       { now: NOW },
     );
@@ -191,6 +201,7 @@ describe("desktop persistence schema", () => {
     expect(nextManifest.settings).toEqual({
       isAlwaysOnTop: true,
       isDockVisible: false,
+      isSoundReminderEnabled: true,
       timerMode: "prod",
     });
   });

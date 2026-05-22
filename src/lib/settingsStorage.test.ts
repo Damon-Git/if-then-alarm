@@ -11,22 +11,32 @@ describe("settings storage", () => {
     expect(normalizeAppSettings(null)).toEqual({
       isAlwaysOnTop: false,
       isDockVisible: true,
+      isSoundReminderEnabled: false,
       timerMode: DEFAULT_TIMER_MODE,
     });
   });
 
-  it("normalizes legacy settings without window behavior fields", () => {
+  it("normalizes legacy settings without newer fields", () => {
     expect(normalizeAppSettings({ timerMode: "prod" })).toEqual({
       isAlwaysOnTop: false,
       isDockVisible: true,
+      isSoundReminderEnabled: false,
       timerMode: "prod",
     });
   });
 
   it("normalizes invalid settings values", () => {
-    expect(normalizeAppSettings({ isAlwaysOnTop: "yes", isDockVisible: "no", timerMode: "fast" })).toEqual({
+    expect(
+      normalizeAppSettings({
+        isAlwaysOnTop: "yes",
+        isDockVisible: "no",
+        isSoundReminderEnabled: "yes",
+        timerMode: "fast",
+      }),
+    ).toEqual({
       isAlwaysOnTop: false,
       isDockVisible: true,
+      isSoundReminderEnabled: false,
       timerMode: DEFAULT_TIMER_MODE,
     });
   });
@@ -35,12 +45,14 @@ describe("settings storage", () => {
     saveAppSettings({
       isAlwaysOnTop: true,
       isDockVisible: false,
+      isSoundReminderEnabled: true,
       timerMode: "prod",
     });
 
     expect(loadAppSettings()).toEqual({
       isAlwaysOnTop: true,
       isDockVisible: false,
+      isSoundReminderEnabled: true,
       timerMode: "prod",
     });
   });

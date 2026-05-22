@@ -7,9 +7,11 @@ type SettingsPanelProps = {
   disabled: boolean;
   isAlwaysOnTop: boolean;
   isDockVisible: boolean;
+  isSoundReminderEnabled: boolean;
   onAlwaysOnTopChange: (isAlwaysOnTop: boolean) => void;
   onDockVisibleChange: (isDockVisible: boolean) => void;
   onDevSessionFixtureSaved?: (message: string) => void;
+  onSoundReminderChange: (isSoundReminderEnabled: boolean) => void;
   timerMode: TimerMode;
   onTimerModeChange: (timerMode: TimerMode) => void;
   supportsWindowAlwaysOnTop: boolean;
@@ -21,9 +23,11 @@ const SettingsPanel = ({
   disabled,
   isAlwaysOnTop,
   isDockVisible,
+  isSoundReminderEnabled,
   onAlwaysOnTopChange,
   onDockVisibleChange,
   onDevSessionFixtureSaved,
+  onSoundReminderChange,
   onTimerModeChange,
   supportsWindowAlwaysOnTop,
   timerMode,
@@ -59,6 +63,20 @@ const SettingsPanel = ({
         {formatDurationLabel(currentConfig.breakSeconds)}
         {disabled ? "。当前轮次进行中，完成或放弃后可切换。" : ""}
       </p>
+
+      <div className="settings-toggle-list" aria-label="提醒设置">
+        <label className="settings-toggle">
+          <span>
+            <strong>声音提醒</strong>
+            <small>预留给下一版钟声提醒；当前只保存设置，不播放声音。</small>
+          </span>
+          <input
+            checked={isSoundReminderEnabled}
+            onChange={(event) => onSoundReminderChange(event.target.checked)}
+            type="checkbox"
+          />
+        </label>
+      </div>
 
       {supportsWindowAlwaysOnTop ? (
         <div className="settings-toggle-list" aria-label="桌面窗口设置">
