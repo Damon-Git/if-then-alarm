@@ -35,6 +35,8 @@ const RitualStage = ({
   onOpenFullView,
   onRequestAbandon,
 }: RitualStageProps) => {
+  const isSessionComplete = intentSets.length > 0 && intentSets.every((intentSet) => intentSet.status === "completed");
+
   return (
     <section className="panel ritual-panel" aria-labelledby="ritual-title">
       <div className="section-heading">
@@ -74,6 +76,7 @@ const RitualStage = ({
             <CompactCenserSlot
               incenseProgress={incenseProgress}
               intentSet={intentSet}
+              isSessionComplete={isSessionComplete}
               key={intentSet.id}
               onOpenFullView={onOpenFullView}
               timerRemaining={isActive ? timerRemaining : 0}
