@@ -1,4 +1,9 @@
-import { getCenserVisualSlot, type CenserAssetLayer, type VisualAssetSize } from "../lib/visualAssets";
+import {
+  CENSER_ASSET_LAYERS,
+  getCenserVisualSlot,
+  type CenserAssetLayer,
+  type VisualAssetSize,
+} from "../lib/visualAssets";
 import { getCenserAssetUrl } from "../lib/visualAssetManifest";
 import { getCenserVisualState } from "../lib/visualState";
 import type { IntentSetStatus } from "../types";
@@ -67,11 +72,9 @@ const CenserVisual = ({ currentIncenseIndex, incenseCount, incenseProgress, size
           size={size}
           status={status}
         />
-        <CenserLayer layer="lid" size={size} />
-        <CenserLayer layer="mouth" size={size} />
-        <CenserLayer layer="ash" size={size} />
-        <CenserLayer layer="body" size={size} />
-        <CenserLayer layer="feet" size={size} />
+        {CENSER_ASSET_LAYERS.map((layer) => (
+          <CenserLayer key={layer} layer={layer} size={size} />
+        ))}
       </div>
 
       <span className="censer-visual__meta">香炉占位</span>

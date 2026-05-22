@@ -1,5 +1,6 @@
 import {
   getTalismanVisualSlot,
+  TALISMAN_TEMPLATE_ASSET_LAYERS,
   type TalismanAssetLayer,
   type TalismanAssetVariant,
 } from "../lib/visualAssets";
@@ -62,8 +63,9 @@ const TalismanLayer = ({
 
 const TalismanContent = ({ label, text, variant }: Pick<TalismanVisualProps, "label" | "text" | "variant">) => (
   <>
-    <TalismanLayer layer="template" variant={variant} />
-    <TalismanLayer layer="state" variant={variant} />
+    {TALISMAN_TEMPLATE_ASSET_LAYERS.map((layer) => (
+      <TalismanLayer key={layer} layer={layer} variant={variant} />
+    ))}
     <span
       className="talisman-visual__text"
       data-talisman-layer="text"

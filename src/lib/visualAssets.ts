@@ -16,6 +16,14 @@ export type IncenseVisualSlot = `incense/${VisualAssetSize}/${IncenseAssetLayer}
 
 export type VisualAssetSlot = TalismanVisualSlot | CenserVisualSlot | IncenseVisualSlot;
 
+export const TALISMAN_ASSET_LAYERS = ["template", "state", "text"] as const satisfies readonly TalismanAssetLayer[];
+
+export const TALISMAN_TEMPLATE_ASSET_LAYERS = ["template", "state"] as const satisfies readonly TalismanAssetLayer[];
+
+export const CENSER_ASSET_LAYERS = ["lid", "mouth", "ash", "body", "feet"] as const satisfies readonly CenserAssetLayer[];
+
+export const INCENSE_ASSET_LAYERS = ["stick", "ash", "ember", "smoke"] as const satisfies readonly IncenseAssetLayer[];
+
 type VisualAssetPixelSize = {
   height: number;
   width: number;
@@ -63,6 +71,21 @@ export const COMPACT_CENSER_ASSET_REQUIREMENTS = {
   maxIncenseCount: 3,
   minIncenseCount: 1,
   tone: "restrained-cute",
+} as const;
+
+export const STAGE_CENSER_ASSET_REQUIREMENTS = {
+  background: "transparent",
+  family: "stage",
+  maxCenserSlots: 3,
+  maxIncenseCount: 3,
+  minIncenseCount: 1,
+  tone: "ritual-placeholder",
+} as const;
+
+export const TALISMAN_ASSET_REQUIREMENTS = {
+  backgroundSource: "uploaded-template-image",
+  maxPreventionCount: 3,
+  textLayer: "react-overlay",
 } as const;
 
 export const VISUAL_ASSET_DIRECTORIES = {

@@ -1,5 +1,10 @@
 import type { CSSProperties } from "react";
-import { getIncenseVisualSlot, type IncenseAssetLayer, type VisualAssetSize } from "../lib/visualAssets";
+import {
+  getIncenseVisualSlot,
+  INCENSE_ASSET_LAYERS,
+  type IncenseAssetLayer,
+  type VisualAssetSize,
+} from "../lib/visualAssets";
 import { getIncenseAssetUrl } from "../lib/visualAssetManifest";
 import { getIncenseVisualState, type IncenseVisualState } from "../lib/visualState";
 import type { IntentSetStatus } from "../types";
@@ -84,10 +89,9 @@ const IncenseVisual = ({ currentIncenseIndex, incenseCount, progress, size, stat
             key={incenseNumber}
             style={{ "--incense-stick-progress": `${stickProgressPercent}%` } as CSSProperties}
           >
-            <IncenseLayer layer="stick" size={size} />
-            <IncenseLayer layer="ash" size={size} />
-            <IncenseLayer layer="ember" size={size} />
-            <IncenseLayer layer="smoke" size={size} />
+            {INCENSE_ASSET_LAYERS.map((layer) => (
+              <IncenseLayer key={layer} layer={layer} size={size} />
+            ))}
           </span>
         );
       })}

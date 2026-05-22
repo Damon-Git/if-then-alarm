@@ -83,6 +83,18 @@
 
 代码层规格见 `src/lib/visualAssets.ts` 的 `VISUAL_ASSET_FAMILY_SPECS` 和 `COMPACT_CENSER_ASSET_REQUIREMENTS`。
 
+## 主祭台素材规格
+
+主祭台真实素材未来从 `censer/stage/`、`incense/stage/`、`talisman/situation/` 和 `talisman/prevention/` 接入：
+
+- 主祭台香炉推荐源画布为 `320px × 320px`，透明背景。
+- 主祭台线香推荐源画布为 `240px × 240px`，透明背景。
+- 主祭台香炉使用 `stage` 素材族，不能复用小窗 `compact` Q 版素材。
+- 情境性和预防性符箓使用上传好的图片模板作为背景，文本必须保留为 React 覆盖层。
+- 主祭台素材可以比小窗更正式，但仍保持图层拆分，方便后续开盖、燃烧和状态变化。
+
+代码层规格见 `src/lib/visualAssets.ts` 的 `STAGE_CENSER_ASSET_REQUIREMENTS` 和 `TALISMAN_ASSET_REQUIREMENTS`。
+
 ## 当前测试素材
 
 `censer/compact/` 中的 `body.png`、`lid.png`、`mouth.png`、`ash.png`、`feet.png` 是 AI 生成的临时测试素材，使用绿色背景生成后本地移除背景并裁切为透明 PNG。它们只用于验证真实图片接入、manifest 引用和小窗渲染链路，不代表最终 Q 版香炉设计。

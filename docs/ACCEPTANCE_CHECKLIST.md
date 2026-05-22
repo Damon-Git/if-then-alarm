@@ -59,6 +59,8 @@
 - [ ] 情境性符箓由 `TalismanVisual` 渲染。
 - [ ] 每套中间显示香炉占位和当前香数。
 - [ ] 主祭台香炉由 `CenserVisual` 渲染。
+- [ ] 主祭台香炉使用 `stage` 视觉素材族，不复用小窗 `compact` Q 版素材。
+- [ ] 主祭台香炉保留 `body/lid/mouth/ash/feet` 五个图层入口。
 - [ ] 主祭台线香由 `IncenseVisual` 渲染。
 - [ ] 符箓、香炉、线香视觉状态由 `src/lib/visualState.ts` 统一映射。
 - [ ] 符箓、香炉、线香图层带有 `data-visual-slot`，插槽由 `src/lib/visualAssets.ts` 统一生成。

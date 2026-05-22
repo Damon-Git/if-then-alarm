@@ -41,6 +41,7 @@
 - 香炉盖
 - 炉口
 - 香灰层
+- 底足
 
 香炉开盖动画未来应该移动已有盖子素材，而不是重新画一个盖子。炉口和香灰层需要预留给线香组件定位。
 
@@ -48,12 +49,15 @@
 
 主祭台香炉和小窗香炉统一从 `src/components/CenserVisual.tsx` 接入视觉层。未来替换真实素材时，优先替换 `CenserVisual` 内部结构和样式，不改计时、开始确认、休息、续香、复盘等业务逻辑。
 
+主祭台香炉使用 `stage` 素材族，小窗 Q 版香炉使用 `compact` 素材族。两套素材可以共享图层命名，但不能混用图片文件；主祭台不复用小窗 Q 版测试素材，小窗也不显示主祭台素材。
+
 `CenserVisual` 当前预留这些图层钩子：
 
-- `data-censer-layer="body"`：香炉主体
 - `data-censer-layer="lid"`：香炉盖
 - `data-censer-layer="mouth"`：炉口
 - `data-censer-layer="ash"`：香灰层
+- `data-censer-layer="body"`：香炉主体
+- `data-censer-layer="feet"`：底足
 
 ## 线香
 

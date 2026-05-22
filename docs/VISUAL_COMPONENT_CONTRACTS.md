@@ -22,6 +22,7 @@
 - `stage` 用于主祭台。
 - `compact` 用于 macOS 小窗香炉舞台。
 - 两种尺寸可以接入不同素材，但业务含义必须一致。
+- 完整窗口的主祭台只能传入 `stage`；小窗香炉舞台只能传入 `compact`。不要用窗口宽度、CSS media query 或临时状态隐式切换素材族。
 
 ### status
 
@@ -76,11 +77,13 @@ type CenserVisualProps = {
 ### 未来素材接入规则
 
 - 主祭台香炉和小窗 Q 版香炉可以使用两套素材。
+- 主祭台香炉必须使用 `censer/stage/*` 插槽；小窗 Q 版香炉必须使用 `censer/compact/*` 插槽。两套素材不能混用。
 - 香炉开盖动画未来只能移动已有盖子素材，不重新画一个临时盖子。
 - 香炉组件可以组合 `IncenseVisual`，但不负责计算倒计时。
 - 不在 `CenserVisual` 内判断“是否所有套组完成”“是否进入复盘”等业务流程。
 - 小窗 Q 版香炉素材必须透明，不包含背景面板、符箓或文字。
 - 小窗 Q 版香炉素材以 `src/lib/visualAssets.ts` 中的 `VISUAL_ASSET_FAMILY_SPECS.censer.compact` 为尺寸锚点。
+- 主祭台香炉素材以 `src/lib/visualAssets.ts` 中的 `VISUAL_ASSET_FAMILY_SPECS.censer.stage` 为尺寸锚点。
 
 ## IncenseVisual
 
@@ -120,6 +123,7 @@ type IncenseVisualProps = {
 - 火星、烟雾和香灰可以由视觉状态和 `progress` 驱动，但不能改变计时结果。
 - 不在 `IncenseVisual` 内启动、暂停或清理 timer。
 - 小窗线香素材以 `src/lib/visualAssets.ts` 中的 `VISUAL_ASSET_FAMILY_SPECS.incense.compact` 为尺寸锚点。
+- 主祭台线香素材以 `src/lib/visualAssets.ts` 中的 `VISUAL_ASSET_FAMILY_SPECS.incense.stage` 为尺寸锚点。
 - 小窗不同香数不能烘焙成 1 / 2 / 3 张整图，必须由组件重复渲染同一套线香图层。
 
 ## TalismanVisual

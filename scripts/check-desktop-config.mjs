@@ -104,6 +104,12 @@ const notificationAdapter = await readText("src/lib/notificationAdapter.ts");
 const soundReminder = await readText("src/lib/soundReminder.ts");
 const tauriWindow = await readText("src/lib/tauriWindow.ts");
 const visualAssetManifest = await readText("src/lib/visualAssetManifest.ts");
+const visualAssets = await readText("src/lib/visualAssets.ts");
+const censerVisual = await readText("src/components/CenserVisual.tsx");
+const compactCenserSlot = await readText("src/components/CompactCenserSlot.tsx");
+const incenseVisual = await readText("src/components/IncenseVisual.tsx");
+const intentSlot = await readText("src/components/IntentSlot.tsx");
+const talismanVisual = await readText("src/components/TalismanVisual.tsx");
 
 assertPackageScript(packageJson, "dev:tauri-frontend", "node scripts/start-tauri-frontend.mjs");
 assertPackageScript(packageJson, "check:compact", "node scripts/check-compact-window.mjs");
@@ -384,6 +390,32 @@ assertTextIncludes(
     `Visual asset manifest includes ${manifestToken}`,
   ),
 );
+[
+  "STAGE_CENSER_ASSET_REQUIREMENTS",
+  "TALISMAN_ASSET_REQUIREMENTS",
+  "TALISMAN_ASSET_LAYERS",
+  "TALISMAN_TEMPLATE_ASSET_LAYERS",
+  "CENSER_ASSET_LAYERS",
+  "INCENSE_ASSET_LAYERS",
+  "censerStage",
+  "incenseStage",
+  "talismanSituation",
+  "talismanPrevention",
+  "getCenserVisualSlot",
+  "getIncenseVisualSlot",
+  "getTalismanVisualSlot",
+].forEach((visualAssetToken) =>
+  assertTextIncludes(
+    visualAssets,
+    visualAssetToken,
+    `Visual asset contracts include ${visualAssetToken}`,
+  ),
+);
+assertTextIncludes(censerVisual, "CENSER_ASSET_LAYERS.map", "CenserVisual uses central censer layer order");
+assertTextIncludes(incenseVisual, "INCENSE_ASSET_LAYERS.map", "IncenseVisual uses central incense layer order");
+assertTextIncludes(talismanVisual, "TALISMAN_TEMPLATE_ASSET_LAYERS.map", "TalismanVisual uses central talisman image layer order");
+assertTextIncludes(intentSlot, 'size="stage"', "Full ritual slot uses stage censer asset family");
+assertTextIncludes(compactCenserSlot, 'size="compact"', "Compact ritual slot uses compact censer asset family");
 
 await Promise.all(
   [
