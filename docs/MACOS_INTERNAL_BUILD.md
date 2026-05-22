@@ -17,6 +17,16 @@
 
 ## 打包命令
 
+建议先执行：
+
+```bash
+npm run test
+npm run check:desktop-config
+npm run build
+```
+
+确认基础检查通过后，再执行：
+
 ```bash
 npm run tauri:build
 ```
@@ -39,6 +49,16 @@ src-tauri/target/release/bundle/macos/急急如律令.app
 
 如果只看到 `src-tauri/target/release/jiji-rululing` 可执行文件，而没有 `.app`，说明 bundle 没有启用或 bundle target 不正确。
 
+当前一次已验证的内部构建：
+
+- 构建日期：2026-05-22
+- 构建命令：`npm run tauri:build`
+- 构建产物：`src-tauri/target/release/bundle/macos/急急如律令.app`
+- 包内可执行文件：`Contents/MacOS/jiji-rululing`
+- 包内图标文件：`Contents/Resources/急急如律令.icns`
+- Bundle identifier：`com.damon.jijirululing`
+- Bundle version：`0.1.0`
+
 ## 当前 bundle 配置
 
 当前 `src-tauri/tauri.conf.json` 中的 bundle 配置只面向内部 `.app` 冒烟：
@@ -60,10 +80,17 @@ src-tauri/target/release/bundle/macos/急急如律令.app
 生成 `.app` 后，至少检查：
 
 - `.app` 文件存在。
-- 双击或右键打开后能启动窗口。
+- 双击或右键打开后能启动窗口；如果 macOS 拦截未签名应用，使用右键打开。
 - 初始窗口接近 `960px × 760px`。
 - 菜单栏右侧能看到临时“令”入口。
+- 点击“进入仪式台”后先展示完整主祭台，不直接进入小窗。
+- 进行中关闭确认里点击“保留并收起”后，切换到只显示香炉的小窗。
+- 小窗点击香炉后能展开完整窗口，标题栏和窗口阴影恢复。
+- 系统通知和声音提醒在倒计时结束时触发，不在倒计时开始时触发。
 - 历史记录、设置、桌面 JSON、系统通知仍按桌面验收清单工作。
+- 保存复盘后重新打开 `.app`，历史记录仍在。
+
+当前 `.app` 不应被视为可分发安装包。它只用于内部手动打开和冒烟验证。
 
 完整桌面手动验收见：
 
