@@ -36,9 +36,9 @@ import {
 } from "./lib/tauriWindow";
 import { loadAppSettings, saveAppSettings } from "./lib/settingsStorage";
 import {
-  areAllIntentSetsCompleted,
   canChangeTimerSettings,
   getActiveIntentSet,
+  getPhaseAfterFullWindowOpen,
   hasBlockingRitualAction,
   hasUnsavedRitualSession,
   isTimerRestorable,
@@ -186,6 +186,7 @@ const App = () => {
     hasUnsavedSetupDraft: false,
     isCloseConfirmOpen: false,
   });
+  const isOpeningFullWindowRef = useRef(false);
 
   useEffect(() => {
     closeStateRef.current = {
@@ -420,16 +421,20 @@ const App = () => {
   };
 
   const requestFullRitualView = () => {
-    const shouldEnterReview = phase === "ritual" && areAllIntentSetsCompleted(intentSets);
+    if (isOpeningFullWindowRef.current) {
+      return;
+    }
+
+    isOpeningFullWindowRef.current = true;
+    const nextPhase = getPhaseAfterFullWindowOpen({ intentSets, phase });
 
     expandCurrentTauriWindow()
       .catch(() => {
         showToast("error", "完整窗口未能打开。");
       })
       .finally(() => {
-        if (shouldEnterReview) {
-          setPhase("review");
-        }
+        setPhase(nextPhase);
+        isOpeningFullWindowRef.current = false;
       });
   };
 

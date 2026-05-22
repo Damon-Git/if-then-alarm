@@ -3,6 +3,7 @@ import {
   areAllIntentSetsCompleted,
   canChangeTimerSettings,
   getActiveIntentSet,
+  getPhaseAfterFullWindowOpen,
   hasBlockingRitualAction,
   hasUnsavedRitualSession,
   hasUnsavedSetupDraft,
@@ -91,6 +92,27 @@ describe("session guards", () => {
         phase: "review",
       }),
     ).toBe(false);
+  });
+
+  it("enters review after opening the full window only when the ritual is complete", () => {
+    expect(
+      getPhaseAfterFullWindowOpen({
+        intentSets: [createIntentSet("completed")],
+        phase: "ritual",
+      }),
+    ).toBe("review");
+    expect(
+      getPhaseAfterFullWindowOpen({
+        intentSets: [createIntentSet("completed"), createIntentSet("idle")],
+        phase: "ritual",
+      }),
+    ).toBe("ritual");
+    expect(
+      getPhaseAfterFullWindowOpen({
+        intentSets: [createIntentSet("completed")],
+        phase: "setup",
+      }),
+    ).toBe("setup");
   });
 
   it("detects whether a persisted timer can be restored directly", () => {

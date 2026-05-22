@@ -28,6 +28,14 @@ export const shouldEnterReviewPhase = ({
   phase: AppPhase;
 }) => phase === "ritual" && areAllIntentSetsCompleted(intentSets) && !isCompactWindow;
 
+export const getPhaseAfterFullWindowOpen = ({
+  intentSets,
+  phase,
+}: {
+  intentSets: IntentSet[];
+  phase: AppPhase;
+}): AppPhase => (phase === "ritual" && areAllIntentSetsCompleted(intentSets) ? "review" : phase);
+
 export const isTimerRestorable = (session: PersistedSession) =>
   Boolean(getActiveIntentSet(session.intentSets) && !session.activeModal && session.timerRemaining > 0);
 
