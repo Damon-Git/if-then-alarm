@@ -85,6 +85,11 @@ const run = async () => {
     assert(!(await page.locator(".stage-grid--full").isVisible()), "full ritual stage should be hidden in compact viewport");
     assert((await page.locator(".compact-censer").count()) === 3, "compact stage should show three censer slots");
     assert((await page.locator(".compact-censer p:visible").count()) === 0, "compact ritual scene should hide intent summaries");
+    const firstCompactCenserLabel = await page.locator(".compact-censer__button").first().getAttribute("aria-label");
+    assert(
+      firstCompactCenserLabel?.includes("点击展开完整窗口"),
+      `compact censer should expand full window instead of starting directly: ${firstCompactCenserLabel}`,
+    );
     const ritualSceneStyle = await page.locator(".compact-stage").evaluate((element) => {
       const style = window.getComputedStyle(element);
       return {
@@ -105,6 +110,11 @@ const run = async () => {
     );
     const rowTops = new Set(censerBoxes.map((box) => box.top));
     assert(rowTops.size === 1, `compact ritual censers should be side by side: ${JSON.stringify(censerBoxes)}`);
+    await page.locator(".compact-censer__button").first().click();
+    assert(
+      !(await page.getByRole("heading", { name: "确认开始这一套？" }).isVisible()),
+      "compact censer click should not open the start confirmation",
+    );
     await assertNoHorizontalOverflow(page, "ritual");
 
     await page.screenshot({ fullPage: true, path: screenshotPath });

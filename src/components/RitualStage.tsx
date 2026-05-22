@@ -72,12 +72,10 @@ const RitualStage = ({
 
           return (
             <CompactCenserSlot
-              actionDisabled={hasBlockingAction && !isActive}
               incenseProgress={incenseProgress}
               intentSet={intentSet}
               key={intentSet.id}
               onOpenFullView={onOpenFullView}
-              onStart={onStartIntent}
               timerRemaining={isActive ? timerRemaining : 0}
             />
           );

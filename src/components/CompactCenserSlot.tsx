@@ -3,11 +3,9 @@ import type { IntentSet } from "../types";
 import CenserVisual from "./CenserVisual";
 
 type CompactCenserSlotProps = {
-  actionDisabled: boolean;
   incenseProgress: number;
   intentSet: IntentSet;
   onOpenFullView: () => void;
-  onStart: (intentSetId: string) => void;
   timerRemaining: number;
 };
 
@@ -18,9 +16,9 @@ const statusLabels: Record<IntentSet["status"], string> = {
   completed: "已完成",
 };
 
-const getStatusHint = (intentSet: IntentSet, canStart: boolean, formattedRemaining: string) => {
+const getStatusHint = (intentSet: IntentSet, formattedRemaining: string) => {
   if (intentSet.status === "idle") {
-    return canStart ? "点击香炉开始" : "点击查看当前轮次";
+    return "点击展开完整窗口";
   }
 
   if (intentSet.status === "burning") {
@@ -35,25 +33,14 @@ const getStatusHint = (intentSet: IntentSet, canStart: boolean, formattedRemaini
 };
 
 const CompactCenserSlot = ({
-  actionDisabled,
   incenseProgress,
   intentSet,
   onOpenFullView,
-  onStart,
   timerRemaining,
 }: CompactCenserSlotProps) => {
   const isActive = intentSet.status === "burning" || intentSet.status === "resting";
-  const canStart = intentSet.status === "idle" && !actionDisabled;
   const formattedRemaining = formatSeconds(timerRemaining);
-  const statusHint = getStatusHint(intentSet, canStart, formattedRemaining);
-  const handleClick = () => {
-    if (canStart) {
-      onStart(intentSet.id);
-      return;
-    }
-
-    onOpenFullView();
-  };
+  const statusHint = getStatusHint(intentSet, formattedRemaining);
 
   return (
     <article className={`compact-censer compact-censer--${intentSet.status}`}>
@@ -61,7 +48,7 @@ const CompactCenserSlot = ({
         aria-label={`第 ${intentSet.currentIncenseIndex} / ${intentSet.incenseCount} 炷，${statusLabels[intentSet.status]}，${statusHint}`}
         className="compact-censer__button"
         type="button"
-        onClick={handleClick}
+        onClick={onOpenFullView}
       >
         <CenserVisual
           currentIncenseIndex={intentSet.currentIncenseIndex}

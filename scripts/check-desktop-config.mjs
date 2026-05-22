@@ -348,6 +348,7 @@ assertTextIncludes(
 await Promise.all(
   [
     "docs/TAURI_DESKTOP_CHECKLIST.md",
+    "docs/INTERACTION_MODEL.md",
     "docs/MACOS_INTERNAL_BUILD.md",
     "docs/DESKTOP_PERSISTENCE_JSON_SPEC.md",
     "docs/DESKTOP_BEHAVIOR_REGRESSION.md",
