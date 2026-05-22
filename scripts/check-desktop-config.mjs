@@ -140,6 +140,10 @@ assert(
   tauriConfig.bundle?.icon?.includes("icons/app-icon/placeholder-icon.png"),
   "Tauri bundle uses the placeholder app icon from app-icon",
 );
+assert(
+  tauriConfig.app?.macOSPrivateApi === true,
+  "Tauri enables macOSPrivateApi for transparent compact shell",
+);
 
 const mainWindow = tauriConfig.app?.windows?.find(
   (windowConfig) => windowConfig.label === "main",
@@ -154,6 +158,8 @@ assert(mainWindow?.width === compactWindowSize?.width, "Tauri main window width 
 assert(mainWindow?.height === compactWindowSize?.height, "Tauri main window height matches COMPACT_WINDOW_SIZE");
 assert(mainWindow?.minWidth === compactWindowMinSize?.width, "Tauri main window minWidth matches COMPACT_WINDOW_MIN_SIZE");
 assert(mainWindow?.minHeight === compactWindowMinSize?.height, "Tauri main window minHeight matches COMPACT_WINDOW_MIN_SIZE");
+assert(mainWindow?.transparent === true, "Tauri main window allows transparent compact shell");
+assert(mainWindow?.backgroundColor === "#00000000", "Tauri main window starts with transparent background");
 assertTextIncludes(
   tauriWindow,
   `FULL_WINDOW_SIZE`,
@@ -163,6 +169,36 @@ assertTextIncludes(
   tauriWindow,
   `COMPACT_WINDOW_SIZE`,
   "Tauri window adapter uses COMPACT_WINDOW_SIZE",
+);
+assertTextIncludes(
+  tauriWindow,
+  `setDecorations(shell.hasDecorations)`,
+  "Tauri window adapter toggles native window decorations",
+);
+assertTextIncludes(
+  tauriWindow,
+  `setBackgroundColor(shell.backgroundColor)`,
+  "Tauri window adapter toggles native window background color",
+);
+assertTextIncludes(
+  tauriWindow,
+  `setShadow(shell.hasShadow)`,
+  "Tauri window adapter toggles native window shadow",
+);
+assertTextIncludes(
+  tauriWindow,
+  `setTitleBarStyle(shell.titleBarStyle)`,
+  "Tauri window adapter toggles native title bar style",
+);
+assertTextIncludes(
+  tauriWindow,
+  `document.documentElement.dataset.windowMode = mode`,
+  "Tauri window adapter marks the current document window mode",
+);
+assertTextIncludes(
+  tauriWindow,
+  `runCompatibleWindowAction`,
+  "Tauri window adapter keeps size changes working when optional shell APIs fail",
 );
 assert(
   fullWindowSize?.width === 960 && fullWindowSize.height === 760,
@@ -180,14 +216,19 @@ assert(
   "core:window:allow-destroy",
   "core:window:allow-hide",
   "core:window:allow-set-always-on-top",
+  "core:window:allow-set-background-color",
+  "core:window:allow-set-decorations",
   "core:window:allow-set-focus",
+  "core:window:allow-set-shadow",
   "core:window:allow-set-size",
+  "core:window:allow-set-title-bar-style",
   "core:window:allow-show",
   "dialog:default",
   "notification:default",
 ].forEach((permission) => assertPermission(capability, permission));
 
-assertTextIncludes(cargoToml, 'features = ["tray-icon"]', "Cargo enables Tauri tray-icon feature");
+assertTextIncludes(cargoToml, '"macos-private-api"', "Cargo enables Tauri macos-private-api feature");
+assertTextIncludes(cargoToml, '"tray-icon"', "Cargo enables Tauri tray-icon feature");
 assertTextIncludes(cargoToml, "tauri-plugin-dialog", "Cargo includes tauri-plugin-dialog");
 assertTextIncludes(
   cargoToml,

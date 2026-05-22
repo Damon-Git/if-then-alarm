@@ -21,7 +21,7 @@ npm run check:desktop-config
 - Tauri identifier 仍为 `com.damon.jijirululing`。
 - 初始窗口仍为 `390 × 620`。
 - 完整窗口尺寸仍为 `960 × 760`。
-- 桌面权限包含 Dock、窗口隐藏、窗口置顶、系统通知、系统文件对话框。
+- 桌面权限包含 Dock、窗口隐藏、窗口置顶、窗口装饰切换、窗口阴影切换、标题栏样式切换、窗口背景色切换、系统通知、系统文件对话框。
 - Rust 依赖包含通知插件、对话框插件和 `tray-icon` feature。
 - 桌面持久化文件名仍为 `persistence.v1.json`。
 - 关键适配器、命令和文档仍存在。

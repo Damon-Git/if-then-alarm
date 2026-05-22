@@ -9,6 +9,28 @@ type TauriWindowSize = {
   width: number;
 };
 
+type TauriTitleBarStyle = "visible" | "transparent" | "overlay";
+
+type TauriWindowShell = {
+  backgroundColor: string;
+  hasDecorations: boolean;
+  hasShadow: boolean;
+  mode: "compact" | "full";
+  titleBarStyle: TauriTitleBarStyle;
+};
+
+const setDocumentWindowMode = (mode: TauriWindowShell["mode"]) => {
+  document.documentElement.dataset.windowMode = mode;
+};
+
+const runCompatibleWindowAction = async (action: () => Promise<void>) => {
+  try {
+    await action();
+  } catch {
+    // Some shell APIs vary by macOS/WebView support. Size/focus remain the source of truth.
+  }
+};
+
 export const isTauriRuntime = () =>
   typeof window !== "undefined" && Boolean((window as TauriInternalsWindow).__TAURI_INTERNALS__);
 
@@ -46,14 +68,20 @@ export const hideCurrentTauriWindow = async () => {
   return true;
 };
 
-const resizeAndFocusCurrentTauriWindow = async (size: TauriWindowSize) => {
+const resizeAndFocusCurrentTauriWindow = async (size: TauriWindowSize, shell: TauriWindowShell) => {
   if (!isTauriRuntime()) {
     return false;
   }
 
+  setDocumentWindowMode(shell.mode);
+
   const { getCurrentWindow, LogicalSize } = await import("@tauri-apps/api/window");
   const currentWindow = getCurrentWindow();
 
+  await runCompatibleWindowAction(() => currentWindow.setBackgroundColor(shell.backgroundColor));
+  await runCompatibleWindowAction(() => currentWindow.setTitleBarStyle(shell.titleBarStyle));
+  await runCompatibleWindowAction(() => currentWindow.setDecorations(shell.hasDecorations));
+  await runCompatibleWindowAction(() => currentWindow.setShadow(shell.hasShadow));
   await currentWindow.setSize(new LogicalSize(size.width, size.height));
   await currentWindow.center();
   await currentWindow.show();
@@ -61,9 +89,23 @@ const resizeAndFocusCurrentTauriWindow = async (size: TauriWindowSize) => {
   return true;
 };
 
-export const expandCurrentTauriWindow = async () => resizeAndFocusCurrentTauriWindow(FULL_WINDOW_SIZE);
+export const expandCurrentTauriWindow = async () =>
+  resizeAndFocusCurrentTauriWindow(FULL_WINDOW_SIZE, {
+    backgroundColor: "#f4f0ea",
+    hasDecorations: true,
+    hasShadow: true,
+    mode: "full",
+    titleBarStyle: "visible",
+  });
 
-export const compactCurrentTauriWindow = async () => resizeAndFocusCurrentTauriWindow(COMPACT_WINDOW_SIZE);
+export const compactCurrentTauriWindow = async () =>
+  resizeAndFocusCurrentTauriWindow(COMPACT_WINDOW_SIZE, {
+    backgroundColor: "#00000000",
+    hasDecorations: false,
+    hasShadow: false,
+    mode: "compact",
+    titleBarStyle: "overlay",
+  });
 
 export const setCurrentTauriWindowAlwaysOnTop = async (isAlwaysOnTop: boolean) => {
   if (!isTauriRuntime()) {

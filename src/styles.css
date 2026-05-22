@@ -20,6 +20,12 @@ body,
   overflow-x: hidden;
 }
 
+html[data-window-mode="compact"],
+html[data-window-mode="compact"] body,
+html[data-window-mode="compact"] #root {
+  background: transparent;
+}
+
 body {
   min-width: 320px;
   min-height: 100vh;

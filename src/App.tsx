@@ -397,6 +397,9 @@ const App = () => {
     void cancelTimerNotification();
     setHasUnsavedSetupDraft(false);
     setPhase("ritual");
+    expandCurrentTauriWindow().catch(() => {
+      showToast("error", "完整仪式台未能打开。");
+    });
   };
 
   const requestStartIntent = (intentSetId: string) => {
@@ -492,7 +495,7 @@ const App = () => {
     setIsAbandonConfirmOpen(false);
   };
 
-  const abandonCurrentSession = () => {
+  const abandonCurrentSession = ({ restoreWindow = true } = {}) => {
     setIntentSets([]);
     setTimerRemaining(0);
     setActiveTimerSegment(null);
@@ -503,6 +506,12 @@ const App = () => {
     void cancelTimerNotification();
     setPhase("setup");
     clearPersistedSession();
+
+    if (restoreWindow) {
+      expandCurrentTauriWindow().catch(() => {
+        showToast("error", "完整窗口未能恢复。");
+      });
+    }
   };
 
   const confirmAbandonSession = () => {
@@ -529,6 +538,10 @@ const App = () => {
     setActiveUtilityPanel(null);
     setPhase(resolvedSession.phase);
     setPendingSession(null);
+
+    expandCurrentTauriWindow().catch(() => {
+      showToast("error", "窗口状态未能恢复。");
+    });
 
     if (restoredTimerSegment) {
       void scheduleTimerNotification({
@@ -575,6 +588,9 @@ const App = () => {
     void cancelTimerNotification();
     setPhase("setup");
     clearPersistedSession();
+    expandCurrentTauriWindow().catch(() => {
+      showToast("error", "完整窗口未能恢复。");
+    });
   };
 
   const deleteRecord = (recordId: string) => {
@@ -642,7 +658,7 @@ const App = () => {
 
   const abandonAndCloseTauriSession = async () => {
     setTauriCloseRequest(null);
-    abandonCurrentSession();
+    abandonCurrentSession({ restoreWindow: false });
 
     const didClose = await closeCurrentTauriWindow();
 

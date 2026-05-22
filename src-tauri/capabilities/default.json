@@ -10,7 +10,11 @@
     "core:window:allow-hide",
     "core:window:allow-set-focus",
     "core:window:allow-set-always-on-top",
+    "core:window:allow-set-background-color",
+    "core:window:allow-set-decorations",
+    "core:window:allow-set-shadow",
     "core:window:allow-set-size",
+    "core:window:allow-set-title-bar-style",
     "core:window:allow-show",
     "dialog:default",
     "notification:default"
