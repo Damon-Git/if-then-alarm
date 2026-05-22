@@ -154,8 +154,8 @@ const fullWindowSize = readWindowSizeConstant(constantsTs, "FULL_WINDOW_SIZE");
 
 assert(Boolean(mainWindow), "Tauri main window is configured");
 assert(mainWindow?.title === "急急如律令", "Tauri main window title is 急急如律令");
-assert(mainWindow?.width === compactWindowSize?.width, "Tauri main window width matches COMPACT_WINDOW_SIZE");
-assert(mainWindow?.height === compactWindowSize?.height, "Tauri main window height matches COMPACT_WINDOW_SIZE");
+assert(mainWindow?.width === fullWindowSize?.width, "Tauri main window width matches FULL_WINDOW_SIZE");
+assert(mainWindow?.height === fullWindowSize?.height, "Tauri main window height matches FULL_WINDOW_SIZE");
 assert(mainWindow?.minWidth === compactWindowMinSize?.width, "Tauri main window minWidth matches COMPACT_WINDOW_MIN_SIZE");
 assert(mainWindow?.minHeight === compactWindowMinSize?.height, "Tauri main window minHeight matches COMPACT_WINDOW_MIN_SIZE");
 assert(mainWindow?.transparent === true, "Tauri main window allows transparent compact shell");

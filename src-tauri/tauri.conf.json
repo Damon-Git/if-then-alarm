@@ -15,8 +15,8 @@
       {
         "label": "main",
         "title": "急急如律令",
-        "width": 390,
-        "height": 620,
+        "width": 960,
+        "height": 760,
         "minWidth": 360,
         "minHeight": 520,
         "resizable": true,

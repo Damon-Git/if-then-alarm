@@ -1329,12 +1329,6 @@ select {
 }
 
 @media (max-width: 560px) {
-  html:has(.app-shell--ritual),
-  body:has(.app-shell--ritual),
-  body:has(.app-shell--ritual) #root {
-    background: transparent;
-  }
-
   .app-shell {
     width: min(calc(100% - 16px), 420px);
     padding-top: 8px;
@@ -1387,94 +1381,6 @@ select {
     min-height: 30px;
     padding: 0 10px;
     font-size: 0.84rem;
-  }
-
-  .stage-grid--full {
-    display: none;
-  }
-
-  .compact-stage {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(108px, 1fr));
-    gap: 10px;
-  }
-
-  .app-shell--ritual {
-    width: max-content;
-    max-width: 100%;
-    min-height: 0;
-    padding: 0;
-  }
-
-  .app-shell--ritual .app-header,
-  .app-shell--ritual .ritual-panel > .section-heading,
-  .app-shell--ritual .settings-panel,
-  .app-shell--ritual .history-panel {
-    display: none;
-  }
-
-  .app-shell--ritual .app-main {
-    min-height: 0;
-    display: grid;
-    place-items: center;
-    gap: 0;
-    background: transparent;
-  }
-
-  .app-shell--ritual .ritual-panel {
-    width: max-content;
-    max-width: 100%;
-    min-height: 0;
-    border: 0;
-    border-radius: 0;
-    padding: 0;
-    background: transparent;
-    box-shadow: none;
-    display: grid;
-    place-items: center;
-  }
-
-  .app-shell--ritual .compact-stage {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    width: 100%;
-    flex-wrap: nowrap;
-    overflow: visible;
-    background: transparent;
-  }
-
-  .app-shell--ritual .compact-censer {
-    place-items: center;
-  }
-
-  .app-shell--ritual .compact-censer__button {
-    width: 94px;
-    min-height: 112px;
-    border: 0;
-    padding: 0;
-    background: transparent;
-  }
-
-  .app-shell--ritual .compact-censer--idle .compact-censer__button:not(:disabled):hover,
-  .app-shell--ritual .compact-censer--burning .compact-censer__button,
-  .app-shell--ritual .compact-censer--resting .compact-censer__button,
-  .app-shell--ritual .compact-censer--completed .compact-censer__button {
-    border-color: transparent;
-    background: transparent;
-  }
-
-  .app-shell--ritual .compact-censer__status,
-  .app-shell--ritual .compact-censer__hint,
-  .app-shell--ritual .compact-censer strong,
-  .app-shell--ritual .compact-censer p {
-    display: none;
-  }
-
-  .app-shell--ritual .censer-visual--compact .censer-visual__asset {
-    width: 74px;
-    height: 84px;
   }
 
   .compact-censer__button {
@@ -1677,4 +1583,92 @@ select {
   .history-summary__review {
     overflow-wrap: anywhere;
   }
+}
+
+html[data-window-mode="compact"]:has(.app-shell--ritual),
+html[data-window-mode="compact"] body:has(.app-shell--ritual),
+html[data-window-mode="compact"] body:has(.app-shell--ritual) #root {
+  background: transparent;
+}
+
+html[data-window-mode="compact"] .stage-grid--full {
+  display: none;
+}
+
+html[data-window-mode="compact"] .app-shell--ritual {
+  width: max-content;
+  max-width: 100%;
+  min-height: 0;
+  padding: 0;
+}
+
+html[data-window-mode="compact"] .app-shell--ritual .app-header,
+html[data-window-mode="compact"] .app-shell--ritual .ritual-panel > .section-heading,
+html[data-window-mode="compact"] .app-shell--ritual .settings-panel,
+html[data-window-mode="compact"] .app-shell--ritual .history-panel {
+  display: none;
+}
+
+html[data-window-mode="compact"] .app-shell--ritual .app-main {
+  min-height: 0;
+  display: grid;
+  place-items: center;
+  gap: 0;
+  background: transparent;
+}
+
+html[data-window-mode="compact"] .app-shell--ritual .ritual-panel {
+  width: max-content;
+  max-width: 100%;
+  min-height: 0;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+  background: transparent;
+  box-shadow: none;
+  display: grid;
+  place-items: center;
+}
+
+html[data-window-mode="compact"] .app-shell--ritual .compact-stage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  flex-wrap: nowrap;
+  overflow: visible;
+  background: transparent;
+}
+
+html[data-window-mode="compact"] .app-shell--ritual .compact-censer {
+  place-items: center;
+}
+
+html[data-window-mode="compact"] .app-shell--ritual .compact-censer__button {
+  width: 94px;
+  min-height: 112px;
+  border: 0;
+  padding: 0;
+  background: transparent;
+}
+
+html[data-window-mode="compact"] .app-shell--ritual .compact-censer--idle .compact-censer__button:not(:disabled):hover,
+html[data-window-mode="compact"] .app-shell--ritual .compact-censer--burning .compact-censer__button,
+html[data-window-mode="compact"] .app-shell--ritual .compact-censer--resting .compact-censer__button,
+html[data-window-mode="compact"] .app-shell--ritual .compact-censer--completed .compact-censer__button {
+  border-color: transparent;
+  background: transparent;
+}
+
+html[data-window-mode="compact"] .app-shell--ritual .compact-censer__status,
+html[data-window-mode="compact"] .app-shell--ritual .compact-censer__hint,
+html[data-window-mode="compact"] .app-shell--ritual .compact-censer strong,
+html[data-window-mode="compact"] .app-shell--ritual .compact-censer p {
+  display: none;
+}
+
+html[data-window-mode="compact"] .app-shell--ritual .censer-visual--compact .censer-visual__asset {
+  width: 74px;
+  height: 84px;
 }
