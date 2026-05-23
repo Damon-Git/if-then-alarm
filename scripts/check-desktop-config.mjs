@@ -116,6 +116,7 @@ const talismanVisual = await readText("src/components/TalismanVisual.tsx");
 assertPackageScript(packageJson, "dev:tauri-frontend", "node scripts/start-tauri-frontend.mjs");
 assertPackageScript(packageJson, "check:compact", "node scripts/check-compact-window.mjs");
 assertPackageScript(packageJson, "check:desktop-config", "node scripts/check-desktop-config.mjs");
+assertPackageScript(packageJson, "check:self-use", "node scripts/check-self-use-readiness.mjs");
 assertPackageScript(packageJson, "tauri:dev", "tauri dev");
 assertPackageScript(packageJson, "tauri:build", "tauri build");
 
@@ -440,8 +441,10 @@ await Promise.all(
     "docs/TAURI_DESKTOP_CHECKLIST.md",
     "docs/INTERACTION_MODEL.md",
     "docs/MACOS_INTERNAL_BUILD.md",
+    "docs/SELF_USE_READINESS.md",
     "docs/DESKTOP_PERSISTENCE_JSON_SPEC.md",
     "docs/DESKTOP_BEHAVIOR_REGRESSION.md",
+    "scripts/check-self-use-readiness.mjs",
     "src/lib/desktopPersistenceAdapter.ts",
     "src/lib/desktopPersistenceSchema.ts",
     "src/lib/fileTransferAdapter.ts",
