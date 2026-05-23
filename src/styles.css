@@ -426,6 +426,51 @@ select {
   gap: 16px;
 }
 
+.stage-grid--full {
+  display: block;
+}
+
+.altar-scene {
+  position: relative;
+  --altar-censer-center-y: 64%;
+  --altar-situation-top: 17%;
+  --altar-prevention-top: 81%;
+  min-height: clamp(520px, 58vw, 720px);
+  overflow: hidden;
+  border: 1px solid #d9cabe;
+  border-radius: 8px;
+  background-color: #d8c19d;
+  background-image: linear-gradient(180deg, rgb(255 250 239 / 16%), rgb(44 30 20 / 8%)),
+    var(--altar-background-image);
+  background-position: center;
+  background-size: cover;
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 18%);
+}
+
+.altar-scene__slots {
+  position: absolute;
+  top: 16%;
+  right: 22%;
+  bottom: 4%;
+  left: 22%;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(10px, 2vw, 28px);
+  align-items: stretch;
+}
+
+.altar-scene--slots-1 .altar-scene__slots {
+  right: 44%;
+  left: 44%;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.altar-scene--slots-2 .altar-scene__slots {
+  right: 33%;
+  left: 33%;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
 .compact-stage {
   display: none;
 }
@@ -460,15 +505,17 @@ select {
   position: relative;
   display: grid;
   gap: 6px;
-  width: 100%;
-  min-height: 112px;
-  border: 1px solid #c9b7a8;
-  border-radius: 6px;
-  padding: 12px;
+  justify-self: center;
+  width: min(100%, 300px);
+  min-height: 420px;
+  border: 0;
+  border-radius: 8px;
+  padding: 0;
   overflow: hidden;
-  background: #fbefe4;
+  background: #f6c34e;
   color: #241f1b;
-  text-align: left;
+  box-shadow: 0 8px 18px rgb(91 53 22 / 16%);
+  text-align: center;
 }
 
 .talisman-visual--interactive {
@@ -482,8 +529,8 @@ select {
 }
 
 .talisman-visual--prevention {
-  min-height: auto;
-  background: #f7f2ed;
+  min-height: 320px;
+  background: #eebf4d;
 }
 
 .talisman-visual__template,
@@ -494,24 +541,62 @@ select {
 }
 
 .talisman-visual__template {
-  background: linear-gradient(180deg, rgb(255 255 255 / 28%), transparent);
+  background: linear-gradient(180deg, rgb(255 255 255 / 18%), transparent);
 }
 
 .talisman-visual__state {
-  border: 1px solid rgb(138 47 37 / 10%);
+  border: 1px solid rgb(138 47 37 / 8%);
+}
+
+.talisman-visual__template .visual-layer__asset {
+  object-fit: cover;
 }
 
 .talisman-visual__text {
-  position: relative;
+  position: absolute;
+  inset: 0;
   z-index: 1;
-  display: grid;
-  gap: 6px;
+  pointer-events: none;
 }
 
 .talisman-visual__label {
+  position: absolute;
+  top: 8%;
+  left: 50%;
+  transform: translateX(-50%);
   color: #8a2f25;
-  font-size: 0.78rem;
+  font-size: 0.72rem;
   font-weight: 800;
+  text-transform: uppercase;
+}
+
+.talisman-visual__column {
+  position: absolute;
+  top: 18%;
+  display: block;
+  max-height: 62%;
+  color: #171310;
+  font-size: clamp(0.9rem, 1.6vw, 1.16rem);
+  font-weight: 900;
+  line-height: 1.22;
+  overflow: hidden;
+  text-align: start;
+  text-orientation: upright;
+  writing-mode: vertical-rl;
+}
+
+.talisman-visual--prevention .talisman-visual__column {
+  top: 17%;
+  max-height: 60%;
+  font-size: clamp(0.82rem, 1.35vw, 1rem);
+}
+
+.talisman-visual__column--right {
+  right: 17%;
+}
+
+.talisman-visual__column--left {
+  left: 17%;
 }
 
 .visual-layer__asset {
@@ -852,6 +937,212 @@ select {
 .prevention-list {
   display: grid;
   gap: 8px;
+}
+
+.prevention-list__items {
+  display: grid;
+  gap: 8px;
+}
+
+.altar-scene .intent-slot {
+  position: relative;
+  display: block;
+  height: 100%;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+  background: transparent;
+}
+
+.altar-scene .intent-slot--completed {
+  background: transparent;
+}
+
+.altar-scene .intent-slot__topline {
+  position: absolute;
+  top: 17%;
+  right: 0;
+  left: 0;
+  z-index: 6;
+  opacity: 0;
+  pointer-events: none;
+  width: 100%;
+  color: #241f1b;
+  font-size: 0.8rem;
+  text-shadow: 0 1px 2px rgb(255 247 229 / 80%);
+  transition: opacity 160ms ease;
+}
+
+.altar-scene .status-pill {
+  min-height: 22px;
+  padding: 0 8px;
+  background: rgb(237 228 218 / 82%);
+  font-size: 0.72rem;
+}
+
+.altar-scene .talisman-visual {
+  --talisman-column-edge: 7.5%;
+  --talisman-text-center-y: 50%;
+  z-index: 3;
+  width: clamp(32px, 3.4vw, 48px);
+  min-height: clamp(112px, 12vw, 158px);
+  border-radius: 4px;
+  box-shadow: 0 6px 14px rgb(55 31 15 / 18%);
+  transition:
+    box-shadow 180ms ease,
+    transform 180ms ease;
+}
+
+.altar-scene .talisman-visual--situation {
+  position: absolute;
+  top: var(--altar-situation-top);
+  left: 50%;
+  transform: translateX(-50%);
+  transform-origin: center bottom;
+}
+
+.altar-scene .talisman-visual--prevention {
+  --talisman-column-edge: 8%;
+  --talisman-text-center-y: 50%;
+  width: clamp(28px, 2.8vw, 38px);
+  min-height: clamp(82px, 8.6vw, 112px);
+  transform-origin: center top;
+}
+
+.altar-scene .talisman-visual__label {
+  display: none;
+}
+
+.altar-scene .talisman-visual__column,
+.altar-scene .talisman-visual--prevention .talisman-visual__column {
+  top: var(--talisman-text-center-y);
+  width: 1.15em;
+  max-height: 75%;
+  font-size: clamp(0.24rem, 0.36vw, 0.36rem);
+  line-height: 1.08;
+  white-space: nowrap;
+  transform: translateY(-50%);
+}
+
+.altar-scene .talisman-visual__column--right {
+  right: var(--talisman-column-edge);
+}
+
+.altar-scene .talisman-visual__column--left {
+  left: var(--talisman-column-edge);
+}
+
+.altar-scene .talisman-visual--situation:hover,
+.altar-scene .talisman-visual--situation:focus-visible {
+  z-index: 12;
+  box-shadow: 0 14px 28px rgb(36 24 14 / 30%);
+  transform: translateX(-50%) scale(1.65);
+}
+
+.altar-scene .talisman-visual--prevention:hover,
+.altar-scene .talisman-visual--prevention:focus-visible {
+  z-index: 12;
+  box-shadow: 0 12px 24px rgb(36 24 14 / 28%);
+  transform: scale(1.72);
+}
+
+.altar-scene .censer-visual--stage {
+  position: absolute;
+  top: var(--altar-censer-center-y);
+  left: 50%;
+  z-index: 5;
+  display: block;
+  width: 150px;
+  height: 182px;
+  min-height: 0;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  transform: translate(-50%, -50%);
+}
+
+.altar-scene .censer-visual--stage .censer-visual__asset {
+  position: absolute;
+  bottom: 28px;
+  left: 50%;
+  margin: 0;
+  transform: translateX(-50%) scale(1.36);
+  transform-origin: center bottom;
+}
+
+.altar-scene .censer-visual__meta {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  opacity: 0;
+  border-radius: 999px;
+  border: 1px solid rgb(124 92 69 / 24%);
+  padding: 3px 9px;
+  background: #fffaf2;
+  box-shadow: 0 2px 6px rgb(31 22 15 / 18%);
+  color: #2f2822;
+  font-size: 0.8rem;
+  font-weight: 800;
+  line-height: 1.1;
+  text-align: center;
+  text-shadow: none;
+  white-space: nowrap;
+  transform: translateX(-50%);
+  transition: opacity 160ms ease;
+}
+
+.altar-scene .timer-panel {
+  position: absolute;
+  top: calc(var(--altar-censer-center-y) + 18%);
+  left: 50%;
+  z-index: 8;
+  opacity: 0;
+  width: min(100%, 168px);
+  border-color: rgb(211 196 181 / 70%);
+  padding: 8px;
+  background: rgb(255 253 249 / 82%);
+  pointer-events: none;
+  transform: translateX(-50%);
+  transition: opacity 160ms ease;
+}
+
+.altar-scene .timer-panel strong {
+  font-size: 1.25rem;
+}
+
+.altar-scene .prevention-list {
+  position: absolute;
+  right: 0;
+  top: var(--altar-prevention-top);
+  bottom: auto;
+  left: 0;
+  z-index: 4;
+  width: 100%;
+  min-width: 0;
+  gap: 6px;
+}
+
+.altar-scene .prevention-list__title {
+  display: none;
+}
+
+.altar-scene .prevention-list__items {
+  display: flex;
+  justify-content: center;
+  gap: clamp(4px, 0.8vw, 8px);
+}
+
+.altar-scene .prevention-list[data-prevention-count="0"] .muted-text {
+  display: none;
+}
+
+.altar-scene .intent-slot:hover .intent-slot__topline,
+.altar-scene .intent-slot:has(.talisman-visual:focus-visible) .intent-slot__topline,
+.altar-scene .intent-slot:hover .censer-visual__meta,
+.altar-scene .intent-slot:has(.talisman-visual:focus-visible) .censer-visual__meta,
+.altar-scene .intent-slot:hover .timer-panel,
+.altar-scene .intent-slot:has(.talisman-visual:focus-visible) .timer-panel {
+  opacity: 1;
 }
 
 .muted-text {

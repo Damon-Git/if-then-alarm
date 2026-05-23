@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  getAltarAssetUrl,
   getCenserAssetUrl,
   getIncenseAssetUrl,
   getTalismanAssetUrl,
@@ -8,11 +9,14 @@ import {
   type VisualAssetManifest,
 } from "./visualAssetManifest";
 import {
+  ALTAR_ASSET_REQUIREMENTS,
+  ALTAR_ASSET_LAYERS,
   CENSER_ASSET_LAYERS,
   COMPACT_CENSER_ASSET_REQUIREMENTS,
   INCENSE_ASSET_LAYERS,
   getCenserVisualSlot,
   getIncenseVisualSlot,
+  getAltarVisualSlot,
   getTalismanVisualSlot,
   STAGE_CENSER_ASSET_REQUIREMENTS,
   TALISMAN_ASSET_LAYERS,
@@ -21,26 +25,37 @@ import {
 } from "./visualAssets";
 
 describe("visual asset manifest", () => {
-  it("keeps non-compact default slots empty when only compact test assets are configured", () => {
+  it("keeps stage defaults empty while configuring altar, compact, and talisman test assets", () => {
     expect(getVisualAssetUrl("censer/stage/body")).toBeUndefined();
     expect(getCenserAssetUrl("stage", "body")).toBeUndefined();
     expect(Object.keys(visualAssetManifest).sort()).toEqual([
+      "altar/background",
       "censer/compact/ash",
       "censer/compact/body",
       "censer/compact/feet",
       "censer/compact/lid",
       "censer/compact/mouth",
+      "talisman/prevention/template",
+      "talisman/situation/template",
     ]);
+    expect(getAltarAssetUrl("background")).toEqual(expect.stringContaining("background"));
     expect(getCenserAssetUrl("compact", "body")).toEqual(expect.stringContaining("body"));
+    expect(getTalismanAssetUrl("situation", "template")).toEqual(expect.stringContaining("template"));
+    expect(getTalismanAssetUrl("prevention", "template")).toEqual(expect.stringContaining("template"));
+    expect(getTalismanAssetUrl("situation", "text")).toBeUndefined();
+    expect(getTalismanAssetUrl("prevention", "text")).toBeUndefined();
   });
 
   it("returns configured asset URLs by visual slot", () => {
     const manifest: VisualAssetManifest = {
+      "altar/background": "/visuals/altar/background.png",
       "censer/stage/body": "/visuals/censer/stage/body.png",
       "incense/compact/stick": "/visuals/incense/compact/stick.png",
       "talisman/situation/template": "/visuals/talisman/situation/template.png",
     };
 
+    expect(getVisualAssetUrl("altar/background", manifest)).toBe("/visuals/altar/background.png");
+    expect(getAltarAssetUrl("background", manifest)).toBe("/visuals/altar/background.png");
     expect(getVisualAssetUrl("censer/stage/body", manifest)).toBe("/visuals/censer/stage/body.png");
     expect(getCenserAssetUrl("stage", "body", manifest)).toBe("/visuals/censer/stage/body.png");
     expect(getIncenseAssetUrl("compact", "stick", manifest)).toBe("/visuals/incense/compact/stick.png");
@@ -126,5 +141,14 @@ describe("visual asset manifest", () => {
       "talisman/prevention/state",
       "talisman/prevention/text",
     ]);
+  });
+
+  it("keeps altar background slot explicit for the shared stage", () => {
+    expect(ALTAR_ASSET_REQUIREMENTS).toMatchObject({
+      backgroundRole: "shared-stage-reference",
+      maxCenserSlots: 3,
+      tableLayout: "single-table-even-slots",
+    });
+    expect(ALTAR_ASSET_LAYERS.map((layer) => getAltarVisualSlot(layer))).toEqual(["altar/background"]);
   });
 });

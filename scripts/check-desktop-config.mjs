@@ -111,6 +111,7 @@ const censerVisual = await readText("src/components/CenserVisual.tsx");
 const compactCenserSlot = await readText("src/components/CompactCenserSlot.tsx");
 const incenseVisual = await readText("src/components/IncenseVisual.tsx");
 const intentSlot = await readText("src/components/IntentSlot.tsx");
+const ritualStage = await readText("src/components/RitualStage.tsx");
 const talismanVisual = await readText("src/components/TalismanVisual.tsx");
 
 assertPackageScript(packageJson, "dev:tauri-frontend", "node scripts/start-tauri-frontend.mjs");
@@ -376,16 +377,22 @@ assertTextIncludes(
   "App applies Dock visibility setting",
 );
 [
+  "altarBackgroundUrl",
   "compactCenserAshUrl",
   "compactCenserBodyUrl",
   "compactCenserFeetUrl",
   "compactCenserLidUrl",
   "compactCenserMouthUrl",
+  "preventionTalismanTemplateUrl",
+  "situationTalismanTemplateUrl",
+  '"altar/background"',
   '"censer/compact/ash"',
   '"censer/compact/body"',
   '"censer/compact/feet"',
   '"censer/compact/lid"',
   '"censer/compact/mouth"',
+  '"talisman/prevention/template"',
+  '"talisman/situation/template"',
 ].forEach((manifestToken) =>
   assertTextIncludes(
     visualAssetManifest,
@@ -394,16 +401,20 @@ assertTextIncludes(
   ),
 );
 [
+  "ALTAR_ASSET_REQUIREMENTS",
+  "ALTAR_ASSET_LAYERS",
   "STAGE_CENSER_ASSET_REQUIREMENTS",
   "TALISMAN_ASSET_REQUIREMENTS",
   "TALISMAN_ASSET_LAYERS",
   "TALISMAN_TEMPLATE_ASSET_LAYERS",
   "CENSER_ASSET_LAYERS",
   "INCENSE_ASSET_LAYERS",
+  "altar",
   "censerStage",
   "incenseStage",
   "talismanSituation",
   "talismanPrevention",
+  "getAltarVisualSlot",
   "getCenserVisualSlot",
   "getIncenseVisualSlot",
   "getTalismanVisualSlot",
@@ -417,6 +428,12 @@ assertTextIncludes(
 assertTextIncludes(censerVisual, "CENSER_ASSET_LAYERS.map", "CenserVisual uses central censer layer order");
 assertTextIncludes(incenseVisual, "INCENSE_ASSET_LAYERS.map", "IncenseVisual uses central incense layer order");
 assertTextIncludes(talismanVisual, "TALISMAN_TEMPLATE_ASSET_LAYERS.map", "TalismanVisual uses central talisman image layer order");
+assertTextIncludes(talismanVisual, "splitIntentText", "TalismanVisual splits intent text into side columns");
+assertTextIncludes(talismanVisual, "talisman-visual__column--right", "TalismanVisual renders right text column");
+assertTextIncludes(talismanVisual, "talisman-visual__column--left", "TalismanVisual renders left text column");
+assertTextIncludes(ritualStage, "getAltarAssetUrl", "RitualStage uses the altar background asset manifest");
+assertTextIncludes(ritualStage, "altar-scene__slots", "RitualStage renders shared altar scene slots");
+assertTextIncludes(intentSlot, "prevention-list__items", "IntentSlot groups prevention talismans for horizontal stage layout");
 assertTextIncludes(intentSlot, 'size="stage"', "Full ritual slot uses stage censer asset family");
 assertTextIncludes(compactCenserSlot, 'size="compact"', "Compact ritual slot uses compact censer asset family");
 assertTextIncludes(compactWindowCheck, "assertFullStageUsesStageVisuals", "Compact check verifies full-stage visual family");
@@ -435,6 +452,14 @@ assertTextIncludes(stylesCss, ".compact-censer--idle .censer-visual--compact", "
 assertTextIncludes(stylesCss, ".compact-censer--burning .censer-visual--compact", "CSS differentiates active compact censer visuals");
 assertTextIncludes(stylesCss, ".compact-censer--resting .censer-visual--compact", "CSS differentiates resting compact censer visuals");
 assertTextIncludes(stylesCss, ".compact-censer--completed .censer-visual--compact", "CSS differentiates completed compact censer visuals");
+assertTextIncludes(stylesCss, ".talisman-visual__template .visual-layer__asset", "CSS renders talisman template image layer");
+assertTextIncludes(stylesCss, "writing-mode: vertical-rl", "CSS renders talisman intent text vertically");
+assertTextIncludes(stylesCss, "text-orientation: upright", "CSS keeps talisman text upright");
+assertTextIncludes(stylesCss, ".altar-scene", "CSS renders a shared altar background scene");
+assertTextIncludes(stylesCss, ".altar-scene__slots", "CSS lays out full-stage intent slots on one altar");
+assertTextIncludes(stylesCss, "--altar-censer-center-y", "CSS pins full-stage censers to a shared horizontal line");
+assertTextIncludes(stylesCss, ".altar-scene .intent-slot:hover .censer-visual__meta", "CSS reveals full-stage censer metadata only on hover");
+assertTextIncludes(stylesCss, ".altar-scene .prevention-list__items", "CSS lays out prevention talismans horizontally on the altar");
 
 await Promise.all(
   [
@@ -460,8 +485,12 @@ await Promise.all(
     "src-tauri/icons/menubar-icon/README.md",
     "src-tauri/icons/notification-icon/README.md",
     "src/assets/visuals/README.md",
+    "src/assets/visuals/altar/README.md",
+    "src/assets/visuals/altar/background.png",
     "src/assets/visuals/talisman/situation/README.md",
     "src/assets/visuals/talisman/prevention/README.md",
+    "src/assets/visuals/talisman/situation/template.png",
+    "src/assets/visuals/talisman/prevention/template.png",
     "src/assets/visuals/censer/stage/README.md",
     "src/assets/visuals/censer/compact/README.md",
     "src/assets/visuals/censer/compact/ash.png",

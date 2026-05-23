@@ -1,3 +1,5 @@
+import type { CSSProperties } from "react";
+import { getAltarAssetUrl } from "../lib/visualAssetManifest";
 import type { IntentSet } from "../types";
 import CompactCenserSlot from "./CompactCenserSlot";
 import IntentSlot from "./IntentSlot";
@@ -36,6 +38,10 @@ const RitualStage = ({
   onRequestAbandon,
 }: RitualStageProps) => {
   const isSessionComplete = intentSets.length > 0 && intentSets.every((intentSet) => intentSet.status === "completed");
+  const altarBackgroundUrl = getAltarAssetUrl("background");
+  const altarSceneStyle = {
+    "--altar-background-image": `url(${altarBackgroundUrl})`,
+  } as CSSProperties;
 
   return (
     <section className="panel ritual-panel" aria-labelledby="ritual-title">
@@ -50,21 +56,25 @@ const RitualStage = ({
       </div>
 
       <div className="stage-grid stage-grid--full">
-        {intentSets.map((intentSet) => {
-          const isActive = intentSet.status === "burning" || intentSet.status === "resting";
-          const incenseProgress = getIncenseProgress(intentSet, focusSeconds, isActive ? timerRemaining : 0);
+        <div className={`altar-scene altar-scene--slots-${intentSets.length}`} style={altarSceneStyle}>
+          <div className="altar-scene__slots">
+            {intentSets.map((intentSet) => {
+              const isActive = intentSet.status === "burning" || intentSet.status === "resting";
+              const incenseProgress = getIncenseProgress(intentSet, focusSeconds, isActive ? timerRemaining : 0);
 
-          return (
-            <IntentSlot
-              actionDisabled={hasBlockingAction && !isActive}
-              incenseProgress={incenseProgress}
-              intentSet={intentSet}
-              key={intentSet.id}
-              onStart={onStartIntent}
-              timerRemaining={isActive ? timerRemaining : 0}
-            />
-          );
-        })}
+              return (
+                <IntentSlot
+                  actionDisabled={hasBlockingAction && !isActive}
+                  incenseProgress={incenseProgress}
+                  intentSet={intentSet}
+                  key={intentSet.id}
+                  onStart={onStartIntent}
+                  timerRemaining={isActive ? timerRemaining : 0}
+                />
+              );
+            })}
+          </div>
+        </div>
       </div>
 
       <div className="compact-stage" aria-label="小窗香炉舞台">

@@ -8,13 +8,17 @@ export type CenserAssetLayer = "lid" | "mouth" | "ash" | "body" | "feet";
 
 export type IncenseAssetLayer = "stick" | "ash" | "ember" | "smoke";
 
+export type AltarAssetLayer = "background";
+
 export type TalismanVisualSlot = `talisman/${TalismanAssetVariant}/${TalismanAssetLayer}`;
 
 export type CenserVisualSlot = `censer/${VisualAssetSize}/${CenserAssetLayer}`;
 
 export type IncenseVisualSlot = `incense/${VisualAssetSize}/${IncenseAssetLayer}`;
 
-export type VisualAssetSlot = TalismanVisualSlot | CenserVisualSlot | IncenseVisualSlot;
+export type AltarVisualSlot = `altar/${AltarAssetLayer}`;
+
+export type VisualAssetSlot = AltarVisualSlot | TalismanVisualSlot | CenserVisualSlot | IncenseVisualSlot;
 
 export const TALISMAN_ASSET_LAYERS = ["template", "state", "text"] as const satisfies readonly TalismanAssetLayer[];
 
@@ -23,6 +27,8 @@ export const TALISMAN_TEMPLATE_ASSET_LAYERS = ["template", "state"] as const sat
 export const CENSER_ASSET_LAYERS = ["lid", "mouth", "ash", "body", "feet"] as const satisfies readonly CenserAssetLayer[];
 
 export const INCENSE_ASSET_LAYERS = ["stick", "ash", "ember", "smoke"] as const satisfies readonly IncenseAssetLayer[];
+
+export const ALTAR_ASSET_LAYERS = ["background"] as const satisfies readonly AltarAssetLayer[];
 
 type VisualAssetPixelSize = {
   height: number;
@@ -88,7 +94,14 @@ export const TALISMAN_ASSET_REQUIREMENTS = {
   textLayer: "react-overlay",
 } as const;
 
+export const ALTAR_ASSET_REQUIREMENTS = {
+  backgroundRole: "shared-stage-reference",
+  maxCenserSlots: 3,
+  tableLayout: "single-table-even-slots",
+} as const;
+
 export const VISUAL_ASSET_DIRECTORIES = {
+  altar: `${VISUAL_ASSET_ROOT}/altar`,
   censerCompact: `${VISUAL_ASSET_ROOT}/censer/compact`,
   censerStage: `${VISUAL_ASSET_ROOT}/censer/stage`,
   incenseCompact: `${VISUAL_ASSET_ROOT}/incense/compact`,
@@ -96,6 +109,8 @@ export const VISUAL_ASSET_DIRECTORIES = {
   talismanPrevention: `${VISUAL_ASSET_ROOT}/talisman/prevention`,
   talismanSituation: `${VISUAL_ASSET_ROOT}/talisman/situation`,
 } as const;
+
+export const getAltarVisualSlot = (layer: AltarAssetLayer): AltarVisualSlot => `altar/${layer}`;
 
 export const getTalismanVisualSlot = (
   variant: TalismanAssetVariant,

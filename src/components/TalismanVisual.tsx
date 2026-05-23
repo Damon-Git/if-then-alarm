@@ -39,6 +39,25 @@ type TalismanVisualProps = {
   variant: "situation" | "prevention";
 };
 
+const splitIntentText = (text: string, variant: TalismanAssetVariant) => {
+  const marker = variant === "situation" ? "就" : "那么";
+  const markerIndex = text.indexOf(marker);
+
+  if (markerIndex > 0) {
+    return {
+      left: text.slice(markerIndex).trim(),
+      right: text.slice(0, markerIndex).trim(),
+    };
+  }
+
+  const midpoint = Math.ceil(text.length / 2);
+
+  return {
+    left: text.slice(midpoint).trim(),
+    right: text.slice(0, midpoint).trim(),
+  };
+};
+
 const TalismanLayer = ({
   layer,
   variant,
@@ -61,21 +80,26 @@ const TalismanLayer = ({
   );
 };
 
-const TalismanContent = ({ label, text, variant }: Pick<TalismanVisualProps, "label" | "text" | "variant">) => (
-  <>
-    {TALISMAN_TEMPLATE_ASSET_LAYERS.map((layer) => (
-      <TalismanLayer key={layer} layer={layer} variant={variant} />
-    ))}
-    <span
-      className="talisman-visual__text"
-      data-talisman-layer="text"
-      data-visual-slot={getTalismanVisualSlot(variant, "text")}
-    >
-      <span className="talisman-visual__label">{label}</span>
-      <strong>{text}</strong>
-    </span>
-  </>
-);
+const TalismanContent = ({ label, text, variant }: Pick<TalismanVisualProps, "label" | "text" | "variant">) => {
+  const textColumns = splitIntentText(text, variant);
+
+  return (
+    <>
+      {TALISMAN_TEMPLATE_ASSET_LAYERS.map((layer) => (
+        <TalismanLayer key={layer} layer={layer} variant={variant} />
+      ))}
+      <span
+        className="talisman-visual__text"
+        data-talisman-layer="text"
+        data-visual-slot={getTalismanVisualSlot(variant, "text")}
+      >
+        <span className="talisman-visual__label">{label}</span>
+        <strong className="talisman-visual__column talisman-visual__column--right">{textColumns.right}</strong>
+        <strong className="talisman-visual__column talisman-visual__column--left">{textColumns.left}</strong>
+      </span>
+    </>
+  );
+};
 
 const TalismanVisual = ({
   disabled = false,
@@ -94,6 +118,7 @@ const TalismanVisual = ({
   if (interactive) {
     return (
       <button
+        aria-label={`${label}：${text}`}
         className={className}
         data-talisman-state={visualState}
         data-talisman-variant={variant}
