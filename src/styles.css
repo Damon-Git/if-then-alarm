@@ -1043,7 +1043,7 @@ select {
 .altar-scene .talisman-visual--prevention:focus-visible {
   z-index: 12;
   box-shadow: 0 12px 24px rgb(36 24 14 / 28%);
-  transform: scale(1.72);
+  transform: translateY(-72%) scale(1.72);
 }
 
 .altar-scene .censer-visual--stage {
@@ -1120,6 +1120,11 @@ select {
   width: 100%;
   min-width: 0;
   gap: 6px;
+}
+
+.altar-scene .prevention-list:has(.talisman-visual:hover),
+.altar-scene .prevention-list:has(.talisman-visual:focus-visible) {
+  z-index: 14;
 }
 
 .altar-scene .prevention-list__title {
