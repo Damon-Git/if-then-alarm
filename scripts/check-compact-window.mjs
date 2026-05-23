@@ -103,6 +103,48 @@ const assertCompactCenserUsesAssetLayers = async (page) => {
   }
 };
 
+const assertCompactCenserStateDifferentiation = async (page) => {
+  assert(
+    (await page.locator(".compact-censer--burning").count()) === 1,
+    "compact ritual scene should show the active censer as burning",
+  );
+  assert(
+    (await page.locator(".compact-censer--idle").count()) === 2,
+    "compact ritual scene should keep inactive censers idle",
+  );
+
+  const visualStyles = await page.locator(".compact-censer").evaluateAll((elements) =>
+    elements.map((element) => {
+      const asset = element.querySelector(".censer-visual--compact > .censer-visual__asset");
+      const style = asset ? window.getComputedStyle(asset) : null;
+
+      return {
+        className: element.className,
+        filter: style?.filter ?? "",
+        opacity: style?.opacity ?? "",
+        transform: style?.transform ?? "",
+      };
+    }),
+  );
+  const burningStyle = visualStyles.find((style) => style.className.includes("compact-censer--burning"));
+  const idleStyle = visualStyles.find((style) => style.className.includes("compact-censer--idle"));
+
+  assert(Boolean(burningStyle), `compact visual styles should include a burning censer: ${JSON.stringify(visualStyles)}`);
+  assert(Boolean(idleStyle), `compact visual styles should include an idle censer: ${JSON.stringify(visualStyles)}`);
+  assert(
+    Number.parseFloat(burningStyle.opacity) > Number.parseFloat(idleStyle.opacity),
+    `active compact censer should be visually stronger than idle censers: ${JSON.stringify(visualStyles)}`,
+  );
+  assert(
+    burningStyle.transform !== "none",
+    `active compact censer should have a distinct non-layout transform: ${JSON.stringify(visualStyles)}`,
+  );
+  assert(
+    burningStyle.filter !== idleStyle.filter,
+    `active compact censer should use a distinct visual filter: ${JSON.stringify(visualStyles)}`,
+  );
+};
+
 const run = async () => {
   await fetch(targetUrl, { method: "HEAD" }).catch(() => {
     throw new Error(`Cannot reach ${targetUrl}. Start the dev server with npm run dev first.`);
@@ -259,6 +301,27 @@ const run = async () => {
     assert(
       stateAfterCompactClick === stateBeforeCompactClick,
       `compact censer click should not change business state: before=${stateBeforeCompactClick} after=${stateAfterCompactClick}`,
+    );
+
+    await page.evaluate(() => {
+      document.documentElement.dataset.windowMode = "full";
+    });
+    await assertVisible(page.locator(".stage-grid--full"), "full ritual stage before starting an intent");
+    await page.locator(".stage-grid--full .talisman-visual--interactive").first().click();
+    await assertVisible(page.getByRole("heading", { name: "确认开始这一套？" }), "start confirmation before compact active state");
+    await page.getByRole("button", { name: "开始这一套" }).click();
+    await assertVisible(page.locator(".intent-slot--burning").first(), "burning intent in full ritual stage");
+    await page.evaluate(() => {
+      document.documentElement.dataset.windowMode = "compact";
+    });
+    await assertCompactCenserStateDifferentiation(page);
+    assert(
+      (await page.locator(".compact-censer__status:visible").count()) === 0,
+      "compact active state should still hide status labels",
+    );
+    assert(
+      (await page.locator(".compact-censer strong:visible").count()) === 0,
+      "compact active state should still hide timer text",
     );
     await assertNoHorizontalOverflow(page, "ritual");
 
