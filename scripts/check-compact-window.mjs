@@ -145,6 +145,64 @@ const assertCompactCenserStateDifferentiation = async (page) => {
   );
 };
 
+const createSingleIncenseRitual = async (page) => {
+  await page.evaluate(() => {
+    window.localStorage.clear();
+    document.documentElement.dataset.windowMode = "full";
+  });
+  await page.reload({ waitUntil: "networkidle" });
+
+  const situationInput = page.locator('textarea[placeholder="当我打开电脑坐到书桌前，就开始写今天的第一段文稿。"]');
+  await situationInput.fill("当我打开电脑坐到书桌前，就开始写今天的第一段文稿。");
+  await page.getByLabel("第 1 套香数").getByRole("button", { name: "1 炷" }).click();
+  await page.getByRole("button", { name: "进入仪式台" }).click();
+  await assertVisible(page.getByRole("heading", { name: "仪式台" }), "single incense full ritual title");
+};
+
+const assertCompactCompletionStaysOutOfReviewWhenFullOpenFails = async (page) => {
+  await createSingleIncenseRitual(page);
+  await page.locator(".stage-grid--full .talisman-visual--interactive").first().click();
+  await assertVisible(page.getByRole("heading", { name: "确认开始这一套？" }), "single incense start confirmation");
+  await page.getByRole("button", { name: "开始这一套" }).click();
+  await assertVisible(page.locator(".intent-slot--burning").first(), "single incense burning intent");
+  await page.evaluate(() => {
+    document.documentElement.dataset.windowMode = "compact";
+  });
+  await assertVisible(page.locator(".compact-stage"), "compact stage during final incense");
+  await page.locator(".compact-censer--completed").waitFor({ state: "visible", timeout: 15000 });
+
+  assert(
+    (await page.locator(".compact-censer--completed").count()) === 1,
+    "compact final incense should end in completed censer state",
+  );
+  assert(
+    (await page.locator(".review-panel:visible").count()) === 0,
+    "compact final incense should not auto-open review",
+  );
+  assert(
+    (await page.locator(".compact-stage:visible").count()) === 1,
+    "compact final incense should keep the compact stage visible",
+  );
+
+  const completedCenserLabel = await page.locator(".compact-censer__button").first().getAttribute("aria-label");
+  assert(
+    completedCenserLabel?.includes("点击展开完整窗口并复盘"),
+    `completed compact censer should point to full-window review: ${completedCenserLabel}`,
+  );
+
+  await page.locator(".compact-censer__button").first().click();
+  await page.waitForTimeout(50);
+
+  assert(
+    (await page.locator(".review-panel:visible").count()) === 0,
+    "failed full-window open should not enter review",
+  );
+  assert(
+    (await page.locator(".compact-censer--completed").count()) === 1,
+    "failed full-window open should keep completed compact censer state",
+  );
+};
+
 const run = async () => {
   await fetch(targetUrl, { method: "HEAD" }).catch(() => {
     throw new Error(`Cannot reach ${targetUrl}. Start the dev server with npm run dev first.`);
@@ -323,6 +381,8 @@ const run = async () => {
       (await page.locator(".compact-censer strong:visible").count()) === 0,
       "compact active state should still hide timer text",
     );
+
+    await assertCompactCompletionStaysOutOfReviewWhenFullOpenFails(page);
     await assertNoHorizontalOverflow(page, "ritual");
 
     await page.screenshot({ fullPage: true, path: screenshotPath });

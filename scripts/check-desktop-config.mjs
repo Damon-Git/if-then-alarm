@@ -420,6 +420,11 @@ assertTextIncludes(intentSlot, 'size="stage"', "Full ritual slot uses stage cens
 assertTextIncludes(compactCenserSlot, 'size="compact"', "Compact ritual slot uses compact censer asset family");
 assertTextIncludes(compactWindowCheck, "assertFullStageUsesStageVisuals", "Compact check verifies full-stage visual family");
 assertTextIncludes(compactWindowCheck, "assertCompactCenserStateDifferentiation", "Compact check verifies compact censer state differentiation");
+assertTextIncludes(
+  compactWindowCheck,
+  "assertCompactCompletionStaysOutOfReviewWhenFullOpenFails",
+  "Compact check verifies completion stays out of review until full window opens",
+);
 assertTextIncludes(compactWindowCheck, "entering ritual should keep all intent slots idle", "Compact check verifies ritual entry stays idle");
 assertTextIncludes(compactWindowCheck, "manual narrow viewport should not enter compact ritual mode", "Compact check verifies narrow full window stays full");
 assertTextIncludes(compactWindowCheck, "compact censer click should not change business state", "Compact check verifies compact censer click is non-mutating");

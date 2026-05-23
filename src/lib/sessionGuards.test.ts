@@ -126,6 +126,32 @@ describe("session guards", () => {
     ).toBe("ritual");
   });
 
+  it("keeps compact completion in ritual until full window expansion succeeds", () => {
+    const completedIntentSets = [createIntentSet("completed")];
+
+    expect(
+      shouldEnterReviewPhase({
+        intentSets: completedIntentSets,
+        isCompactWindow: true,
+        phase: "ritual",
+      }),
+    ).toBe(false);
+    expect(
+      getPhaseAfterFullWindowOpen({
+        didOpenFullWindow: false,
+        intentSets: completedIntentSets,
+        phase: "ritual",
+      }),
+    ).toBe("ritual");
+    expect(
+      getPhaseAfterFullWindowOpen({
+        didOpenFullWindow: true,
+        intentSets: completedIntentSets,
+        phase: "ritual",
+      }),
+    ).toBe("review");
+  });
+
   it("uses a completion notification only for the final incense of the final remaining set", () => {
     expect(
       getFocusTimerNotificationKind({
