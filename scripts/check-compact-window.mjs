@@ -55,6 +55,29 @@ const assertTransparentBackground = async (locator, label) => {
 
 const compactCenserAssetLayers = ["lid", "mouth", "ash", "body", "feet"];
 
+const assertFullStageUsesStageVisuals = async (page) => {
+  assert(
+    (await page.locator(".stage-grid--full .censer-visual--stage").count()) === 3,
+    "full ritual stage should render three stage censer visuals",
+  );
+  assert(
+    (await page.locator(".stage-grid--full .censer-visual--compact").count()) === 0,
+    "full ritual stage should not render compact censer visuals",
+  );
+  assert(
+    (await page.locator('.stage-grid--full .censer-visual[data-censer-size="stage"]').count()) === 3,
+    "full ritual stage should mark every censer as stage-sized",
+  );
+  assert(
+    (await page.locator('.stage-grid--full [data-visual-slot^="censer/stage/"]').count()) === 15,
+    "full ritual stage should expose all stage censer visual slots",
+  );
+  assert(
+    (await page.locator('.stage-grid--full [data-visual-slot^="censer/compact/"]').count()) === 0,
+    "full ritual stage should not expose compact censer visual slots",
+  );
+};
+
 const assertCompactCenserUsesAssetLayers = async (page) => {
   for (const layer of compactCenserAssetLayers) {
     const layerLocator = page.locator(`.compact-censer .censer-visual__${layer}.visual-layer--with-asset`);
@@ -116,6 +139,32 @@ const run = async () => {
 
     await assertVisible(page.getByRole("heading", { name: "仪式台" }), "full ritual title before compact mode");
     await assertVisible(page.locator(".stage-grid--full"), "full ritual stage before compact mode");
+    await assertFullStageUsesStageVisuals(page);
+    assert(
+      (await page.locator(".intent-slot--idle").count()) === 3,
+      "entering ritual should keep all intent slots idle",
+    );
+    assert(
+      (await page.locator(".intent-slot--burning, .intent-slot--resting, .intent-slot--completed").count()) === 0,
+      "entering ritual should not start, rest, or complete any intent slot",
+    );
+    assert(
+      (await page.locator(".timer-panel").count()) === 0,
+      "entering ritual should not show a timer panel before confirmation",
+    );
+    assert(
+      (await page.locator(".review-panel").count()) === 0,
+      "entering ritual should not enter review",
+    );
+    assert(
+      (await page.getByRole("heading", { name: "确认开始这一套？" }).count()) === 0,
+      "entering ritual should not open start confirmation",
+    );
+    const documentWindowModeBeforeCompact = await page.evaluate(() => document.documentElement.dataset.windowMode ?? "");
+    assert(
+      documentWindowModeBeforeCompact !== "compact",
+      `entering ritual should not mark the document as compact: ${documentWindowModeBeforeCompact}`,
+    );
     assert(
       !(await page.locator(".compact-stage").isVisible()),
       "manual narrow viewport should not enter compact ritual mode without explicit compact window mode",
@@ -131,6 +180,18 @@ const run = async () => {
     await assertHidden(page.getByRole("button", { name: "设置" }), "settings button in compact ritual scene");
     await assertHidden(page.getByRole("heading", { name: "仪式台" }), "ritual title in compact ritual scene");
     await assertHidden(page.locator(".stage-grid--full"), "full ritual stage in compact window mode");
+    assert(
+      (await page.locator(".talisman-visual:visible").count()) === 0,
+      "compact ritual scene should not show talismans",
+    );
+    assert(
+      (await page.locator(".timer-panel:visible").count()) === 0,
+      "compact ritual scene should not show timer panels",
+    );
+    assert(
+      (await page.locator(".review-panel:visible").count()) === 0,
+      "compact ritual scene should not show review",
+    );
     assert((await page.locator(".compact-censer").count()) === 3, "compact stage should show three censer slots");
     await assertCompactCenserUsesAssetLayers(page);
     assert((await page.locator(".compact-censer p:visible").count()) === 0, "compact ritual scene should hide intent summaries");
@@ -175,10 +236,29 @@ const run = async () => {
     );
     const rowTops = new Set(censerBoxes.map((box) => box.top));
     assert(rowTops.size === 1, `compact ritual censers should be side by side: ${JSON.stringify(censerBoxes)}`);
+    const stateBeforeCompactClick = await page.locator(".compact-censer").evaluateAll((elements) =>
+      elements.map((element) => element.className).join(" | "),
+    );
     await page.locator(".compact-censer__button").first().click();
+    await page.waitForTimeout(50);
     assert(
       !(await page.getByRole("heading", { name: "确认开始这一套？" }).isVisible()),
       "compact censer click should not open the start confirmation",
+    );
+    assert(
+      (await page.locator(".compact-censer--burning, .compact-censer--resting").count()) === 0,
+      "compact censer click should not start or continue a timer",
+    );
+    assert(
+      (await page.locator(".review-panel:visible").count()) === 0,
+      "compact censer click should not open review in an unfinished session",
+    );
+    const stateAfterCompactClick = await page.locator(".compact-censer").evaluateAll((elements) =>
+      elements.map((element) => element.className).join(" | "),
+    );
+    assert(
+      stateAfterCompactClick === stateBeforeCompactClick,
+      `compact censer click should not change business state: before=${stateBeforeCompactClick} after=${stateAfterCompactClick}`,
     );
     await assertNoHorizontalOverflow(page, "ritual");
 

@@ -102,6 +102,8 @@ const desktopPersistenceAdapter = await readText(
 const fileTransferAdapter = await readText("src/lib/fileTransferAdapter.ts");
 const notificationAdapter = await readText("src/lib/notificationAdapter.ts");
 const soundReminder = await readText("src/lib/soundReminder.ts");
+const compactWindowCheck = await readText("scripts/check-compact-window.mjs");
+const stylesCss = await readText("src/styles.css");
 const tauriWindow = await readText("src/lib/tauriWindow.ts");
 const visualAssetManifest = await readText("src/lib/visualAssetManifest.ts");
 const visualAssets = await readText("src/lib/visualAssets.ts");
@@ -416,6 +418,12 @@ assertTextIncludes(incenseVisual, "INCENSE_ASSET_LAYERS.map", "IncenseVisual use
 assertTextIncludes(talismanVisual, "TALISMAN_TEMPLATE_ASSET_LAYERS.map", "TalismanVisual uses central talisman image layer order");
 assertTextIncludes(intentSlot, 'size="stage"', "Full ritual slot uses stage censer asset family");
 assertTextIncludes(compactCenserSlot, 'size="compact"', "Compact ritual slot uses compact censer asset family");
+assertTextIncludes(compactWindowCheck, "assertFullStageUsesStageVisuals", "Compact check verifies full-stage visual family");
+assertTextIncludes(compactWindowCheck, "entering ritual should keep all intent slots idle", "Compact check verifies ritual entry stays idle");
+assertTextIncludes(compactWindowCheck, "manual narrow viewport should not enter compact ritual mode", "Compact check verifies narrow full window stays full");
+assertTextIncludes(compactWindowCheck, "compact censer click should not change business state", "Compact check verifies compact censer click is non-mutating");
+assertTextIncludes(stylesCss, 'html[data-window-mode="compact"] .stage-grid--full', "CSS hides full stage only under explicit compact window mode");
+assertTextIncludes(stylesCss, 'html[data-window-mode="compact"] .app-shell--ritual .compact-stage', "CSS shows compact stage only under explicit compact ritual mode");
 
 await Promise.all(
   [
