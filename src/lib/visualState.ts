@@ -8,6 +8,50 @@ export type IncenseVisualState = "pending" | "burning" | "burned" | "resting";
 
 export type TalismanVisualState = "ready" | "disabled" | "completed";
 
+export type StageIntentMetadataVisibility = "hover-focus";
+
+export type StageTimerIntentStatus = Extract<IntentSetStatus, "burning" | "resting">;
+
+export type StageIntentVisualSemantics = {
+  canStart: boolean;
+  metadataVisibility: StageIntentMetadataVisibility;
+  shouldRenderTimerPanel: boolean;
+  statusLabel: string;
+};
+
+const STAGE_INTENT_VISUAL_SEMANTICS = {
+  idle: {
+    canStart: true,
+    metadataVisibility: "hover-focus",
+    shouldRenderTimerPanel: false,
+    statusLabel: "未开始",
+  },
+  burning: {
+    canStart: false,
+    metadataVisibility: "hover-focus",
+    shouldRenderTimerPanel: true,
+    statusLabel: "进行中",
+  },
+  resting: {
+    canStart: false,
+    metadataVisibility: "hover-focus",
+    shouldRenderTimerPanel: true,
+    statusLabel: "休息中",
+  },
+  completed: {
+    canStart: false,
+    metadataVisibility: "hover-focus",
+    shouldRenderTimerPanel: false,
+    statusLabel: "已完成",
+  },
+} as const satisfies Record<IntentSetStatus, StageIntentVisualSemantics>;
+
+export const getStageIntentVisualSemantics = (status: IntentSetStatus): StageIntentVisualSemantics =>
+  STAGE_INTENT_VISUAL_SEMANTICS[status];
+
+export const isStageTimerIntentStatus = (status: IntentSetStatus): status is StageTimerIntentStatus =>
+  getStageIntentVisualSemantics(status).shouldRenderTimerPanel;
+
 export const getCenserVisualState = (status: IntentSetStatus): CenserVisualState => {
   if (status === "burning") {
     return "active";

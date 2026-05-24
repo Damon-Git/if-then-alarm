@@ -1190,12 +1190,12 @@ select {
   display: none;
 }
 
-.altar-scene .intent-slot:hover .intent-slot__topline,
-.altar-scene .intent-slot:has(.talisman-visual:focus-visible) .intent-slot__topline,
-.altar-scene .intent-slot:hover .censer-visual__meta,
-.altar-scene .intent-slot:has(.talisman-visual:focus-visible) .censer-visual__meta,
-.altar-scene .intent-slot:hover .timer-panel,
-.altar-scene .intent-slot:has(.talisman-visual:focus-visible) .timer-panel {
+.altar-scene .intent-slot[data-stage-metadata-visibility="hover-focus"]:hover .intent-slot__topline,
+.altar-scene .intent-slot[data-stage-metadata-visibility="hover-focus"]:has(.talisman-visual:focus-visible) .intent-slot__topline,
+.altar-scene .intent-slot[data-stage-metadata-visibility="hover-focus"]:hover .censer-visual__meta,
+.altar-scene .intent-slot[data-stage-metadata-visibility="hover-focus"]:has(.talisman-visual:focus-visible) .censer-visual__meta,
+.altar-scene .intent-slot[data-stage-metadata-visibility="hover-focus"]:hover .timer-panel,
+.altar-scene .intent-slot[data-stage-metadata-visibility="hover-focus"]:has(.talisman-visual:focus-visible) .timer-panel {
   opacity: 1;
 }
 

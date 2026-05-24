@@ -1,4 +1,5 @@
 import type { IntentSet } from "../types";
+import { getStageIntentVisualSemantics, isStageTimerIntentStatus } from "../lib/visualState";
 import CenserVisual from "./CenserVisual";
 import TalismanVisual from "./TalismanVisual";
 import TimerPanel from "./TimerPanel";
@@ -11,21 +12,22 @@ type IntentSlotProps = {
   onStart: (intentSetId: string) => void;
 };
 
-const statusLabels: Record<IntentSet["status"], string> = {
-  idle: "未开始",
-  burning: "进行中",
-  resting: "休息中",
-  completed: "已完成",
-};
-
 const IntentSlot = ({ intentSet, actionDisabled, incenseProgress, timerRemaining, onStart }: IntentSlotProps) => {
-  const canStart = intentSet.status === "idle" && !actionDisabled;
+  const visualSemantics = getStageIntentVisualSemantics(intentSet.status);
+  const canStart = visualSemantics.canStart && !actionDisabled;
+  const timerStatus = isStageTimerIntentStatus(intentSet.status) ? intentSet.status : null;
   const preventionCount = intentSet.preventionIntents.length;
 
   return (
-    <article className={`intent-slot intent-slot--${intentSet.status}`}>
+    <article
+      className={`intent-slot intent-slot--${intentSet.status}`}
+      data-stage-can-start={canStart}
+      data-stage-intent-status={intentSet.status}
+      data-stage-metadata-visibility={visualSemantics.metadataVisibility}
+      data-stage-timer-visible={timerStatus !== null}
+    >
       <div className="intent-slot__topline">
-        <span className="status-pill">{statusLabels[intentSet.status]}</span>
+        <span className="status-pill">{visualSemantics.statusLabel}</span>
         <span>{intentSet.incenseCount} 炷香</span>
       </div>
 
@@ -47,12 +49,12 @@ const IntentSlot = ({ intentSet, actionDisabled, incenseProgress, timerRemaining
         status={intentSet.status}
       />
 
-      {intentSet.status === "burning" || intentSet.status === "resting" ? (
+      {timerStatus ? (
         <TimerPanel
           currentIncenseIndex={intentSet.currentIncenseIndex}
           incenseCount={intentSet.incenseCount}
           secondsRemaining={timerRemaining}
-          status={intentSet.status}
+          status={timerStatus}
         />
       ) : null}
 

@@ -30,6 +30,19 @@
 
 这是视觉组件允许接收的最小业务状态。组件内部只能用它推导视觉状态，不应依赖完整 `IntentSet` 或 `PersistedSession`。
 
+## 主祭台单槽视觉语义
+
+主祭台的单个 `IntentSlot` 必须先通过 `src/lib/visualState.ts` 中的 `getStageIntentVisualSemantics(status)` 派生 UI 语义，再传给符箓、香炉、线香和计时面板。
+
+| 状态 | 状态标签 | 情境符箓 | 香炉 | 线香 | 计时面板 | 辅助信息 |
+| --- | --- | --- | --- | --- | --- | --- |
+| `idle` | 未开始 | 可点击启动，若其他套组阻塞则禁用 | 开盖 | 全部完整待燃 | 不渲染 | 默认隐藏，hover/focus 显示 |
+| `burning` | 进行中 | 禁用 | 开盖 | 当前线香按进度燃烧 | 渲染 | 默认隐藏，hover/focus 显示 |
+| `resting` | 休息中 | 禁用 | 开盖 | 当前线香保持已烧完状态，不表现为继续燃烧 | 渲染 | 默认隐藏，hover/focus 显示 |
+| `completed` | 已完成 | 弱化完成态 | 闭盖 | 隐藏，不能穿出盖子 | 不渲染 | 默认隐藏，hover/focus 显示 |
+
+`IntentSlot` 会输出 `data-stage-intent-status`、`data-stage-can-start`、`data-stage-timer-visible` 和 `data-stage-metadata-visibility`。这些属性只表达视觉语义和回归检查锚点，不反推业务流程。
+
 ## CenserVisual
 
 文件：`src/components/CenserVisual.tsx`

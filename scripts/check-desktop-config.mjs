@@ -107,6 +107,7 @@ const stylesCss = await readText("src/styles.css");
 const tauriWindow = await readText("src/lib/tauriWindow.ts");
 const visualAssetManifest = await readText("src/lib/visualAssetManifest.ts");
 const visualAssets = await readText("src/lib/visualAssets.ts");
+const visualState = await readText("src/lib/visualState.ts");
 const censerVisual = await readText("src/components/CenserVisual.tsx");
 const compactCenserSlot = await readText("src/components/CompactCenserSlot.tsx");
 const incenseVisual = await readText("src/components/IncenseVisual.tsx");
@@ -446,6 +447,10 @@ assertTextIncludes(
 assertTextIncludes(censerVisual, "CENSER_ASSET_LAYERS.map", "CenserVisual uses central censer layer order");
 assertTextIncludes(censerVisual, "getCenserLidState", "CenserVisual derives lid state from central visual state");
 assertTextIncludes(censerVisual, "data-censer-lid-state", "CenserVisual exposes explicit lid state for open and closed censer visuals");
+assertTextIncludes(visualState, "getStageIntentVisualSemantics", "Visual state centralizes full-stage intent semantics");
+assertTextIncludes(visualState, "isStageTimerIntentStatus", "Visual state narrows statuses that can render full-stage timer panels");
+assertTextIncludes(visualState, "metadataVisibility: \"hover-focus\"", "Full-stage metadata is explicitly hover or focus only");
+assertTextIncludes(visualState, "shouldRenderTimerPanel", "Full-stage timer panel visibility is derived from visual state");
 assertTextIncludes(incenseVisual, "INCENSE_ASSET_LAYERS.map", "IncenseVisual uses central incense layer order");
 assertTextIncludes(talismanVisual, "TALISMAN_TEMPLATE_ASSET_LAYERS.map", "TalismanVisual uses central talisman image layer order");
 assertTextIncludes(talismanVisual, "splitIntentText", "TalismanVisual splits intent text into side columns");
@@ -454,6 +459,9 @@ assertTextIncludes(talismanVisual, "talisman-visual__column--left", "TalismanVis
 assertTextIncludes(ritualStage, "getAltarAssetUrl", "RitualStage uses the altar background asset manifest");
 assertTextIncludes(ritualStage, "altar-scene__slots", "RitualStage renders shared altar scene slots");
 assertTextIncludes(intentSlot, "prevention-list__items", "IntentSlot groups prevention talismans for horizontal stage layout");
+assertTextIncludes(intentSlot, "getStageIntentVisualSemantics", "IntentSlot derives full-stage UI semantics centrally");
+assertTextIncludes(intentSlot, "data-stage-metadata-visibility", "IntentSlot exposes metadata visibility semantics");
+assertTextIncludes(intentSlot, "data-stage-timer-visible", "IntentSlot exposes timer visibility semantics");
 assertTextIncludes(intentSlot, 'size="stage"', "Full ritual slot uses stage censer asset family");
 assertTextIncludes(compactCenserSlot, 'size="compact"', "Compact ritual slot uses compact censer asset family");
 assertTextIncludes(compactWindowCheck, "assertFullStageUsesStageVisuals", "Compact check verifies full-stage visual family");
@@ -478,7 +486,7 @@ assertTextIncludes(stylesCss, "text-orientation: upright", "CSS keeps talisman t
 assertTextIncludes(stylesCss, ".altar-scene", "CSS renders a shared altar background scene");
 assertTextIncludes(stylesCss, ".altar-scene__slots", "CSS lays out full-stage intent slots on one altar");
 assertTextIncludes(stylesCss, "--altar-censer-center-y", "CSS pins full-stage censers to a shared horizontal line");
-assertTextIncludes(stylesCss, ".altar-scene .intent-slot:hover .censer-visual__meta", "CSS reveals full-stage censer metadata only on hover");
+assertTextIncludes(stylesCss, 'data-stage-metadata-visibility="hover-focus"', "CSS reveals full-stage metadata only through explicit hover or focus semantics");
 assertTextIncludes(stylesCss, ".altar-scene .prevention-list__items", "CSS lays out prevention talismans horizontally on the altar");
 assertTextIncludes(stylesCss, ".censer-visual--stage .censer-visual__lid.visual-layer--with-asset", "CSS renders stage censer PNG layers as full transparent canvases");
 assertTextIncludes(stylesCss, '.censer-visual[data-censer-lid-state="open"] .censer-visual__lid', "CSS keeps censer lids visually open before completion");
