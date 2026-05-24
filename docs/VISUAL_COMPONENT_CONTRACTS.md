@@ -2,7 +2,7 @@
 
 本文冻结当前视觉组件的输入边界，供未来接入真实符箓模板、主祭台香炉、小窗 Q 版香炉和线香素材时遵守。
 
-当前已接入小窗 Q 版香炉和主祭台香炉的临时测试 PNG，不做动画，不改变业务状态机。
+当前已接入小窗 Q 版香炉、主祭台香炉和主祭台线香的临时测试 PNG，不做动画，不改变业务状态机。
 
 ## 总原则
 
@@ -125,6 +125,7 @@ type IncenseVisualProps = {
 - 不在 `IncenseVisual` 内启动、暂停或清理 timer。
 - 小窗线香素材以 `src/lib/visualAssets.ts` 中的 `VISUAL_ASSET_FAMILY_SPECS.incense.compact` 为尺寸锚点。
 - 主祭台线香素材以 `src/lib/visualAssets.ts` 中的 `VISUAL_ASSET_FAMILY_SPECS.incense.stage` 为尺寸锚点。
+- 当前主祭台线香已配置 `incense/stage/*` 临时 PNG；小窗线香暂时可以继续使用 CSS 占位。
 - 小窗不同香数不能烘焙成 1 / 2 / 3 张整图，必须由组件重复渲染同一套线香图层。
 
 ## TalismanVisual

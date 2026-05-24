@@ -38,6 +38,10 @@ describe("visual asset manifest", () => {
       "censer/stage/feet",
       "censer/stage/lid",
       "censer/stage/mouth",
+      "incense/stage/ash",
+      "incense/stage/ember",
+      "incense/stage/smoke",
+      "incense/stage/stick",
       "talisman/prevention/template",
       "talisman/situation/template",
     ]);
@@ -45,6 +49,10 @@ describe("visual asset manifest", () => {
     expect(getVisualAssetUrl("censer/stage/body")).toEqual(expect.stringContaining("body"));
     expect(getCenserAssetUrl("stage", "body")).toEqual(expect.stringContaining("body"));
     expect(getCenserAssetUrl("compact", "body")).toEqual(expect.stringContaining("body"));
+    expect(getIncenseAssetUrl("stage", "stick")).toEqual(expect.stringContaining("stick"));
+    expect(getIncenseAssetUrl("stage", "ash")).toEqual(expect.stringContaining("ash"));
+    expect(getIncenseAssetUrl("stage", "ember")).toEqual(expect.stringContaining("ember"));
+    expect(getIncenseAssetUrl("stage", "smoke")).toEqual(expect.stringContaining("smoke"));
     expect(getTalismanAssetUrl("situation", "template")).toEqual(expect.stringContaining("template"));
     expect(getTalismanAssetUrl("prevention", "template")).toEqual(expect.stringContaining("template"));
     expect(getTalismanAssetUrl("situation", "text")).toBeUndefined();
@@ -129,6 +137,8 @@ describe("visual asset manifest", () => {
     expect(getCenserAssetUrl("compact", "body")).toBeDefined();
     expect(getCenserAssetUrl("stage", "body")).toBeDefined();
     expect(getCenserAssetUrl("stage", "body")).not.toBe(getCenserAssetUrl("compact", "body"));
+    expect(getIncenseAssetUrl("stage", "stick")).toBeDefined();
+    expect(getIncenseAssetUrl("compact", "stick")).toBeUndefined();
   });
 
   it("keeps talisman image slots explicit while text stays a React overlay", () => {

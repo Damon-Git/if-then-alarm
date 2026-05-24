@@ -73,8 +73,16 @@ const assertFullStageUsesStageVisuals = async (page) => {
     "full ritual stage should expose all stage censer visual slots",
   );
   assert(
+    (await page.locator('.stage-grid--full [data-visual-slot^="incense/stage/"]').count()) === 24,
+    "full ritual stage should expose all stage incense visual slots",
+  );
+  assert(
     (await page.locator('.stage-grid--full [data-visual-slot^="censer/compact/"]').count()) === 0,
     "full ritual stage should not expose compact censer visual slots",
+  );
+  assert(
+    (await page.locator('.stage-grid--full [data-visual-slot^="incense/compact/"]').count()) === 0,
+    "full ritual stage should not expose compact incense visual slots",
   );
 };
 

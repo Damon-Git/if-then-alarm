@@ -1,6 +1,6 @@
 # 视觉素材接入管线
 
-本文件约定未来真实符箓、香炉、线香素材如何进入项目。当前版本已接入主祭台背景、符箓模板、小窗 Q 版香炉和主祭台香炉的临时测试 PNG，用于验证素材链路；线香仍使用占位元素，不做动画。素材目录内的执行清单见 `src/assets/visuals/README.md`。
+本文件约定未来真实符箓、香炉、线香素材如何进入项目。当前版本已接入主祭台背景、符箓模板、小窗 Q 版香炉、主祭台香炉和主祭台线香的临时测试 PNG，用于验证素材链路；不做动画。素材目录内的执行清单见 `src/assets/visuals/README.md`。
 
 ## 目录结构
 
@@ -79,7 +79,7 @@ src/assets/visuals/talisman/situation/template.png
 
 同一类素材优先保持相同文件名，只通过目录区分 `stage` 和 `compact`。
 
-真实素材进入项目时，应在对应目录更新 README，记录素材来源、用途和替换范围。当前 `censer/compact/` 和 `censer/stage/` 下的 PNG 是临时测试素材，不代表正式视觉风格。
+真实素材进入项目时，应在对应目录更新 README，记录素材来源、用途和替换范围。当前 `censer/compact/`、`censer/stage/` 和 `incense/stage/` 下的 PNG 是临时测试素材，不代表正式视觉风格。
 
 ## 素材格式
 
@@ -118,6 +118,18 @@ src/assets/visuals/talisman/situation/template.png
 - `lid.png` 必须对应香炉上方完整盖子，包括顶部钮和镂空盖面；未来开盖动画只移动这一层。
 - `mouth.png` 只负责盖子下沿到炉口过渡区域，不承载完整盖子。
 - 线香继续由 `IncenseVisual` 渲染，不烘焙进香炉图片。
+
+## 主祭台线香规格
+
+主祭台线香当前已接入临时 PNG 测试素材，素材规格固定如下：
+
+- 主祭台线香素材必须是透明背景，不允许自带香炉、祭台背景或符箓。
+- 主祭台线香使用 `incense/stage` 素材族，小窗线香未来使用 `incense/compact` 素材族。
+- 主祭台线香推荐源素材画布为 `240px × 240px`。
+- `stick.png`、`ash.png`、`ember.png`、`smoke.png` 继续保持独立图层。
+- 线香数量由 `IncenseVisual` 按用户选择重复渲染，不为 1 / 2 / 3 炷香分别烘焙整图。
+- 当前香灰高度和火星位置由倒计时进度驱动；烟雾只允许静态显隐，不做动画。
+- 当前临时线香 PNG 由 `scripts/generate-stage-incense-assets.mjs` 确定性生成。
 
 ## 接入边界
 

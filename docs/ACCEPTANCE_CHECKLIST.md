@@ -74,6 +74,8 @@
 - [ ] 主祭台香炉保留 `body/lid/mouth/ash/feet` 五个图层入口。
 - [ ] 主祭台香炉的 `lid` 图层对应完整盖子，包括顶部钮和镂空盖面；不要误放到 `mouth` 或 `body`。
 - [ ] 主祭台线香由 `IncenseVisual` 渲染。
+- [ ] 主祭台线香使用 `incense/stage` 临时 PNG 测试素材，不退回 CSS 占位图。
+- [ ] 主祭台线香保留 `stick/ash/ember/smoke` 四个图层入口。
 - [ ] 符箓、香炉、线香视觉状态由 `src/lib/visualState.ts` 统一映射。
 - [ ] 符箓、香炉、线香图层带有 `data-visual-slot`，插槽由 `src/lib/visualAssets.ts` 统一生成。
 - [ ] 选择 1 / 2 / 3 炷香时，主祭台香炉内分别显示 1 / 2 / 3 根线香。

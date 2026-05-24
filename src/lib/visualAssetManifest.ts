@@ -22,6 +22,10 @@ import stageCenserBodyUrl from "../assets/visuals/censer/stage/body.png";
 import stageCenserFeetUrl from "../assets/visuals/censer/stage/feet.png";
 import stageCenserLidUrl from "../assets/visuals/censer/stage/lid.png";
 import stageCenserMouthUrl from "../assets/visuals/censer/stage/mouth.png";
+import stageIncenseAshUrl from "../assets/visuals/incense/stage/ash.png";
+import stageIncenseEmberUrl from "../assets/visuals/incense/stage/ember.png";
+import stageIncenseSmokeUrl from "../assets/visuals/incense/stage/smoke.png";
+import stageIncenseStickUrl from "../assets/visuals/incense/stage/stick.png";
 import preventionTalismanTemplateUrl from "../assets/visuals/talisman/prevention/template.png";
 import situationTalismanTemplateUrl from "../assets/visuals/talisman/situation/template.png";
 
@@ -39,6 +43,10 @@ export const visualAssetManifest = {
   "censer/stage/feet": stageCenserFeetUrl,
   "censer/stage/lid": stageCenserLidUrl,
   "censer/stage/mouth": stageCenserMouthUrl,
+  "incense/stage/ash": stageIncenseAshUrl,
+  "incense/stage/ember": stageIncenseEmberUrl,
+  "incense/stage/smoke": stageIncenseSmokeUrl,
+  "incense/stage/stick": stageIncenseStickUrl,
   "talisman/prevention/template": preventionTalismanTemplateUrl,
   "talisman/situation/template": situationTalismanTemplateUrl,
 } satisfies VisualAssetManifest;

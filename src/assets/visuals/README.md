@@ -1,6 +1,6 @@
 # 视觉素材清单
 
-本目录用于未来接入真实符箓、香炉、线香和主祭台背景素材。当前阶段接入了四类测试素材：一组小窗 Q 版香炉测试 PNG、一组主祭台香炉测试 PNG、两张主祭台符箓模板测试 PNG，以及一张主祭台背景测试 PNG。它们只用于验证素材管线和排版方向，不代表最终视觉设计。
+本目录用于未来接入真实符箓、香炉、线香和主祭台背景素材。当前阶段接入了五类测试素材：一组小窗 Q 版香炉测试 PNG、一组主祭台香炉测试 PNG、一组主祭台线香测试 PNG、两张主祭台符箓模板测试 PNG，以及一张主祭台背景测试 PNG。它们只用于验证素材管线和排版方向，不代表最终视觉设计。
 
 ## 目录与用途
 
@@ -90,7 +90,7 @@
 
 ## 主祭台素材规格
 
-主祭台真实素材未来从 `censer/stage/`、`incense/stage/`、`talisman/situation/` 和 `talisman/prevention/` 接入：
+主祭台真实素材从 `censer/stage/`、`incense/stage/`、`talisman/situation/` 和 `talisman/prevention/` 接入：
 
 - 主祭台背景推荐源画布为横向构图，当前参考尺寸为 `1672px × 941px`。
 - 主祭台背景需要提供明确桌面边缘，方便 1-3 个香炉在同一张桌子上均匀排列。
@@ -114,6 +114,8 @@
 
 `censer/stage/` 中的 `body.png`、`lid.png`、`mouth.png`、`ash.png`、`feet.png` 是 AI 生成的临时主祭台香炉测试素材，使用 `scripts/extract-stage-censer-layers.mjs` 从绿色背景源图本地移除背景并切分到透明 PNG。`lid.png` 对应香炉上方完整盖子，包括顶部钮和镂空盖面；未来开盖动画应移动这一层。
 
+`incense/stage/` 中的 `stick.png`、`ash.png`、`ember.png`、`smoke.png` 是确定性脚本生成的临时主祭台线香测试素材，使用 `scripts/generate-stage-incense-assets.mjs` 生成。它们用于验证主祭台线香图片图层、香数重复渲染和当前炷香进度驱动，不代表最终线香设计。
+
 `talisman/situation/template.png` 和 `talisman/prevention/template.png` 是 AI 生成的临时符箓模板测试素材。它们用于验证主祭台符箓图片模板、左右竖排文本覆盖层和 manifest 引用链路，不代表最终符箓设计，也不宣称宗教、玄学或超自然功效。
 
 `altar/background.png` 是 AI 生成的临时空桌主祭台背景测试素材。它用于验证共享桌面、三香炉并排和预防性符箓水平贴边布局，不代表最终主祭台设计。背景图不能自带固定香炉；香炉必须继续由组件独立渲染。
@@ -121,6 +123,6 @@
 ## 当前不做
 
 - 不导入正式视觉素材。
-- 不导入正式符箓、香炉或线香素材；当前香炉 PNG 仍是测试资产。
+- 不导入正式符箓、香炉或线香素材；当前 PNG 仍是测试资产。
 - 不做燃烧、开盖、烟雾或香灰动画。
 - 不把桌面应用图标放进本目录。

@@ -388,6 +388,10 @@ assertTextIncludes(
   "stageCenserFeetUrl",
   "stageCenserLidUrl",
   "stageCenserMouthUrl",
+  "stageIncenseAshUrl",
+  "stageIncenseEmberUrl",
+  "stageIncenseSmokeUrl",
+  "stageIncenseStickUrl",
   "preventionTalismanTemplateUrl",
   "situationTalismanTemplateUrl",
   '"altar/background"',
@@ -401,6 +405,10 @@ assertTextIncludes(
   '"censer/stage/feet"',
   '"censer/stage/lid"',
   '"censer/stage/mouth"',
+  '"incense/stage/ash"',
+  '"incense/stage/ember"',
+  '"incense/stage/smoke"',
+  '"incense/stage/stick"',
   '"talisman/prevention/template"',
   '"talisman/situation/template"',
 ].forEach((manifestToken) =>
@@ -471,6 +479,7 @@ assertTextIncludes(stylesCss, "--altar-censer-center-y", "CSS pins full-stage ce
 assertTextIncludes(stylesCss, ".altar-scene .intent-slot:hover .censer-visual__meta", "CSS reveals full-stage censer metadata only on hover");
 assertTextIncludes(stylesCss, ".altar-scene .prevention-list__items", "CSS lays out prevention talismans horizontally on the altar");
 assertTextIncludes(stylesCss, ".censer-visual--stage .censer-visual__lid.visual-layer--with-asset", "CSS renders stage censer PNG layers as full transparent canvases");
+assertTextIncludes(stylesCss, ".incense-visual .visual-layer--with-asset .visual-layer__asset", "CSS stretches incense PNG layers inside progress-driven boxes");
 
 await Promise.all(
   [
@@ -481,6 +490,7 @@ await Promise.all(
     "docs/DESKTOP_PERSISTENCE_JSON_SPEC.md",
     "docs/DESKTOP_BEHAVIOR_REGRESSION.md",
     "scripts/extract-stage-censer-layers.mjs",
+    "scripts/generate-stage-incense-assets.mjs",
     "scripts/check-self-use-readiness.mjs",
     "src/lib/desktopPersistenceAdapter.ts",
     "src/lib/desktopPersistenceSchema.ts",
@@ -516,6 +526,10 @@ await Promise.all(
     "src/assets/visuals/censer/compact/lid.png",
     "src/assets/visuals/censer/compact/mouth.png",
     "src/assets/visuals/incense/stage/README.md",
+    "src/assets/visuals/incense/stage/ash.png",
+    "src/assets/visuals/incense/stage/ember.png",
+    "src/assets/visuals/incense/stage/smoke.png",
+    "src/assets/visuals/incense/stage/stick.png",
     "src/assets/visuals/incense/compact/README.md",
   ].map(assertFileExists),
 );

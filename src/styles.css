@@ -806,6 +806,10 @@ select {
   height: 50px;
 }
 
+.incense-visual--stage:has(.visual-layer--with-asset) {
+  bottom: 46px;
+}
+
 .incense-visual__unit {
   position: relative;
   flex: 0 0 8px;
@@ -823,6 +827,10 @@ select {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
+}
+
+.incense-visual .visual-layer--with-asset .visual-layer__asset {
+  object-fit: fill;
 }
 
 .incense-visual__stick {
@@ -861,6 +869,15 @@ select {
   height: 10px;
   border-radius: 999px;
   background: transparent;
+  opacity: 0;
+}
+
+.incense-visual__unit--burning .incense-visual__smoke {
+  opacity: 0.42;
+}
+
+.incense-visual__unit--resting .incense-visual__smoke {
+  opacity: 0.18;
 }
 
 .incense-visual__progress {
