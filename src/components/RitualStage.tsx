@@ -9,6 +9,7 @@ type RitualStageProps = {
   focusSeconds: number;
   timerRemaining: number;
   hasBlockingAction: boolean;
+  startingIntentId: string | null;
   onStartIntent: (intentSetId: string) => void;
   onOpenFullView: () => void;
   onRequestAbandon: () => void;
@@ -33,6 +34,7 @@ const RitualStage = ({
   focusSeconds,
   timerRemaining,
   hasBlockingAction,
+  startingIntentId,
   onStartIntent,
   onOpenFullView,
   onRequestAbandon,
@@ -66,6 +68,7 @@ const RitualStage = ({
                 <IntentSlot
                   actionDisabled={hasBlockingAction && !isActive}
                   incenseProgress={incenseProgress}
+                  isStartAnimationActive={startingIntentId === intentSet.id}
                   intentSet={intentSet}
                   key={intentSet.id}
                   onStart={onStartIntent}

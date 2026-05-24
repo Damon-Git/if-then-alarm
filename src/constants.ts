@@ -9,6 +9,7 @@ export const PROD_BREAK_SECONDS = 5 * 60;
 export const MAX_INTENT_SETS = 3;
 export const MAX_PREVENTION_INTENTS = 3;
 export const FOCUS_MINUTES_PER_INCENSE = 25;
+export const START_TALISMAN_BURN_MS = 2000;
 
 export const COMPACT_WINDOW_SIZE = { width: 390, height: 620 } as const;
 export const COMPACT_WINDOW_MIN_SIZE = { width: 360, height: 520 } as const;

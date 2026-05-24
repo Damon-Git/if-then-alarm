@@ -220,6 +220,15 @@ const assertCompactCompletionStaysOutOfReviewWhenFullOpenFails = async (page) =>
   await page.locator(".stage-grid--full .talisman-visual--interactive").first().click();
   await assertVisible(page.getByRole("heading", { name: "确认开始这一套？" }), "single incense start confirmation");
   await page.getByRole("button", { name: "开始这一套" }).click();
+  await assertVisible(
+    page.locator('.stage-grid--full .intent-slot[data-stage-start-visual-state="burning"]').first(),
+    "single incense start talisman burn animation state",
+  );
+  assert(
+    (await page.locator(".stage-grid--full .timer-panel").count()) === 0,
+    "single incense start animation should run before the focus timer panel appears",
+  );
+  await page.locator(".intent-slot--burning").first().waitFor({ state: "visible", timeout: 5000 });
   await assertVisible(page.locator(".intent-slot--burning").first(), "single incense burning intent");
   await page.evaluate(() => {
     document.documentElement.dataset.windowMode = "compact";
@@ -437,6 +446,15 @@ const run = async () => {
     await page.locator(".stage-grid--full .talisman-visual--interactive").first().click();
     await assertVisible(page.getByRole("heading", { name: "确认开始这一套？" }), "start confirmation before compact active state");
     await page.getByRole("button", { name: "开始这一套" }).click();
+    await assertVisible(
+      page.locator('.stage-grid--full .intent-slot[data-stage-start-visual-state="burning"]').first(),
+      "start talisman burn animation state before compact active state",
+    );
+    assert(
+      (await page.locator(".stage-grid--full .timer-panel").count()) === 0,
+      "start talisman burn animation should complete before the focus timer appears",
+    );
+    await page.locator(".intent-slot--burning").first().waitFor({ state: "visible", timeout: 5000 });
     await assertVisible(page.locator(".intent-slot--burning").first(), "burning intent in full ritual stage");
     assert(
       (await page.locator('.stage-grid--full .intent-slot--burning[data-stage-situation-visibility="dismissed"]').count()) === 1,

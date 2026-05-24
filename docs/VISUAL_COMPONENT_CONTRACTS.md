@@ -37,13 +37,13 @@
 | 状态 | 状态标签 | 情境符箓 | 预防性符箓 | 香炉 | 线香 | 计时面板 | 辅助信息 |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | `idle` | 未开始 | 可点击启动，若其他套组阻塞则禁用 | 预防性符箓可见 | 开盖，正常强调 | 全部完整待燃 | 不渲染 | 默认隐藏，只在香炉命中区 hover 显示 |
-| `burning` | 进行中 | 退场；未来接入约 2 秒燃烧后消失 | 预防性符箓可见 | 开盖，正常强调 | 当前线香按进度燃烧 | 渲染 | 默认隐藏，只在香炉命中区 hover 显示 |
+| `burning` | 进行中 | 已燃烧退场 | 预防性符箓可见 | 开盖，正常强调 | 当前线香按进度燃烧 | 渲染 | 默认隐藏，只在香炉命中区 hover 显示 |
 | `resting` | 休息中 | 已退场，不重新出现 | 预防性符箓可见 | 开盖，正常强调 | 当前线香保持已烧完状态，不表现为继续燃烧 | 渲染 | 默认隐藏，只在香炉命中区 hover 显示 |
 | `completed` | 已完成 | 已退场 | 预防性符箓退场 | 闭盖并弱化 | 隐藏，不能穿出盖子 | 不渲染 | 默认隐藏，只在香炉命中区 hover 显示 |
 
-`IntentSlot` 会输出 `data-stage-intent-status`、`data-stage-can-start`、`data-stage-timer-visible`、`data-stage-metadata-visibility`、`data-stage-situation-visibility`、`data-stage-prevention-visibility` 和 `data-stage-censer-emphasis`。当前 `data-stage-metadata-visibility` 的值为 `censer-hover`，表示辅助信息只由香炉命中区触发。这些属性只表达视觉语义和回归检查锚点，不反推业务流程。
+`IntentSlot` 会输出 `data-stage-intent-status`、`data-stage-can-start`、`data-stage-timer-visible`、`data-stage-metadata-visibility`、`data-stage-situation-visibility`、`data-stage-prevention-visibility`、`data-stage-censer-emphasis` 和 `data-stage-start-visual-state`。当前 `data-stage-metadata-visibility` 的值为 `censer-hover`，表示辅助信息只由香炉命中区触发。这些属性只表达视觉语义和回归检查锚点，不反推业务流程。
 
-情境符箓燃烧动画的未来契约：只在该套从 `idle` 确认进入第一次 `burning` 时触发一次，动画目标时长约 2 秒，结束后情境符箓退场；后续同一个香炉续香时不再播放该动画，也不重新显示情境符箓。
+情境符箓燃烧动画契约：只在该套从 `idle` 确认进入第一次 `burning` 前触发一次，动画目标时长约 2 秒；动画期间不启动专注倒计时，不显示计时面板；动画结束后情境符箓退场并正式进入 `burning`。后续同一个香炉续香时不再播放该动画，也不重新显示情境符箓。
 
 主祭台辅助信息不能由符箓 hover、符箓 focus 或线香区域 hover 触发。符箓 hover 只负责符箓自身放大，线香区域保持低干扰。
 

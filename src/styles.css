@@ -1100,6 +1100,28 @@ select {
   transform: translateY(-72%) scale(1.72);
 }
 
+.altar-scene .intent-slot[data-stage-start-visual-state="burning"] .talisman-visual--situation {
+  z-index: 13;
+  pointer-events: none;
+  animation: situation-talisman-burn-away 2000ms ease-in forwards;
+  opacity: 1;
+}
+
+.altar-scene .intent-slot[data-stage-start-visual-state="burning"] .talisman-visual--situation:disabled {
+  opacity: 1;
+}
+
+.altar-scene
+  .intent-slot[data-stage-start-visual-state="burning"]
+  .talisman-visual--situation
+  .talisman-visual__state {
+  background:
+    radial-gradient(circle at 50% 88%, rgb(255 241 184 / 90%) 0 8%, rgb(202 55 24 / 70%) 9% 18%, transparent 30%),
+    linear-gradient(0deg, rgb(168 43 20 / 62%), transparent 58%);
+  mix-blend-mode: multiply;
+  animation: situation-talisman-ember-wash 2000ms ease-in forwards;
+}
+
 .altar-scene .intent-slot[data-stage-situation-visibility="dismissed"] .talisman-visual--situation {
   opacity: 0;
   pointer-events: none;
@@ -1237,6 +1259,58 @@ select {
 .altar-scene .intent-slot[data-stage-metadata-visibility="censer-hover"]:has(.censer-visual__hover-target:hover) .censer-visual__meta,
 .altar-scene .intent-slot[data-stage-metadata-visibility="censer-hover"]:has(.censer-visual__hover-target:hover) .timer-panel {
   opacity: 1;
+}
+
+@keyframes situation-talisman-burn-away {
+  0% {
+    filter: none;
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+  }
+
+  45% {
+    filter: saturate(1.22) brightness(1.06);
+    opacity: 0.95;
+    transform: translateX(-50%) scale(1.02);
+  }
+
+  74% {
+    filter: sepia(0.75) saturate(1.28) brightness(0.9);
+    opacity: 0.62;
+    transform: translateX(-50%) scale(0.98);
+  }
+
+  100% {
+    filter: sepia(1) saturate(0.72) brightness(0.68);
+    opacity: 0;
+    transform: translateX(-50%) scale(0.9);
+  }
+}
+
+@keyframes situation-talisman-ember-wash {
+  0% {
+    opacity: 0;
+    transform: translateY(42%);
+  }
+
+  40% {
+    opacity: 0.75;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateY(-18%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .altar-scene .intent-slot[data-stage-start-visual-state="burning"] .talisman-visual--situation,
+  .altar-scene
+    .intent-slot[data-stage-start-visual-state="burning"]
+    .talisman-visual--situation
+    .talisman-visual__state {
+    animation-duration: 1ms;
+  }
 }
 
 .muted-text {

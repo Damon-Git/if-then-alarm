@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { TIMER_MODE_CONFIG } from "./constants";
+import { START_TALISMAN_BURN_MS, TIMER_MODE_CONFIG } from "./constants";
 import AbandonSessionModal from "./components/AbandonSessionModal";
 import BreakModal from "./components/BreakModal";
 import ConfirmModal from "./components/ConfirmModal";
@@ -157,6 +157,7 @@ const App = () => {
   const [activeTimerSegment, setActiveTimerSegment] = useState<ActiveTimerSegment | null>(null);
   const [confirmationRequest, setConfirmationRequest] = useState<ConfirmationRequest | null>(null);
   const [pendingStartIntentId, setPendingStartIntentId] = useState<string | null>(null);
+  const [startingIntentId, setStartingIntentId] = useState<string | null>(null);
   const [isAbandonConfirmOpen, setIsAbandonConfirmOpen] = useState(false);
   const [settings, setSettings] = useState<AppSettings>(() => loadAppSettings());
   const [historyRecords, setHistoryRecords] = useState<HistoryRecord[]>(() => loadHistoryRecords());
@@ -190,6 +191,23 @@ const App = () => {
     isCloseConfirmOpen: false,
   });
   const isOpeningFullWindowRef = useRef(false);
+  const startAnimationTimeoutRef = useRef<number | null>(null);
+
+  const clearStartAnimationTimeout = () => {
+    if (startAnimationTimeoutRef.current === null) {
+      return;
+    }
+
+    window.clearTimeout(startAnimationTimeoutRef.current);
+    startAnimationTimeoutRef.current = null;
+  };
+
+  useEffect(
+    () => () => {
+      clearStartAnimationTimeout();
+    },
+    [],
+  );
 
   useEffect(() => {
     closeStateRef.current = {
@@ -270,7 +288,14 @@ const App = () => {
   };
 
   useEffect(() => {
-    if (!activeIntentSet || !activeTimerSegment || activeModal || pendingStartIntentId || isAbandonConfirmOpen) {
+    if (
+      !activeIntentSet ||
+      !activeTimerSegment ||
+      activeModal ||
+      pendingStartIntentId ||
+      startingIntentId ||
+      isAbandonConfirmOpen
+    ) {
       return;
     }
 
@@ -283,10 +308,25 @@ const App = () => {
     const intervalId = window.setInterval(syncTimerRemaining, 1000);
 
     return () => window.clearInterval(intervalId);
-  }, [activeIntentSetKey, activeIntentSet, activeTimerSegment, activeModal, pendingStartIntentId, isAbandonConfirmOpen]);
+  }, [
+    activeIntentSetKey,
+    activeIntentSet,
+    activeTimerSegment,
+    activeModal,
+    pendingStartIntentId,
+    startingIntentId,
+    isAbandonConfirmOpen,
+  ]);
 
   useEffect(() => {
-    if (!activeIntentSet || activeModal || pendingStartIntentId || isAbandonConfirmOpen || timerRemaining !== 0) {
+    if (
+      !activeIntentSet ||
+      activeModal ||
+      pendingStartIntentId ||
+      startingIntentId ||
+      isAbandonConfirmOpen ||
+      timerRemaining !== 0
+    ) {
       return;
     }
 
@@ -315,7 +355,15 @@ const App = () => {
         intentSetId: activeIntentSet.id,
       });
     }
-  }, [activeIntentSet, activeIntentSetKey, activeModal, pendingStartIntentId, isAbandonConfirmOpen, timerRemaining]);
+  }, [
+    activeIntentSet,
+    activeIntentSetKey,
+    activeModal,
+    pendingStartIntentId,
+    startingIntentId,
+    isAbandonConfirmOpen,
+    timerRemaining,
+  ]);
 
   useEffect(() => {
     if (
@@ -406,10 +454,12 @@ const App = () => {
     setActiveTimerSegment(null);
     setActiveModal(null);
     setPendingStartIntentId(null);
+    setStartingIntentId(null);
     setIsAbandonConfirmOpen(false);
     setActiveUtilityPanel(null);
     void cancelTimerNotification();
     cancelTimerSoundReminder();
+    clearStartAnimationTimeout();
     setHasUnsavedSetupDraft(false);
     setPhase("ritual");
     expandCurrentTauriWindow().catch(() => {
@@ -418,7 +468,7 @@ const App = () => {
   };
 
   const requestStartIntent = (intentSetId: string) => {
-    if (activeIntentSet || activeModal || pendingStartIntentId || isAbandonConfirmOpen) {
+    if (activeIntentSet || activeModal || pendingStartIntentId || startingIntentId || isAbandonConfirmOpen) {
       return;
     }
 
@@ -461,25 +511,40 @@ const App = () => {
   };
 
   const confirmStartIntent = () => {
-    if (!pendingStartIntentId || activeIntentSet || activeModal) {
+    if (!pendingStartIntentId || activeIntentSet || activeModal || startingIntentId) {
       return;
     }
 
+    const targetIntentSet = intentSets.find((intentSet) => intentSet.id === pendingStartIntentId);
+
+    if (!targetIntentSet || targetIntentSet.status !== "idle") {
+      setPendingStartIntentId(null);
+      return;
+    }
+
+    const targetIntentSetId = targetIntentSet.id;
     const notificationKind = getFocusTimerNotificationKind({
-      intentSetId: pendingStartIntentId,
+      intentSetId: targetIntentSetId,
       intentSets,
       nextIncenseIndex: 1,
     });
 
-    setIntentSets((currentIntentSets) =>
-      currentIntentSets.map((intentSet) =>
-        intentSet.id === pendingStartIntentId && intentSet.status === "idle"
-          ? { ...intentSet, currentIncenseIndex: 1, status: "burning" }
-          : intentSet,
-      ),
-    );
-    beginTimer(timerConfig.focusSeconds, notificationKind);
     setPendingStartIntentId(null);
+    setStartingIntentId(targetIntentSetId);
+    clearStartAnimationTimeout();
+
+    startAnimationTimeoutRef.current = window.setTimeout(() => {
+      startAnimationTimeoutRef.current = null;
+      setIntentSets((currentIntentSets) =>
+        currentIntentSets.map((intentSet) =>
+          intentSet.id === targetIntentSetId && intentSet.status === "idle"
+            ? { ...intentSet, currentIncenseIndex: 1, status: "burning" }
+            : intentSet,
+        ),
+      );
+      beginTimer(timerConfig.focusSeconds, notificationKind);
+      setStartingIntentId(null);
+    }, START_TALISMAN_BURN_MS);
   };
 
   const startBreak = (intentSetId: string) => {
@@ -554,10 +619,12 @@ const App = () => {
     setActiveTimerSegment(null);
     setActiveModal(null);
     setPendingStartIntentId(null);
+    setStartingIntentId(null);
     setIsAbandonConfirmOpen(false);
     setActiveUtilityPanel(null);
     void cancelTimerNotification();
     cancelTimerSoundReminder();
+    clearStartAnimationTimeout();
     setPhase("setup");
     clearPersistedSession();
 
@@ -587,7 +654,9 @@ const App = () => {
     setActiveTimerSegment(restoredTimerSegment);
     setActiveModal(resolvedSession.activeModal);
     setPendingStartIntentId(null);
+    setStartingIntentId(null);
     setIsAbandonConfirmOpen(false);
+    clearStartAnimationTimeout();
     setSettings((currentSettings) => saveAppSettings({ ...currentSettings, timerMode: resolvedSession.timerMode }));
     setActiveUtilityPanel(null);
     setPhase(resolvedSession.phase);
@@ -652,10 +721,12 @@ const App = () => {
     setActiveTimerSegment(null);
     setActiveModal(null);
     setPendingStartIntentId(null);
+    setStartingIntentId(null);
     setIsAbandonConfirmOpen(false);
     setActiveUtilityPanel(null);
     void cancelTimerNotification();
     cancelTimerSoundReminder();
+    clearStartAnimationTimeout();
     setPhase("setup");
     clearPersistedSession();
     expandCurrentTauriWindow().catch(() => {
@@ -822,7 +893,7 @@ const App = () => {
     activeModal,
     intentSets,
     pendingStartIntentId,
-  });
+  }) || Boolean(startingIntentId);
   const isSettingsDisabled = !canChangeTimerSettings({ pendingSession, phase });
 
   const toggleUtilityPanel = (panel: UtilityPanel) => {
@@ -870,6 +941,7 @@ const App = () => {
             focusSeconds={timerConfig.focusSeconds}
             hasBlockingAction={hasBlockingAction}
             intentSets={intentSets}
+            startingIntentId={startingIntentId}
             onOpenFullView={requestFullRitualView}
             onRequestAbandon={requestAbandonSession}
             onStartIntent={requestStartIntent}

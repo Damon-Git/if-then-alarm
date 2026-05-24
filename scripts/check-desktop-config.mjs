@@ -165,6 +165,11 @@ const compactWindowSize = readWindowSizeConstant(constantsTs, "COMPACT_WINDOW_SI
 const compactWindowMinSize = readWindowSizeConstant(constantsTs, "COMPACT_WINDOW_MIN_SIZE");
 const fullWindowSize = readWindowSizeConstant(constantsTs, "FULL_WINDOW_SIZE");
 
+assertTextIncludes(
+  constantsTs,
+  "START_TALISMAN_BURN_MS = 2000",
+  "src/constants.ts exports the 2 second situation talisman burn duration",
+);
 assert(Boolean(mainWindow), "Tauri main window is configured");
 assert(mainWindow?.title === "急急如律令", "Tauri main window title is 急急如律令");
 assert(mainWindow?.width === fullWindowSize?.width, "Tauri main window width matches FULL_WINDOW_SIZE");
@@ -338,6 +343,16 @@ assertTextIncludes(
   "App cancels stale timer sound reminders",
 );
 assertTextIncludes(
+  appTsx,
+  "startingIntentId",
+  "App separates transient start animation state from intent business status",
+);
+assertTextIncludes(
+  appTsx,
+  "START_TALISMAN_BURN_MS",
+  "App delays the first focus timer until the start talisman animation completes",
+);
+assertTextIncludes(
   tauriWindow,
   "setCurrentTauriWindowAlwaysOnTop",
   "Tauri window adapter exposes always-on-top control",
@@ -473,6 +488,7 @@ assertTextIncludes(intentSlot, "data-stage-metadata-visibility", "IntentSlot exp
 assertTextIncludes(intentSlot, "data-stage-situation-visibility", "IntentSlot exposes situation talisman visibility semantics");
 assertTextIncludes(intentSlot, "data-stage-prevention-visibility", "IntentSlot exposes prevention talisman visibility semantics");
 assertTextIncludes(intentSlot, "data-stage-censer-emphasis", "IntentSlot exposes completed censer emphasis semantics");
+assertTextIncludes(intentSlot, "data-stage-start-visual-state", "IntentSlot exposes transient situation talisman start animation semantics");
 assertTextIncludes(intentSlot, "data-stage-timer-visible", "IntentSlot exposes timer visibility semantics");
 assertTextIncludes(intentSlot, 'size="stage"', "Full ritual slot uses stage censer asset family");
 assertTextIncludes(compactCenserSlot, 'size="compact"', "Compact ritual slot uses compact censer asset family");
@@ -503,6 +519,8 @@ assertTextIncludes(stylesCss, 'data-stage-metadata-visibility="censer-hover"', "
 assertTextIncludes(stylesCss, 'data-stage-situation-visibility="dismissed"', "CSS dismisses situation talismans after an intent starts");
 assertTextIncludes(stylesCss, 'data-stage-prevention-visibility="dismissed"', "CSS dismisses prevention talismans after an intent completes");
 assertTextIncludes(stylesCss, 'data-stage-censer-emphasis="muted"', "CSS weakens completed full-stage censers");
+assertTextIncludes(stylesCss, 'data-stage-start-visual-state="burning"', "CSS scopes the situation talisman burn animation to the transient start state");
+assertTextIncludes(stylesCss, "situation-talisman-burn-away", "CSS defines the situation talisman burn-away animation");
 assertTextIncludes(stylesCss, ".censer-visual__hover-target:hover", "CSS prevents talisman and incense hover from revealing full-stage metadata");
 assertTextIncludes(stylesCss, "background: transparent;\n  pointer-events: none;", "Full-stage censer transparent areas do not capture talisman or incense hover");
 assertTextIncludes(stylesCss, ".altar-scene .censer-visual--stage .censer-visual__hover-target", "Full-stage censer hover target is scoped to stage censers");

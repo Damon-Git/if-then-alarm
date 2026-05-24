@@ -8,11 +8,19 @@ type IntentSlotProps = {
   intentSet: IntentSet;
   actionDisabled: boolean;
   incenseProgress: number;
+  isStartAnimationActive: boolean;
   timerRemaining: number;
   onStart: (intentSetId: string) => void;
 };
 
-const IntentSlot = ({ intentSet, actionDisabled, incenseProgress, timerRemaining, onStart }: IntentSlotProps) => {
+const IntentSlot = ({
+  intentSet,
+  actionDisabled,
+  incenseProgress,
+  isStartAnimationActive,
+  timerRemaining,
+  onStart,
+}: IntentSlotProps) => {
   const visualSemantics = getStageIntentVisualSemantics(intentSet.status);
   const canStart = visualSemantics.canStart && !actionDisabled;
   const timerStatus = isStageTimerIntentStatus(intentSet.status) ? intentSet.status : null;
@@ -26,6 +34,7 @@ const IntentSlot = ({ intentSet, actionDisabled, incenseProgress, timerRemaining
       data-stage-intent-status={intentSet.status}
       data-stage-metadata-visibility={visualSemantics.metadataVisibility}
       data-stage-prevention-visibility={visualSemantics.preventionTalismanVisibility}
+      data-stage-start-visual-state={isStartAnimationActive ? "burning" : "idle"}
       data-stage-situation-visibility={visualSemantics.situationTalismanVisibility}
       data-stage-timer-visible={timerStatus !== null}
     >
