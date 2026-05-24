@@ -60,6 +60,7 @@ type CenserVisualProps = {
 
 - `data-censer-size`：`stage` 或 `compact`。
 - `data-censer-state`：由 `status` 映射出的视觉状态。
+- `data-censer-lid-state`：`open` 或 `closed`。默认和进行中都保持开盖，只有该套全部香完成后才闭盖。
 - `data-censer-incense-count`：当前套组总香数。
 - `data-censer-current`：当前第几炷香。
 - `data-censer-progress`：当前炷香进度百分比。
@@ -80,6 +81,8 @@ type CenserVisualProps = {
 - 主祭台香炉必须使用 `censer/stage/*` 插槽；小窗 Q 版香炉必须使用 `censer/compact/*` 插槽。两套素材不能混用。
 - `lid` 图层必须对应香炉上方完整盖子，包括顶部钮和镂空盖面；`mouth` 只表示盖子下沿和炉口过渡区域。
 - 香炉开盖动画未来只能移动已有 `lid` 素材，不重新画一个临时盖子，也不移动 `mouth/body` 代替盖子。
+- 香炉默认开盖，包括 `idle`、`burning` 和 `resting`。只有该香炉对应的执行意图进入 `completed`，也就是该套所有线香都烧完时，盖子才闭合。
+- 盖子闭合后，线香视觉层应隐藏，避免线香穿出已闭合的香炉。
 - 香炉组件可以组合 `IncenseVisual`，但不负责计算倒计时。
 - 不在 `CenserVisual` 内判断“是否所有套组完成”“是否进入复盘”等业务流程。
 - 小窗 Q 版香炉素材必须透明，不包含背景面板、符箓或文字。

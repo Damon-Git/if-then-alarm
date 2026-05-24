@@ -786,6 +786,14 @@ select {
   background: transparent;
 }
 
+.censer-visual[data-censer-lid-state="open"] .censer-visual__lid {
+  opacity: 0;
+}
+
+.censer-visual[data-censer-lid-state="closed"] .incense-visual {
+  opacity: 0;
+}
+
 .incense-visual {
   position: absolute;
   left: 50%;

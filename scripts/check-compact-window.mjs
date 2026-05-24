@@ -69,6 +69,10 @@ const assertFullStageUsesStageVisuals = async (page) => {
     "full ritual stage should mark every censer as stage-sized",
   );
   assert(
+    (await page.locator('.stage-grid--full .censer-visual[data-censer-lid-state="open"]').count()) === 3,
+    "full ritual stage should keep all idle censer lids open",
+  );
+  assert(
     (await page.locator('.stage-grid--full [data-visual-slot^="censer/stage/"]').count()) === 15,
     "full ritual stage should expose all stage censer visual slots",
   );
@@ -183,6 +187,15 @@ const assertCompactCompletionStaysOutOfReviewWhenFullOpenFails = async (page) =>
     (await page.locator(".compact-censer--completed").count()) === 1,
     "compact final incense should end in completed censer state",
   );
+  assert(
+    (await page.locator('.compact-censer--completed .censer-visual[data-censer-lid-state="closed"]').count()) === 1,
+    "completed compact censer should close its lid",
+  );
+  const completedIncenseOpacity = await page
+    .locator(".compact-censer--completed .incense-visual")
+    .first()
+    .evaluate((element) => window.getComputedStyle(element).opacity);
+  assert(completedIncenseOpacity === "0", `completed compact censer should hide incense: ${completedIncenseOpacity}`);
   assert(
     (await page.locator(".review-panel:visible").count()) === 0,
     "compact final incense should not auto-open review",

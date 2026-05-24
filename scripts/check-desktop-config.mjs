@@ -444,6 +444,8 @@ assertTextIncludes(
   ),
 );
 assertTextIncludes(censerVisual, "CENSER_ASSET_LAYERS.map", "CenserVisual uses central censer layer order");
+assertTextIncludes(censerVisual, "getCenserLidState", "CenserVisual derives lid state from central visual state");
+assertTextIncludes(censerVisual, "data-censer-lid-state", "CenserVisual exposes explicit lid state for open and closed censer visuals");
 assertTextIncludes(incenseVisual, "INCENSE_ASSET_LAYERS.map", "IncenseVisual uses central incense layer order");
 assertTextIncludes(talismanVisual, "TALISMAN_TEMPLATE_ASSET_LAYERS.map", "TalismanVisual uses central talisman image layer order");
 assertTextIncludes(talismanVisual, "splitIntentText", "TalismanVisual splits intent text into side columns");
@@ -479,6 +481,8 @@ assertTextIncludes(stylesCss, "--altar-censer-center-y", "CSS pins full-stage ce
 assertTextIncludes(stylesCss, ".altar-scene .intent-slot:hover .censer-visual__meta", "CSS reveals full-stage censer metadata only on hover");
 assertTextIncludes(stylesCss, ".altar-scene .prevention-list__items", "CSS lays out prevention talismans horizontally on the altar");
 assertTextIncludes(stylesCss, ".censer-visual--stage .censer-visual__lid.visual-layer--with-asset", "CSS renders stage censer PNG layers as full transparent canvases");
+assertTextIncludes(stylesCss, '.censer-visual[data-censer-lid-state="open"] .censer-visual__lid', "CSS keeps censer lids visually open before completion");
+assertTextIncludes(stylesCss, '.censer-visual[data-censer-lid-state="closed"] .incense-visual', "CSS hides incense after the censer lid closes");
 assertTextIncludes(stylesCss, ".incense-visual .visual-layer--with-asset .visual-layer__asset", "CSS stretches incense PNG layers inside progress-driven boxes");
 
 await Promise.all(

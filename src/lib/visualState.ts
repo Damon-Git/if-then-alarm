@@ -2,6 +2,8 @@ import type { IntentSetStatus } from "../types";
 
 export type CenserVisualState = "idle" | "active" | "resting" | "completed";
 
+export type CenserLidState = "open" | "closed";
+
 export type IncenseVisualState = "pending" | "burning" | "burned" | "resting";
 
 export type TalismanVisualState = "ready" | "disabled" | "completed";
@@ -21,6 +23,9 @@ export const getCenserVisualState = (status: IntentSetStatus): CenserVisualState
 
   return "idle";
 };
+
+export const getCenserLidState = (status: IntentSetStatus): CenserLidState =>
+  status === "completed" ? "closed" : "open";
 
 export const getIncenseVisualState = (
   incenseNumber: number,

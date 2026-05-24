@@ -118,6 +118,8 @@ src/assets/visuals/talisman/situation/template.png
 - `lid.png` 必须对应香炉上方完整盖子，包括顶部钮和镂空盖面；未来开盖动画只移动这一层。
 - `mouth.png` 只负责盖子下沿到炉口过渡区域，不承载完整盖子。
 - 线香继续由 `IncenseVisual` 渲染，不烘焙进香炉图片。
+- 香炉默认开盖；只有对应执行意图的所有线香都烧完并进入 `completed` 后才闭盖。
+- 闭盖状态必须隐藏线香视觉层，避免线香穿出已闭合的盖子。
 
 ## 主祭台线香规格
 
