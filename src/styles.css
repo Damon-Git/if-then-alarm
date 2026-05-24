@@ -643,6 +643,10 @@ select {
   height: 104px;
 }
 
+.censer-visual__hover-target {
+  display: none;
+}
+
 .censer-visual--compact .censer-visual__asset {
   width: 82px;
   height: 90px;
@@ -1107,6 +1111,7 @@ select {
   border: 0;
   padding: 0;
   background: transparent;
+  pointer-events: none;
   transform: translate(-50%, -50%);
 }
 
@@ -1117,6 +1122,19 @@ select {
   margin: 0;
   transform: translateX(-50%) scale(1.36);
   transform-origin: center bottom;
+}
+
+.altar-scene .censer-visual--stage .censer-visual__hover-target {
+  position: absolute;
+  bottom: 34px;
+  left: 50%;
+  z-index: 12;
+  display: block;
+  width: 148px;
+  height: 86px;
+  border-radius: 999px 999px 44px 44px;
+  pointer-events: auto;
+  transform: translateX(-50%);
 }
 
 .altar-scene .censer-visual__meta {
@@ -1190,12 +1208,9 @@ select {
   display: none;
 }
 
-.altar-scene .intent-slot[data-stage-metadata-visibility="hover-focus"]:hover .intent-slot__topline,
-.altar-scene .intent-slot[data-stage-metadata-visibility="hover-focus"]:has(.talisman-visual:focus-visible) .intent-slot__topline,
-.altar-scene .intent-slot[data-stage-metadata-visibility="hover-focus"]:hover .censer-visual__meta,
-.altar-scene .intent-slot[data-stage-metadata-visibility="hover-focus"]:has(.talisman-visual:focus-visible) .censer-visual__meta,
-.altar-scene .intent-slot[data-stage-metadata-visibility="hover-focus"]:hover .timer-panel,
-.altar-scene .intent-slot[data-stage-metadata-visibility="hover-focus"]:has(.talisman-visual:focus-visible) .timer-panel {
+.altar-scene .intent-slot[data-stage-metadata-visibility="censer-hover"]:has(.censer-visual__hover-target:hover) .intent-slot__topline,
+.altar-scene .intent-slot[data-stage-metadata-visibility="censer-hover"]:has(.censer-visual__hover-target:hover) .censer-visual__meta,
+.altar-scene .intent-slot[data-stage-metadata-visibility="censer-hover"]:has(.censer-visual__hover-target:hover) .timer-panel {
   opacity: 1;
 }
 

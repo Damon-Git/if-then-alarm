@@ -445,11 +445,12 @@ assertTextIncludes(
   ),
 );
 assertTextIncludes(censerVisual, "CENSER_ASSET_LAYERS.map", "CenserVisual uses central censer layer order");
+assertTextIncludes(censerVisual, "censer-visual__hover-target", "CenserVisual exposes a censer-only metadata hover target");
 assertTextIncludes(censerVisual, "getCenserLidState", "CenserVisual derives lid state from central visual state");
 assertTextIncludes(censerVisual, "data-censer-lid-state", "CenserVisual exposes explicit lid state for open and closed censer visuals");
 assertTextIncludes(visualState, "getStageIntentVisualSemantics", "Visual state centralizes full-stage intent semantics");
 assertTextIncludes(visualState, "isStageTimerIntentStatus", "Visual state narrows statuses that can render full-stage timer panels");
-assertTextIncludes(visualState, "metadataVisibility: \"hover-focus\"", "Full-stage metadata is explicitly hover or focus only");
+assertTextIncludes(visualState, "metadataVisibility: \"censer-hover\"", "Full-stage metadata is explicitly triggered by censer hover only");
 assertTextIncludes(visualState, "shouldRenderTimerPanel", "Full-stage timer panel visibility is derived from visual state");
 assertTextIncludes(incenseVisual, "INCENSE_ASSET_LAYERS.map", "IncenseVisual uses central incense layer order");
 assertTextIncludes(talismanVisual, "TALISMAN_TEMPLATE_ASSET_LAYERS.map", "TalismanVisual uses central talisman image layer order");
@@ -486,7 +487,10 @@ assertTextIncludes(stylesCss, "text-orientation: upright", "CSS keeps talisman t
 assertTextIncludes(stylesCss, ".altar-scene", "CSS renders a shared altar background scene");
 assertTextIncludes(stylesCss, ".altar-scene__slots", "CSS lays out full-stage intent slots on one altar");
 assertTextIncludes(stylesCss, "--altar-censer-center-y", "CSS pins full-stage censers to a shared horizontal line");
-assertTextIncludes(stylesCss, 'data-stage-metadata-visibility="hover-focus"', "CSS reveals full-stage metadata only through explicit hover or focus semantics");
+assertTextIncludes(stylesCss, 'data-stage-metadata-visibility="censer-hover"', "CSS reveals full-stage metadata only through explicit censer hover semantics");
+assertTextIncludes(stylesCss, ".censer-visual__hover-target:hover", "CSS prevents talisman and incense hover from revealing full-stage metadata");
+assertTextIncludes(stylesCss, "background: transparent;\n  pointer-events: none;", "Full-stage censer transparent areas do not capture talisman or incense hover");
+assertTextIncludes(stylesCss, "border-radius: 999px 999px 44px 44px;\n  pointer-events: auto;", "Full-stage censer hover target remains interactive");
 assertTextIncludes(stylesCss, ".altar-scene .prevention-list__items", "CSS lays out prevention talismans horizontally on the altar");
 assertTextIncludes(stylesCss, ".censer-visual--stage .censer-visual__lid.visual-layer--with-asset", "CSS renders stage censer PNG layers as full transparent canvases");
 assertTextIncludes(stylesCss, '.censer-visual[data-censer-lid-state="open"] .censer-visual__lid', "CSS keeps censer lids visually open before completion");

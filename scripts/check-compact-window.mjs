@@ -77,8 +77,12 @@ const assertFullStageUsesStageVisuals = async (page) => {
     "full ritual stage should expose idle status semantics for every new slot",
   );
   assert(
-    (await page.locator('.stage-grid--full .intent-slot[data-stage-metadata-visibility="hover-focus"]').count()) === 3,
-    "full ritual stage should hide metadata until hover or focus",
+    (await page.locator('.stage-grid--full .intent-slot[data-stage-metadata-visibility="censer-hover"]').count()) === 3,
+    "full ritual stage should hide metadata until hovering the censer",
+  );
+  assert(
+    (await page.locator(".stage-grid--full .censer-visual__hover-target").count()) === 3,
+    "full ritual stage should expose a censer-only metadata hover target",
   );
   assert(
     (await page.locator('.stage-grid--full .intent-slot[data-stage-timer-visible="false"]').count()) === 3,

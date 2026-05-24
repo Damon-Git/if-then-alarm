@@ -12,25 +12,25 @@ describe("visual state", () => {
   it("centralizes full-stage intent semantics by status", () => {
     expect(getStageIntentVisualSemantics("idle")).toEqual({
       canStart: true,
-      metadataVisibility: "hover-focus",
+      metadataVisibility: "censer-hover",
       shouldRenderTimerPanel: false,
       statusLabel: "未开始",
     });
     expect(getStageIntentVisualSemantics("burning")).toEqual({
       canStart: false,
-      metadataVisibility: "hover-focus",
+      metadataVisibility: "censer-hover",
       shouldRenderTimerPanel: true,
       statusLabel: "进行中",
     });
     expect(getStageIntentVisualSemantics("resting")).toEqual({
       canStart: false,
-      metadataVisibility: "hover-focus",
+      metadataVisibility: "censer-hover",
       shouldRenderTimerPanel: true,
       statusLabel: "休息中",
     });
     expect(getStageIntentVisualSemantics("completed")).toEqual({
       canStart: false,
-      metadataVisibility: "hover-focus",
+      metadataVisibility: "censer-hover",
       shouldRenderTimerPanel: false,
       statusLabel: "已完成",
     });

@@ -36,12 +36,14 @@
 
 | 状态 | 状态标签 | 情境符箓 | 香炉 | 线香 | 计时面板 | 辅助信息 |
 | --- | --- | --- | --- | --- | --- | --- |
-| `idle` | 未开始 | 可点击启动，若其他套组阻塞则禁用 | 开盖 | 全部完整待燃 | 不渲染 | 默认隐藏，hover/focus 显示 |
-| `burning` | 进行中 | 禁用 | 开盖 | 当前线香按进度燃烧 | 渲染 | 默认隐藏，hover/focus 显示 |
-| `resting` | 休息中 | 禁用 | 开盖 | 当前线香保持已烧完状态，不表现为继续燃烧 | 渲染 | 默认隐藏，hover/focus 显示 |
-| `completed` | 已完成 | 弱化完成态 | 闭盖 | 隐藏，不能穿出盖子 | 不渲染 | 默认隐藏，hover/focus 显示 |
+| `idle` | 未开始 | 可点击启动，若其他套组阻塞则禁用 | 开盖 | 全部完整待燃 | 不渲染 | 默认隐藏，只在香炉命中区 hover 显示 |
+| `burning` | 进行中 | 禁用 | 开盖 | 当前线香按进度燃烧 | 渲染 | 默认隐藏，只在香炉命中区 hover 显示 |
+| `resting` | 休息中 | 禁用 | 开盖 | 当前线香保持已烧完状态，不表现为继续燃烧 | 渲染 | 默认隐藏，只在香炉命中区 hover 显示 |
+| `completed` | 已完成 | 弱化完成态 | 闭盖 | 隐藏，不能穿出盖子 | 不渲染 | 默认隐藏，只在香炉命中区 hover 显示 |
 
-`IntentSlot` 会输出 `data-stage-intent-status`、`data-stage-can-start`、`data-stage-timer-visible` 和 `data-stage-metadata-visibility`。这些属性只表达视觉语义和回归检查锚点，不反推业务流程。
+`IntentSlot` 会输出 `data-stage-intent-status`、`data-stage-can-start`、`data-stage-timer-visible` 和 `data-stage-metadata-visibility`。当前 `data-stage-metadata-visibility` 的值为 `censer-hover`，表示辅助信息只由香炉命中区触发。这些属性只表达视觉语义和回归检查锚点，不反推业务流程。
+
+主祭台辅助信息不能由符箓 hover、符箓 focus 或线香区域 hover 触发。符箓 hover 只负责符箓自身放大，线香区域保持低干扰。
 
 ## CenserVisual
 
@@ -79,6 +81,8 @@ type CenserVisualProps = {
 - `data-censer-progress`：当前炷香进度百分比。
 
 这些属性用于未来真实素材、截图检查和 CSS 状态选择，不应用来反推业务状态。
+
+主祭台 `CenserVisual` 还会暴露 `.censer-visual__hover-target` 作为香炉专用命中区。这个命中区只覆盖香炉主体和盖子，不覆盖符箓或线香；状态标签、香数、线香进度和计时面板只能由这个命中区 hover 触发。
 
 ### 预留图层
 

@@ -78,6 +78,7 @@ const CenserVisual = ({ currentIncenseIndex, incenseCount, incenseProgress, size
           <CenserLayer key={layer} layer={layer} size={size} />
         ))}
       </div>
+      <span className="censer-visual__hover-target" aria-hidden="true" />
 
       <span className="censer-visual__meta">香炉</span>
       <strong className="censer-visual__meta">{incenseLabel}</strong>

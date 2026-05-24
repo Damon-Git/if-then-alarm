@@ -8,7 +8,7 @@ export type IncenseVisualState = "pending" | "burning" | "burned" | "resting";
 
 export type TalismanVisualState = "ready" | "disabled" | "completed";
 
-export type StageIntentMetadataVisibility = "hover-focus";
+export type StageIntentMetadataVisibility = "censer-hover";
 
 export type StageTimerIntentStatus = Extract<IntentSetStatus, "burning" | "resting">;
 
@@ -22,25 +22,25 @@ export type StageIntentVisualSemantics = {
 const STAGE_INTENT_VISUAL_SEMANTICS = {
   idle: {
     canStart: true,
-    metadataVisibility: "hover-focus",
+    metadataVisibility: "censer-hover",
     shouldRenderTimerPanel: false,
     statusLabel: "未开始",
   },
   burning: {
     canStart: false,
-    metadataVisibility: "hover-focus",
+    metadataVisibility: "censer-hover",
     shouldRenderTimerPanel: true,
     statusLabel: "进行中",
   },
   resting: {
     canStart: false,
-    metadataVisibility: "hover-focus",
+    metadataVisibility: "censer-hover",
     shouldRenderTimerPanel: true,
     statusLabel: "休息中",
   },
   completed: {
     canStart: false,
-    metadataVisibility: "hover-focus",
+    metadataVisibility: "censer-hover",
     shouldRenderTimerPanel: false,
     statusLabel: "已完成",
   },
