@@ -60,6 +60,7 @@ const CenserVisual = ({ currentIncenseIndex, incenseCount, incenseProgress, size
       className={`censer-visual censer-visual--${size} censer-visual--${visualState}`}
       data-censer-current={currentIncenseIndex}
       data-censer-incense-count={incenseCount}
+      data-censer-interaction-role={size === "stage" ? "metadata-only" : "presentational"}
       data-censer-lid-state={lidState}
       data-censer-progress={incenseProgressPercent}
       data-censer-size={size}
@@ -78,7 +79,7 @@ const CenserVisual = ({ currentIncenseIndex, incenseCount, incenseProgress, size
           <CenserLayer key={layer} layer={layer} size={size} />
         ))}
       </div>
-      <span className="censer-visual__hover-target" aria-hidden="true" />
+      <span className="censer-visual__hover-target" data-censer-hover-action="show-metadata" aria-hidden="true" />
 
       <span className="censer-visual__meta">香炉</span>
       <strong className="censer-visual__meta">{incenseLabel}</strong>

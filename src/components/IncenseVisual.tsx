@@ -70,6 +70,7 @@ const IncenseVisual = ({ currentIncenseIndex, incenseCount, progress, size, stat
   return (
     <div
       className={`incense-visual incense-visual--${size}`}
+      data-incense-click-action="none"
       data-incense-count={incenseCount}
       data-incense-current={currentIncenseIndex}
       data-incense-progress={progressPercent}

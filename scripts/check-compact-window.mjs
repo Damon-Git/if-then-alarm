@@ -85,6 +85,22 @@ const assertFullStageUsesStageVisuals = async (page) => {
     "full ritual stage should expose a censer-only metadata hover target",
   );
   assert(
+    (await page.locator('.stage-grid--full .talisman-visual--situation[data-talisman-click-action="start-confirm"]').count()) === 3,
+    "full ritual stage should make idle situation talismans the only start-confirm click targets",
+  );
+  assert(
+    (await page.locator('.stage-grid--full .talisman-visual--prevention[data-talisman-click-action="none"]').count()) === 0,
+    "full ritual stage should not render prevention click targets when no prevention intents exist",
+  );
+  assert(
+    (await page.locator('.stage-grid--full .censer-visual[data-censer-interaction-role="metadata-only"]').count()) === 3,
+    "full ritual stage should keep censers metadata-only",
+  );
+  assert(
+    (await page.locator('.stage-grid--full .incense-visual[data-incense-click-action="none"]').count()) === 3,
+    "full ritual stage should keep incense non-clickable",
+  );
+  assert(
     (await page.locator('.stage-grid--full .intent-slot[data-stage-timer-visible="false"]').count()) === 3,
     "full ritual stage should not show timer panels before any intent starts",
   );
@@ -336,6 +352,10 @@ const run = async () => {
     assert((await page.locator(".compact-censer__hint:visible").count()) === 0, "compact ritual scene should hide interaction hints");
     assert((await page.locator(".compact-censer strong:visible").count()) === 0, "compact ritual scene should hide timer text");
     const firstCompactCenserLabel = await page.locator(".compact-censer__button").first().getAttribute("aria-label");
+    assert(
+      (await page.locator('.compact-censer__button[data-compact-censer-click-action="open-full-window"]').count()) === 3,
+      "compact censer buttons should only open the full window",
+    );
     assert(
       firstCompactCenserLabel?.includes("点击展开完整窗口"),
       `compact censer should expand full window instead of starting directly: ${firstCompactCenserLabel}`,

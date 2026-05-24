@@ -45,6 +45,14 @@
 
 主祭台辅助信息不能由符箓 hover、符箓 focus 或线香区域 hover 触发。符箓 hover 只负责符箓自身放大，线香区域保持低干扰。
 
+主祭台点击动作必须保持单一入口：
+
+- 情境符箓是唯一可以打开“开始这一套”确认弹窗的元素。
+- 预防性符箓只用于查看内容，不能触发业务动作。
+- 主祭台香炉只用于显示辅助信息，不能启动、续香或进入复盘。
+- 主祭台线香不承担点击交互。
+- 小窗香炉按钮只用于展开完整窗口，不复用主祭台点击规则。
+
 ## CenserVisual
 
 文件：`src/components/CenserVisual.tsx`
@@ -75,6 +83,7 @@ type CenserVisualProps = {
 
 - `data-censer-size`：`stage` 或 `compact`。
 - `data-censer-state`：由 `status` 映射出的视觉状态。
+- `data-censer-interaction-role`：`stage` 下为 `metadata-only`，`compact` 下为 `presentational`。小窗点击动作在外层按钮上表达。
 - `data-censer-lid-state`：`open` 或 `closed`。默认和进行中都保持开盖，只有该套全部香完成后才闭盖。
 - `data-censer-incense-count`：当前套组总香数。
 - `data-censer-current`：当前第几炷香。
@@ -82,7 +91,7 @@ type CenserVisualProps = {
 
 这些属性用于未来真实素材、截图检查和 CSS 状态选择，不应用来反推业务状态。
 
-主祭台 `CenserVisual` 还会暴露 `.censer-visual__hover-target` 作为香炉专用命中区。这个命中区只覆盖香炉主体和盖子，不覆盖符箓或线香；状态标签、香数、线香进度和计时面板只能由这个命中区 hover 触发。
+主祭台 `CenserVisual` 还会暴露 `.censer-visual__hover-target` 作为香炉专用命中区。这个命中区只覆盖香炉主体和盖子，不覆盖符箓或线香；状态标签、香数、线香进度和计时面板只能由这个命中区 hover 触发。它的 `data-censer-hover-action` 是 `show-metadata`，不承担点击动作。
 
 ### 预留图层
 
@@ -129,6 +138,7 @@ type IncenseVisualProps = {
 - `progress`：当前线香进度，范围 0-1；组件可以 clamp，但不能计算时间。
 - `size`：选择主祭台或小窗素材族。
 - `status`：用于把每根线香映射为 `pending`、`burning`、`burned` 或 `resting`。
+- `data-incense-click-action="none"`：线香是进度视觉，不承担点击交互。
 
 ### 预留图层
 
@@ -175,6 +185,8 @@ type TalismanVisualProps = {
 - `disabled`：禁用交互并映射为禁用视觉状态。
 - `intentStatus`：用于映射完成状态。
 - `onClick`：只负责把点击交给外层流程，例如打开开始确认弹窗。
+- `data-talisman-interaction-role`：`start-entry` 或 `view-only`。
+- `data-talisman-click-action`：只有未禁用的情境性符箓可以是 `start-confirm`，其他符箓必须是 `none`。
 
 ### 预留图层
 

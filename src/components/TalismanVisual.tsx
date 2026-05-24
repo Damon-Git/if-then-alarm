@@ -111,6 +111,8 @@ const TalismanVisual = ({
   variant,
 }: TalismanVisualProps) => {
   const visualState = getTalismanVisualState({ disabled, intentStatus });
+  const interactionRole = interactive ? "start-entry" : "view-only";
+  const clickAction = interactive && !disabled ? "start-confirm" : "none";
   const className = `talisman-visual talisman-visual--${variant} talisman-visual--${visualState}${
     interactive ? " talisman-visual--interactive" : ""
   }`;
@@ -120,6 +122,8 @@ const TalismanVisual = ({
       <button
         aria-label={`${label}：${text}`}
         className={className}
+        data-talisman-click-action={clickAction}
+        data-talisman-interaction-role={interactionRole}
         data-talisman-state={visualState}
         data-talisman-variant={variant}
         disabled={disabled}
@@ -132,7 +136,13 @@ const TalismanVisual = ({
   }
 
   return (
-    <div className={className} data-talisman-state={visualState} data-talisman-variant={variant}>
+    <div
+      className={className}
+      data-talisman-click-action="none"
+      data-talisman-interaction-role={interactionRole}
+      data-talisman-state={visualState}
+      data-talisman-variant={variant}
+    >
       <TalismanContent label={label} text={text} variant={variant} />
     </div>
   );

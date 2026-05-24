@@ -53,6 +53,7 @@ const CompactCenserSlot = ({
       <button
         aria-label={`第 ${intentSet.currentIncenseIndex} / ${intentSet.incenseCount} 炷，${statusLabels[intentSet.status]}，${statusHint}`}
         className="compact-censer__button"
+        data-compact-censer-click-action="open-full-window"
         type="button"
         onClick={onOpenFullView}
       >

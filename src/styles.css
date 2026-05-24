@@ -1133,6 +1133,7 @@ select {
   width: 148px;
   height: 86px;
   border-radius: 999px 999px 44px 44px;
+  cursor: default;
   pointer-events: auto;
   transform: translateX(-50%);
 }
