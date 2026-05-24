@@ -81,6 +81,18 @@ const assertFullStageUsesStageVisuals = async (page) => {
     "full ritual stage should hide metadata until hovering the censer",
   );
   assert(
+    (await page.locator('.stage-grid--full .intent-slot[data-stage-situation-visibility="visible"]').count()) === 3,
+    "full ritual stage should keep idle situation talismans visible",
+  );
+  assert(
+    (await page.locator('.stage-grid--full .intent-slot[data-stage-prevention-visibility="visible"]').count()) === 3,
+    "full ritual stage should keep idle prevention talisman slots visible",
+  );
+  assert(
+    (await page.locator('.stage-grid--full .intent-slot[data-stage-censer-emphasis="normal"]').count()) === 3,
+    "full ritual stage should keep idle censers at normal emphasis",
+  );
+  assert(
     (await page.locator(".stage-grid--full .censer-visual__hover-target").count()) === 3,
     "full ritual stage should expose a censer-only metadata hover target",
   );
@@ -426,6 +438,18 @@ const run = async () => {
     await assertVisible(page.getByRole("heading", { name: "确认开始这一套？" }), "start confirmation before compact active state");
     await page.getByRole("button", { name: "开始这一套" }).click();
     await assertVisible(page.locator(".intent-slot--burning").first(), "burning intent in full ritual stage");
+    assert(
+      (await page.locator('.stage-grid--full .intent-slot--burning[data-stage-situation-visibility="dismissed"]').count()) === 1,
+      "burning full-stage intent should dismiss its situation talisman",
+    );
+    assert(
+      (await page.locator('.stage-grid--full .intent-slot--burning[data-stage-prevention-visibility="visible"]').count()) === 1,
+      "burning full-stage intent should keep prevention talismans visible",
+    );
+    assert(
+      (await page.locator('.stage-grid--full .intent-slot--burning[data-stage-censer-emphasis="normal"]').count()) === 1,
+      "burning full-stage intent should keep its censer at normal emphasis",
+    );
     await page.evaluate(() => {
       document.documentElement.dataset.windowMode = "compact";
     });

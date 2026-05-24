@@ -22,8 +22,11 @@ const IntentSlot = ({ intentSet, actionDisabled, incenseProgress, timerRemaining
     <article
       className={`intent-slot intent-slot--${intentSet.status}`}
       data-stage-can-start={canStart}
+      data-stage-censer-emphasis={visualSemantics.censerEmphasis}
       data-stage-intent-status={intentSet.status}
       data-stage-metadata-visibility={visualSemantics.metadataVisibility}
+      data-stage-prevention-visibility={visualSemantics.preventionTalismanVisibility}
+      data-stage-situation-visibility={visualSemantics.situationTalismanVisibility}
       data-stage-timer-visible={timerStatus !== null}
     >
       <div className="intent-slot__topline">

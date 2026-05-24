@@ -12,26 +12,38 @@ describe("visual state", () => {
   it("centralizes full-stage intent semantics by status", () => {
     expect(getStageIntentVisualSemantics("idle")).toEqual({
       canStart: true,
+      censerEmphasis: "normal",
       metadataVisibility: "censer-hover",
+      preventionTalismanVisibility: "visible",
       shouldRenderTimerPanel: false,
+      situationTalismanVisibility: "visible",
       statusLabel: "未开始",
     });
     expect(getStageIntentVisualSemantics("burning")).toEqual({
       canStart: false,
+      censerEmphasis: "normal",
       metadataVisibility: "censer-hover",
+      preventionTalismanVisibility: "visible",
       shouldRenderTimerPanel: true,
+      situationTalismanVisibility: "dismissed",
       statusLabel: "进行中",
     });
     expect(getStageIntentVisualSemantics("resting")).toEqual({
       canStart: false,
+      censerEmphasis: "normal",
       metadataVisibility: "censer-hover",
+      preventionTalismanVisibility: "visible",
       shouldRenderTimerPanel: true,
+      situationTalismanVisibility: "dismissed",
       statusLabel: "休息中",
     });
     expect(getStageIntentVisualSemantics("completed")).toEqual({
       canStart: false,
+      censerEmphasis: "muted",
       metadataVisibility: "censer-hover",
+      preventionTalismanVisibility: "dismissed",
       shouldRenderTimerPanel: false,
+      situationTalismanVisibility: "dismissed",
       statusLabel: "已完成",
     });
   });

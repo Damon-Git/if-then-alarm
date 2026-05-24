@@ -1042,6 +1042,7 @@ select {
   border-radius: 4px;
   box-shadow: 0 6px 14px rgb(55 31 15 / 18%);
   transition:
+    opacity 180ms ease,
     box-shadow 180ms ease,
     transform 180ms ease;
 }
@@ -1099,6 +1100,18 @@ select {
   transform: translateY(-72%) scale(1.72);
 }
 
+.altar-scene .intent-slot[data-stage-situation-visibility="dismissed"] .talisman-visual--situation {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(-50%) scale(0.92);
+}
+
+.altar-scene .intent-slot[data-stage-prevention-visibility="dismissed"] .prevention-list {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(8px);
+}
+
 .altar-scene .censer-visual--stage {
   position: absolute;
   top: var(--altar-censer-center-y);
@@ -1122,6 +1135,14 @@ select {
   margin: 0;
   transform: translateX(-50%) scale(1.36);
   transform-origin: center bottom;
+  transition:
+    filter 180ms ease,
+    opacity 180ms ease;
+}
+
+.altar-scene .intent-slot[data-stage-censer-emphasis="muted"] .censer-visual--stage .censer-visual__asset {
+  filter: saturate(0.58) brightness(0.82);
+  opacity: 0.62;
 }
 
 .altar-scene .censer-visual--stage .censer-visual__hover-target {
@@ -1188,6 +1209,9 @@ select {
   width: 100%;
   min-width: 0;
   gap: 6px;
+  transition:
+    opacity 180ms ease,
+    transform 180ms ease;
 }
 
 .altar-scene .prevention-list:has(.talisman-visual:hover),
