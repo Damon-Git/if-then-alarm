@@ -55,7 +55,7 @@ export const VISUAL_ASSET_FAMILY_SPECS = {
       sourceCanvas: { height: 256, width: 256 },
     },
     stage: {
-      renderBox: { height: 104, width: 96 },
+      renderBox: { height: 118, width: 118 },
       sourceCanvas: { height: 320, width: 320 },
     },
   },

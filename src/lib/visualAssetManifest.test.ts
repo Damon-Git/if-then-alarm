@@ -25,9 +25,7 @@ import {
 } from "./visualAssets";
 
 describe("visual asset manifest", () => {
-  it("keeps stage defaults empty while configuring altar, compact, and talisman test assets", () => {
-    expect(getVisualAssetUrl("censer/stage/body")).toBeUndefined();
-    expect(getCenserAssetUrl("stage", "body")).toBeUndefined();
+  it("configures altar, stage, compact, and talisman test assets", () => {
     expect(Object.keys(visualAssetManifest).sort()).toEqual([
       "altar/background",
       "censer/compact/ash",
@@ -35,10 +33,17 @@ describe("visual asset manifest", () => {
       "censer/compact/feet",
       "censer/compact/lid",
       "censer/compact/mouth",
+      "censer/stage/ash",
+      "censer/stage/body",
+      "censer/stage/feet",
+      "censer/stage/lid",
+      "censer/stage/mouth",
       "talisman/prevention/template",
       "talisman/situation/template",
     ]);
     expect(getAltarAssetUrl("background")).toEqual(expect.stringContaining("background"));
+    expect(getVisualAssetUrl("censer/stage/body")).toEqual(expect.stringContaining("body"));
+    expect(getCenserAssetUrl("stage", "body")).toEqual(expect.stringContaining("body"));
     expect(getCenserAssetUrl("compact", "body")).toEqual(expect.stringContaining("body"));
     expect(getTalismanAssetUrl("situation", "template")).toEqual(expect.stringContaining("template"));
     expect(getTalismanAssetUrl("prevention", "template")).toEqual(expect.stringContaining("template"));
@@ -87,7 +92,7 @@ describe("visual asset manifest", () => {
       tone: "ritual-placeholder",
     });
     expect(VISUAL_ASSET_FAMILY_SPECS.censer.stage.sourceCanvas).toEqual({ height: 320, width: 320 });
-    expect(VISUAL_ASSET_FAMILY_SPECS.censer.stage.renderBox).toEqual({ height: 104, width: 96 });
+    expect(VISUAL_ASSET_FAMILY_SPECS.censer.stage.renderBox).toEqual({ height: 118, width: 118 });
     expect(VISUAL_ASSET_FAMILY_SPECS.incense.stage.sourceCanvas).toEqual({ height: 240, width: 240 });
   });
 
@@ -122,7 +127,8 @@ describe("visual asset manifest", () => {
       "incense/stage/smoke",
     ]);
     expect(getCenserAssetUrl("compact", "body")).toBeDefined();
-    expect(getCenserAssetUrl("stage", "body")).toBeUndefined();
+    expect(getCenserAssetUrl("stage", "body")).toBeDefined();
+    expect(getCenserAssetUrl("stage", "body")).not.toBe(getCenserAssetUrl("compact", "body"));
   });
 
   it("keeps talisman image slots explicit while text stays a React overlay", () => {

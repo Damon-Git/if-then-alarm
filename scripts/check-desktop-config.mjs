@@ -383,6 +383,11 @@ assertTextIncludes(
   "compactCenserFeetUrl",
   "compactCenserLidUrl",
   "compactCenserMouthUrl",
+  "stageCenserAshUrl",
+  "stageCenserBodyUrl",
+  "stageCenserFeetUrl",
+  "stageCenserLidUrl",
+  "stageCenserMouthUrl",
   "preventionTalismanTemplateUrl",
   "situationTalismanTemplateUrl",
   '"altar/background"',
@@ -391,6 +396,11 @@ assertTextIncludes(
   '"censer/compact/feet"',
   '"censer/compact/lid"',
   '"censer/compact/mouth"',
+  '"censer/stage/ash"',
+  '"censer/stage/body"',
+  '"censer/stage/feet"',
+  '"censer/stage/lid"',
+  '"censer/stage/mouth"',
   '"talisman/prevention/template"',
   '"talisman/situation/template"',
 ].forEach((manifestToken) =>
@@ -460,6 +470,7 @@ assertTextIncludes(stylesCss, ".altar-scene__slots", "CSS lays out full-stage in
 assertTextIncludes(stylesCss, "--altar-censer-center-y", "CSS pins full-stage censers to a shared horizontal line");
 assertTextIncludes(stylesCss, ".altar-scene .intent-slot:hover .censer-visual__meta", "CSS reveals full-stage censer metadata only on hover");
 assertTextIncludes(stylesCss, ".altar-scene .prevention-list__items", "CSS lays out prevention talismans horizontally on the altar");
+assertTextIncludes(stylesCss, ".censer-visual--stage .censer-visual__lid.visual-layer--with-asset", "CSS renders stage censer PNG layers as full transparent canvases");
 
 await Promise.all(
   [
@@ -469,6 +480,7 @@ await Promise.all(
     "docs/SELF_USE_READINESS.md",
     "docs/DESKTOP_PERSISTENCE_JSON_SPEC.md",
     "docs/DESKTOP_BEHAVIOR_REGRESSION.md",
+    "scripts/extract-stage-censer-layers.mjs",
     "scripts/check-self-use-readiness.mjs",
     "src/lib/desktopPersistenceAdapter.ts",
     "src/lib/desktopPersistenceSchema.ts",
@@ -492,6 +504,11 @@ await Promise.all(
     "src/assets/visuals/talisman/situation/template.png",
     "src/assets/visuals/talisman/prevention/template.png",
     "src/assets/visuals/censer/stage/README.md",
+    "src/assets/visuals/censer/stage/ash.png",
+    "src/assets/visuals/censer/stage/body.png",
+    "src/assets/visuals/censer/stage/feet.png",
+    "src/assets/visuals/censer/stage/lid.png",
+    "src/assets/visuals/censer/stage/mouth.png",
     "src/assets/visuals/censer/compact/README.md",
     "src/assets/visuals/censer/compact/ash.png",
     "src/assets/visuals/censer/compact/body.png",

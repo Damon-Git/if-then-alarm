@@ -1,6 +1,6 @@
 # 视觉素材接入管线
 
-本文件约定未来真实符箓、香炉、线香素材如何进入项目。当前版本只接入了一组小窗 Q 版香炉测试 PNG，用于验证素材链路；主祭台、符箓和线香仍使用占位元素，不做动画。素材目录内的执行清单见 `src/assets/visuals/README.md`。
+本文件约定未来真实符箓、香炉、线香素材如何进入项目。当前版本已接入主祭台背景、符箓模板、小窗 Q 版香炉和主祭台香炉的临时测试 PNG，用于验证素材链路；线香仍使用占位元素，不做动画。素材目录内的执行清单见 `src/assets/visuals/README.md`。
 
 ## 目录结构
 
@@ -79,7 +79,7 @@ src/assets/visuals/talisman/situation/template.png
 
 同一类素材优先保持相同文件名，只通过目录区分 `stage` 和 `compact`。
 
-真实素材进入项目时，应在对应目录更新 README，记录素材来源、用途和替换范围。当前 `censer/compact/` 下的 PNG 是临时测试素材，不代表正式视觉风格。
+真实素材进入项目时，应在对应目录更新 README，记录素材来源、用途和替换范围。当前 `censer/compact/` 和 `censer/stage/` 下的 PNG 是临时测试素材，不代表正式视觉风格。
 
 ## 素材格式
 
@@ -92,7 +92,7 @@ src/assets/visuals/talisman/situation/template.png
 
 ## 小窗 Q 版香炉规格
 
-小窗香炉是下一轮真实素材接入的优先对象。当前代码仍使用 CSS 占位，但素材规格先固定如下：
+小窗香炉当前已接入临时 PNG 测试素材，素材规格固定如下：
 
 - 小窗香炉素材必须是透明背景，不允许自带白底、灰底、米色底或面板背景。
 - 小窗最多显示 3 个香炉槽位，用户创建几套就显示几套，不补空位。
@@ -107,6 +107,18 @@ src/assets/visuals/talisman/situation/template.png
 
 代码中的规格锚点见 `VISUAL_ASSET_FAMILY_SPECS` 和 `COMPACT_CENSER_ASSET_REQUIREMENTS`。
 
+## 主祭台香炉规格
+
+主祭台香炉当前已接入临时 PNG 测试素材，素材规格固定如下：
+
+- 主祭台香炉素材必须是透明背景，不允许自带祭台背景、符箓或线香。
+- 主祭台香炉使用 `censer/stage` 素材族，不能复用小窗 `compact` Q 版素材。
+- 主祭台香炉推荐源素材画布为 `320px × 320px`。
+- 香炉主体、盖、炉口、香灰层、底足继续使用独立图层。
+- `lid.png` 必须对应香炉上方完整盖子，包括顶部钮和镂空盖面；未来开盖动画只移动这一层。
+- `mouth.png` 只负责盖子下沿到炉口过渡区域，不承载完整盖子。
+- 线香继续由 `IncenseVisual` 渲染，不烘焙进香炉图片。
+
 ## 接入边界
 
 - 业务状态到视觉状态的映射只放在 `src/lib/visualState.ts`。
@@ -118,7 +130,7 @@ src/assets/visuals/talisman/situation/template.png
 
 ## Manifest 接入
 
-当前 `src/lib/visualAssetManifest.ts` 默认导出空 manifest。视觉组件会先查询对应 `data-visual-slot`：
+当前 `src/lib/visualAssetManifest.ts` 已登记临时测试素材。视觉组件会先查询对应 `data-visual-slot`：
 
 - 如果 manifest 中存在 URL，则在该图层渲染 `<img>`。
 - 如果 manifest 中没有 URL，则保留现有 CSS 占位图层。
