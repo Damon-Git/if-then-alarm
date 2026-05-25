@@ -32,6 +32,8 @@ npm run check:compact
 
 更完整的手动回归路径见 [SELF_USE_REGRESSION_RUNBOOK.md](SELF_USE_REGRESSION_RUNBOOK.md)。准备把某个版本作为日常自用版本前，按该清单完整走一遍。
 
+内部 `.app` 安装、替换、数据备份和恢复见 [MACOS_SELF_USE_INSTALL.md](MACOS_SELF_USE_INSTALL.md)。准备把构建产物放进日常使用位置前，按该文档检查。
+
 ## 桌面冒烟
 
 需要确认内部 `.app` 能正常生成和启动：
@@ -43,10 +45,12 @@ npm run tauri:build
 生成后检查：
 
 - `src-tauri/target/release/bundle/macos/急急如律令.app` 存在。
+- 如果替换日常自用 `.app`，先退出正在运行的旧应用。
 - 双击或右键打开 `.app` 能启动完整窗口。
 - 初始窗口接近 `960 × 760`。
 - 菜单栏右侧有临时“令”入口。
 - 完成一轮复盘后关闭再打开，历史记录仍在。
+- 数据文件位于 `~/Library/Application Support/com.damon.jijirululing/persistence.v1.json`，替换 `.app` 不应清空该文件。
 
 ## 必验路径
 

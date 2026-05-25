@@ -50,6 +50,7 @@ const desktopPersistenceAdapter = await readText("src/lib/desktopPersistenceAdap
 const desktopRegression = await readText("docs/DESKTOP_BEHAVIOR_REGRESSION.md");
 const interactionModel = await readText("docs/INTERACTION_MODEL.md");
 const macosInternalBuild = await readText("docs/MACOS_INTERNAL_BUILD.md");
+const macosSelfUseInstall = await readText("docs/MACOS_SELF_USE_INSTALL.md");
 const selfUseReadiness = await readText("docs/SELF_USE_READINESS.md");
 const selfUseRegressionRunbook = await readText("docs/SELF_USE_REGRESSION_RUNBOOK.md");
 const sessionGuards = await readText("src/lib/sessionGuards.ts");
@@ -68,6 +69,7 @@ for (const relativePath of [
   "docs/DESKTOP_BEHAVIOR_REGRESSION.md",
   "docs/INTERACTION_MODEL.md",
   "docs/MACOS_INTERNAL_BUILD.md",
+  "docs/MACOS_SELF_USE_INSTALL.md",
   "docs/SELF_USE_READINESS.md",
   "docs/SELF_USE_REGRESSION_RUNBOOK.md",
   "docs/TAURI_CLOSE_RESTORE_NOTES.md",
@@ -112,7 +114,20 @@ for (const relativePath of [
   "npm run check:compact",
   "npm run tauri:build",
   "SELF_USE_REGRESSION_RUNBOOK.md",
+  "MACOS_SELF_USE_INSTALL.md",
+  "persistence.v1.json",
 ].forEach((token) => assertIncludes(selfUseReadiness, token, `self-use readiness documents ${token}`));
+
+[
+  "安装方式",
+  "什么时候需要重新构建",
+  "数据位置",
+  "备份数据",
+  "恢复数据",
+  "重置数据",
+  "安装后冒烟检查",
+  "不覆盖",
+].forEach((token) => assertIncludes(macosSelfUseInstall, token, `macOS self-use install doc covers ${token}`));
 
 [
   "准备",
@@ -168,6 +183,9 @@ for (const relativePath of [
 
 assertIncludes(macosInternalBuild, "急急如律令.app", "macOS internal build doc names the app bundle");
 assertIncludes(macosInternalBuild, "不包含签名、公证、DMG", "macOS internal build doc keeps release scope explicit");
+assertIncludes(macosInternalBuild, "MACOS_SELF_USE_INSTALL.md", "macOS internal build doc links self-use install doc");
+assertIncludes(macosSelfUseInstall, "com.damon.jijirululing", "macOS self-use install doc names app data directory");
+assertIncludes(macosSelfUseInstall, "替换 `.app` 前先退出旧应用", "macOS self-use install doc guards app replacement");
 
 if (failures.length > 0) {
   console.error("Self-use readiness check failed:");

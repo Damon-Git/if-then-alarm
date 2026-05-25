@@ -97,6 +97,10 @@ src-tauri/target/release/bundle/macos/急急如律令.app
 - `docs/TAURI_DESKTOP_CHECKLIST.md`
 - `docs/DESKTOP_BEHAVIOR_REGRESSION.md`
 
+把内部 `.app` 放进日常自用位置、替换旧版本、备份和恢复数据时，见：
+
+- `docs/MACOS_SELF_USE_INSTALL.md`
+
 ## 当前仍是占位
 
 - `src-tauri/icons/app-icon/placeholder-icon.png` 仍是临时占位应用图标。
