@@ -41,7 +41,7 @@
 | `resting` | 休息中 | 已退场，不重新出现 | 预防性符箓可见 | 开盖，正常强调 | 当前线香保持已烧完状态，不表现为继续燃烧 | 渲染 | 默认隐藏，只在香炉命中区 hover 显示 |
 | `completed` | 已完成 | 已退场 | 预防性符箓退场 | 闭盖并弱化 | 隐藏，不能穿出盖子 | 不渲染 | 默认隐藏，只在香炉命中区 hover 显示 |
 
-`IntentSlot` 会输出 `data-stage-intent-status`、`data-stage-can-start`、`data-stage-timer-visible`、`data-stage-metadata-visibility`、`data-stage-situation-visibility`、`data-stage-prevention-visibility`、`data-stage-censer-emphasis` 和 `data-stage-start-visual-state`。当前 `data-stage-metadata-visibility` 的值为 `censer-hover`，表示辅助信息只由香炉命中区触发。这些属性只表达视觉语义和回归检查锚点，不反推业务流程。
+`IntentSlot` 会输出 `data-stage-intent-status`、`data-stage-can-start`、`data-stage-timer-visible`、`data-stage-metadata-visibility`、`data-stage-metadata-active`、`data-stage-situation-visibility`、`data-stage-prevention-visibility`、`data-stage-prevention-preview-active`、`data-stage-censer-emphasis` 和 `data-stage-start-visual-state`。当前 `data-stage-metadata-visibility` 的值为 `censer-hover`，表示辅助信息只由香炉命中区触发；`data-stage-metadata-active` 和 `data-stage-prevention-preview-active` 由 React 指针事件写入，用于规避打包 WebView 中 CSS hover 选择器不稳定的问题。这些属性只表达视觉语义和回归检查锚点，不反推业务流程。
 
 情境符箓燃烧动画契约：只在该套从 `idle` 确认进入第一次 `burning` 前触发一次，动画目标时长约 2 秒；动画期间不启动专注倒计时，不显示计时面板；动画结束后情境符箓退场并正式进入 `burning`。后续同一个香炉续香时不再播放该动画，也不重新显示情境符箓。
 
@@ -93,9 +93,9 @@ type CenserVisualProps = {
 
 这些属性用于未来真实素材、截图检查和 CSS 状态选择，不应用来反推业务状态。
 
-主祭台 `CenserVisual` 还会暴露 `.censer-visual__hover-target` 作为香炉专用命中区。这个命中区只覆盖香炉主体和盖子，不覆盖符箓或线香；状态标签、香数、线香进度和计时面板只能由这个命中区 hover 触发。它的 `data-censer-hover-action` 是 `show-metadata`，不承担点击动作。
+主祭台 `CenserVisual` 还会暴露 `.censer-visual__hover-target` 作为香炉专用命中区。这个命中区只覆盖香炉主体和盖子，不覆盖符箓或线香；状态标签、香数、线香进度和计时面板只能由这个命中区 hover 触发。它的 `data-censer-hover-action` 是 `show-metadata`，不承担点击动作；悬停结果通过 `data-stage-metadata-active` 显式表达。
 
-主祭台辅助信息必须集中在 `.censer-visual__metadata` 这一张清晰信息卡内，不拆成多个绝对定位标签。信息卡默认隐藏，只由 `.censer-visual__hover-target` 触发显示；符箓 hover、符箓 focus 和线香区域 hover 都不能触发它。
+主祭台辅助信息必须集中在 `.censer-visual__metadata` 这一张清晰信息卡内，不拆成多个绝对定位标签。信息卡默认隐藏，只由 `.censer-visual__hover-target` 触发显示；符箓 hover、符箓 focus 和线香区域 hover 都不能触发它。实现上不要依赖 CSS `:has(...:hover)` 作为唯一触发条件。
 
 ### 预留图层
 
@@ -194,6 +194,7 @@ type TalismanVisualProps = {
 - `onClick`：只负责把点击交给外层流程，例如打开开始确认弹窗。
 - `data-talisman-interaction-role`：`start-entry` 或 `view-only`。
 - `data-talisman-click-action`：只有未禁用的情境性符箓可以是 `start-confirm`，其他符箓必须是 `none`。
+- `data-talisman-preview-active`：符箓当前是否被鼠标悬停或键盘聚焦，用于控制放大预览，不改变业务状态。
 
 ### 预留图层
 

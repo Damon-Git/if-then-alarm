@@ -27,6 +27,14 @@ type CenserVisualProps = {
    */
   size: "stage" | "compact";
   /**
+   * True only while the dedicated censer hit area is hovered.
+   */
+  isMetadataActive?: boolean;
+  /**
+   * Reports hover state for the dedicated censer hit area.
+   */
+  onMetadataActiveChange?: (isActive: boolean) => void;
+  /**
    * Minimal intent status needed to derive visual state. Do not pass full session data.
    */
   status: IntentSetStatus;
@@ -47,7 +55,15 @@ const CenserLayer = ({ layer, size }: { layer: CenserAssetLayer; size: VisualAss
   );
 };
 
-const CenserVisual = ({ currentIncenseIndex, incenseCount, incenseProgress, size, status }: CenserVisualProps) => {
+const CenserVisual = ({
+  currentIncenseIndex,
+  incenseCount,
+  incenseProgress,
+  isMetadataActive = false,
+  onMetadataActiveChange,
+  size,
+  status,
+}: CenserVisualProps) => {
   const incenseLabel = `第 ${currentIncenseIndex} / ${incenseCount} 炷`;
   const incenseProgressPercent = Math.round(Math.min(1, Math.max(0, incenseProgress)) * 100);
   const visualState = getCenserVisualState(status);
@@ -63,6 +79,7 @@ const CenserVisual = ({ currentIncenseIndex, incenseCount, incenseProgress, size
       data-censer-incense-count={incenseCount}
       data-censer-interaction-role={size === "stage" ? "metadata-only" : "presentational"}
       data-censer-lid-state={lidState}
+      data-censer-metadata-active={isMetadataActive ? "true" : "false"}
       data-censer-progress={incenseProgressPercent}
       data-censer-size={size}
       data-censer-state={visualState}
@@ -80,7 +97,14 @@ const CenserVisual = ({ currentIncenseIndex, incenseCount, incenseProgress, size
           <CenserLayer key={layer} layer={layer} size={size} />
         ))}
       </div>
-      <span className="censer-visual__hover-target" data-censer-hover-action="show-metadata" aria-hidden="true" />
+      <span
+        className="censer-visual__hover-target"
+        data-censer-hover-action="show-metadata"
+        aria-hidden="true"
+        onMouseEnter={() => onMetadataActiveChange?.(true)}
+        onMouseLeave={() => onMetadataActiveChange?.(false)}
+        onMouseMove={() => onMetadataActiveChange?.(true)}
+      />
 
       <div className="censer-visual__metadata" aria-hidden="true">
         <span className="censer-visual__meta censer-visual__meta--status">{statusLabel}</span>

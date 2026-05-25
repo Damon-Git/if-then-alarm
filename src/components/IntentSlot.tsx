@@ -1,3 +1,4 @@
+import { useState } from "react";
 import type { IntentSet } from "../types";
 import { getStageIntentVisualSemantics, isStageTimerIntentStatus } from "../lib/visualState";
 import CenserVisual from "./CenserVisual";
@@ -21,6 +22,8 @@ const IntentSlot = ({
   timerRemaining,
   onStart,
 }: IntentSlotProps) => {
+  const [isCenserMetadataActive, setIsCenserMetadataActive] = useState(false);
+  const [isPreventionPreviewActive, setIsPreventionPreviewActive] = useState(false);
   const visualSemantics = getStageIntentVisualSemantics(intentSet.status);
   const canStart = visualSemantics.canStart && !actionDisabled;
   const timerStatus = isStageTimerIntentStatus(intentSet.status) ? intentSet.status : null;
@@ -32,8 +35,10 @@ const IntentSlot = ({
       data-stage-can-start={canStart}
       data-stage-censer-emphasis={visualSemantics.censerEmphasis}
       data-stage-intent-status={intentSet.status}
+      data-stage-metadata-active={isCenserMetadataActive ? "true" : "false"}
       data-stage-metadata-visibility={visualSemantics.metadataVisibility}
       data-stage-prevention-visibility={visualSemantics.preventionTalismanVisibility}
+      data-stage-prevention-preview-active={isPreventionPreviewActive ? "true" : "false"}
       data-stage-start-visual-state={isStartAnimationActive ? "burning" : "idle"}
       data-stage-situation-visibility={visualSemantics.situationTalismanVisibility}
       data-stage-timer-visible={timerStatus !== null}
@@ -52,6 +57,8 @@ const IntentSlot = ({
         currentIncenseIndex={intentSet.currentIncenseIndex}
         incenseCount={intentSet.incenseCount}
         incenseProgress={incenseProgress}
+        isMetadataActive={isCenserMetadataActive}
+        onMetadataActiveChange={setIsCenserMetadataActive}
         size="stage"
         status={intentSet.status}
       />
@@ -76,6 +83,7 @@ const IntentSlot = ({
                 key={`${intentSet.id}-${index}`}
                 intentStatus={intentSet.status}
                 label={`第 ${index + 1} 条`}
+                onPreviewActiveChange={setIsPreventionPreviewActive}
                 text={preventionIntent}
                 variant="prevention"
               />

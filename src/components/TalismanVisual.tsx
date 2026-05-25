@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   getTalismanVisualSlot,
   TALISMAN_TEMPLATE_ASSET_LAYERS,
@@ -29,6 +30,10 @@ type TalismanVisualProps = {
    * Optional click handler for the situation talisman entry point.
    */
   onClick?: () => void;
+  /**
+   * Notifies the stage when this talisman is being previewed so parent stacking can stay stable in WebView.
+   */
+  onPreviewActiveChange?: (isActive: boolean) => void;
   /**
    * User-authored text rendered over the talisman template layer.
    */
@@ -107,9 +112,11 @@ const TalismanVisual = ({
   intentStatus,
   label,
   onClick,
+  onPreviewActiveChange,
   text,
   variant,
 }: TalismanVisualProps) => {
+  const [isPreviewActive, setIsPreviewActive] = useState(false);
   const visualState = getTalismanVisualState({ disabled, intentStatus });
   const interactionRole = interactive ? "start-entry" : "view-only";
   const clickAction = interactive && !disabled ? "start-confirm" : "none";
@@ -117,18 +124,42 @@ const TalismanVisual = ({
     interactive ? " talisman-visual--interactive" : ""
   }`;
 
+  const setPreviewActive = (nextIsPreviewActive: boolean) => {
+    setIsPreviewActive(nextIsPreviewActive);
+    onPreviewActiveChange?.(nextIsPreviewActive);
+  };
+
+  const handleClick = () => {
+    if (disabled) {
+      return;
+    }
+
+    onClick?.();
+  };
+
+  const interactionProps = {
+    "data-talisman-preview-active": isPreviewActive ? "true" : "false",
+    onBlur: () => setPreviewActive(false),
+    onFocus: () => setPreviewActive(true),
+    onMouseEnter: () => setPreviewActive(true),
+    onMouseLeave: () => setPreviewActive(false),
+    onMouseMove: () => setPreviewActive(true),
+  } as const;
+
   if (interactive) {
     return (
       <button
         aria-label={`${label}：${text}`}
+        aria-disabled={disabled}
         className={className}
         data-talisman-click-action={clickAction}
         data-talisman-interaction-role={interactionRole}
         data-talisman-state={visualState}
         data-talisman-variant={variant}
-        disabled={disabled}
+        tabIndex={disabled ? -1 : undefined}
         type="button"
-        onClick={onClick}
+        onClick={handleClick}
+        {...interactionProps}
       >
         <TalismanContent label={label} text={text} variant={variant} />
       </button>
@@ -140,8 +171,14 @@ const TalismanVisual = ({
       className={className}
       data-talisman-click-action="none"
       data-talisman-interaction-role={interactionRole}
+      data-talisman-preview-active={isPreviewActive ? "true" : "false"}
       data-talisman-state={visualState}
       data-talisman-variant={variant}
+      onBlur={() => setPreviewActive(false)}
+      onFocus={() => setPreviewActive(true)}
+      onMouseEnter={() => setPreviewActive(true)}
+      onMouseLeave={() => setPreviewActive(false)}
+      onMouseMove={() => setPreviewActive(true)}
     >
       <TalismanContent label={label} text={text} variant={variant} />
     </div>
