@@ -461,6 +461,8 @@ assertTextIncludes(
 );
 assertTextIncludes(censerVisual, "CENSER_ASSET_LAYERS.map", "CenserVisual uses central censer layer order");
 assertTextIncludes(censerVisual, "censer-visual__hover-target", "CenserVisual exposes a censer-only metadata hover target");
+assertTextIncludes(censerVisual, "censer-visual__metadata", "CenserVisual groups full-stage metadata in one hover card");
+assertTextIncludes(censerVisual, "getStageIntentVisualSemantics(status).statusLabel", "CenserVisual derives metadata status copy from central visual semantics");
 assertTextIncludes(censerVisual, 'data-censer-interaction-role={size === "stage" ? "metadata-only" : "presentational"}', "CenserVisual keeps full-stage censers metadata-only");
 assertTextIncludes(censerVisual, 'data-censer-hover-action="show-metadata"', "CenserVisual limits stage hover action to metadata display");
 assertTextIncludes(censerVisual, "getCenserLidState", "CenserVisual derives lid state from central visual state");
@@ -524,6 +526,7 @@ assertTextIncludes(stylesCss, ".altar-scene", "CSS renders a shared altar backgr
 assertTextIncludes(stylesCss, ".altar-scene__slots", "CSS lays out full-stage intent slots on one altar");
 assertTextIncludes(stylesCss, "--altar-censer-center-y", "CSS pins full-stage censers to a shared horizontal line");
 assertTextIncludes(stylesCss, 'data-stage-metadata-visibility="censer-hover"', "CSS reveals full-stage metadata only through explicit censer hover semantics");
+assertTextIncludes(stylesCss, ".censer-visual__metadata", "CSS treats full-stage metadata as one card");
 assertTextIncludes(stylesCss, 'data-stage-situation-visibility="dismissed"', "CSS dismisses situation talismans after an intent starts");
 assertTextIncludes(stylesCss, 'data-stage-prevention-visibility="dismissed"', "CSS dismisses prevention talismans after an intent completes");
 assertTextIncludes(stylesCss, 'data-stage-censer-emphasis="muted"', "CSS weakens completed full-stage censers");

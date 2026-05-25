@@ -95,6 +95,8 @@ type CenserVisualProps = {
 
 主祭台 `CenserVisual` 还会暴露 `.censer-visual__hover-target` 作为香炉专用命中区。这个命中区只覆盖香炉主体和盖子，不覆盖符箓或线香；状态标签、香数、线香进度和计时面板只能由这个命中区 hover 触发。它的 `data-censer-hover-action` 是 `show-metadata`，不承担点击动作。
 
+主祭台辅助信息必须集中在 `.censer-visual__metadata` 这一张清晰信息卡内，不拆成多个绝对定位标签。信息卡默认隐藏，只由 `.censer-visual__hover-target` 触发显示；符箓 hover、符箓 focus 和线香区域 hover 都不能触发它。
+
 ### 预留图层
 
 - `data-censer-layer="body"`：香炉主体。

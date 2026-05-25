@@ -38,11 +38,6 @@ const IntentSlot = ({
       data-stage-situation-visibility={visualSemantics.situationTalismanVisibility}
       data-stage-timer-visible={timerStatus !== null}
     >
-      <div className="intent-slot__topline">
-        <span className="status-pill">{visualSemantics.statusLabel}</span>
-        <span>{intentSet.incenseCount} 炷香</span>
-      </div>
-
       <TalismanVisual
         disabled={!canStart}
         interactive
