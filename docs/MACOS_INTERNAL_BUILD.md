@@ -97,6 +97,8 @@ src-tauri/target/release/bundle/macos/急急如律令.app
 - `docs/TAURI_DESKTOP_CHECKLIST.md`
 - `docs/DESKTOP_BEHAVIOR_REGRESSION.md`
 
+准备用作日常自用版本时，在 `docs/SELF_USE_RELEASE_LOG.md` 记录版本、数据版本、检查结果和回滚方式。
+
 把内部 `.app` 放进日常自用位置、替换旧版本、备份和恢复数据时，见：
 
 - `docs/MACOS_SELF_USE_INSTALL.md`

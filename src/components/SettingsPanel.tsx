@@ -1,5 +1,6 @@
 import { useRef, type ChangeEvent } from "react";
 import { TIMER_MODE_CONFIG } from "../constants";
+import { APP_METADATA } from "../lib/appMetadata";
 import { formatDurationLabel } from "../lib/timer";
 import type { TimerMode } from "../types";
 import DevSessionFixturesPanel from "./DevSessionFixturesPanel";
@@ -161,6 +162,33 @@ const SettingsPanel = ({
             />
           )}
         </div>
+      </div>
+
+      <div className="settings-metadata-list" aria-label="版本信息">
+        <span>
+          <strong>版本信息</strong>
+          <small>用于确认当前自用包、数据版本和 bundle 标识。</small>
+        </span>
+        <dl className="settings-metadata">
+          <div>
+            <dt>应用版本</dt>
+            <dd>v{APP_METADATA.version}</dd>
+          </div>
+          <div>
+            <dt>构建类型</dt>
+            <dd>{APP_METADATA.buildLabel}</dd>
+          </div>
+          <div>
+            <dt>Bundle ID</dt>
+            <dd>{APP_METADATA.identifier}</dd>
+          </div>
+          <div>
+            <dt>数据版本</dt>
+            <dd>
+              {APP_METADATA.dataFilename} / v{APP_METADATA.dataSchemaVersion}
+            </dd>
+          </div>
+        </dl>
       </div>
 
       {import.meta.env.DEV && onDevSessionFixtureSaved ? (

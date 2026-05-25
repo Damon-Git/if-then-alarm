@@ -45,6 +45,7 @@ const assertPackageScript = (packageJson, scriptName, expectedCommand) => {
 
 const packageJson = await readJson("package.json");
 const appTsx = await readText("src/App.tsx");
+const appMetadata = await readText("src/lib/appMetadata.ts");
 const compactWindowCheck = await readText("scripts/check-compact-window.mjs");
 const desktopPersistenceAdapter = await readText("src/lib/desktopPersistenceAdapter.ts");
 const fullBackup = await readText("src/lib/fullBackup.ts");
@@ -52,9 +53,12 @@ const desktopRegression = await readText("docs/DESKTOP_BEHAVIOR_REGRESSION.md");
 const interactionModel = await readText("docs/INTERACTION_MODEL.md");
 const macosInternalBuild = await readText("docs/MACOS_INTERNAL_BUILD.md");
 const macosSelfUseInstall = await readText("docs/MACOS_SELF_USE_INSTALL.md");
+const releaseLog = await readText("docs/SELF_USE_RELEASE_LOG.md");
 const selfUseReadiness = await readText("docs/SELF_USE_READINESS.md");
 const selfUseRegressionRunbook = await readText("docs/SELF_USE_REGRESSION_RUNBOOK.md");
 const sessionGuards = await readText("src/lib/sessionGuards.ts");
+const settingsPanel = await readText("src/components/SettingsPanel.tsx");
+const tauriConfig = await readJson("src-tauri/tauri.conf.json");
 const tauriWindow = await readText("src/lib/tauriWindow.ts");
 
 assertPackageScript(packageJson, "test", "vitest run");
@@ -71,6 +75,7 @@ for (const relativePath of [
   "docs/INTERACTION_MODEL.md",
   "docs/MACOS_INTERNAL_BUILD.md",
   "docs/MACOS_SELF_USE_INSTALL.md",
+  "docs/SELF_USE_RELEASE_LOG.md",
   "docs/SELF_USE_READINESS.md",
   "docs/SELF_USE_REGRESSION_RUNBOOK.md",
   "docs/TAURI_CLOSE_RESTORE_NOTES.md",
@@ -79,6 +84,7 @@ for (const relativePath of [
   "scripts/check-desktop-config.mjs",
   "scripts/check-self-use-readiness.mjs",
   "src/lib/desktopPersistenceAdapter.ts",
+  "src/lib/appMetadata.ts",
   "src/lib/fileTransferAdapter.ts",
   "src/lib/fullBackup.ts",
   "src/lib/notificationAdapter.ts",
@@ -118,8 +124,10 @@ for (const relativePath of [
   "npm run tauri:build",
   "SELF_USE_REGRESSION_RUNBOOK.md",
   "MACOS_SELF_USE_INSTALL.md",
+  "SELF_USE_RELEASE_LOG.md",
   "persistence.v1.json",
   "完整备份",
+  "版本信息",
 ].forEach((token) => assertIncludes(selfUseReadiness, token, `self-use readiness documents ${token}`));
 
 [
@@ -130,6 +138,8 @@ for (const relativePath of [
   "恢复数据",
   "导出完整备份",
   "导入完整备份",
+  "SELF_USE_RELEASE_LOG.md",
+  "版本信息",
   "重置数据",
   "安装后冒烟检查",
   "不覆盖",
@@ -146,9 +156,22 @@ for (const relativePath of [
   "恢复与保护",
   "问题记录",
   "通过标准",
+  "版本信息",
+  "SELF_USE_RELEASE_LOG.md",
 ].forEach((token) =>
   assertIncludes(selfUseRegressionRunbook, token, `self-use regression runbook covers ${token}`),
 );
+
+[
+  "自用版本发布记录",
+  "Git 提交",
+  "构建产物",
+  "Bundle ID",
+  "数据版本",
+  "自动检查",
+  "完整备份",
+  "回滚方式",
+].forEach((token) => assertIncludes(releaseLog, token, `self-use release log covers ${token}`));
 
 [
   "canEnterReviewPhase",
@@ -191,6 +214,23 @@ for (const relativePath of [
 ].forEach((token) => assertIncludes(fullBackup, token, `full backup module includes ${token}`));
 
 [
+  "APP_VERSION = packageJson.version",
+  tauriConfig.identifier,
+  "internal-self-use",
+  "DESKTOP_PERSISTENCE_FILENAME",
+  "DESKTOP_PERSISTENCE_VERSION",
+].forEach((token) => assertIncludes(appMetadata, token, `app metadata includes ${token}`));
+
+[
+  "APP_METADATA",
+  "版本信息",
+  "应用版本",
+  "构建类型",
+  "Bundle ID",
+  "数据版本",
+].forEach((token) => assertIncludes(settingsPanel, token, `settings panel renders ${token}`));
+
+[
   "assertCompactCenserStateDifferentiation",
   "assertCompactCompletionStaysOutOfReviewWhenFullOpenFails",
   "manual narrow viewport should not enter compact ritual mode",
@@ -200,8 +240,10 @@ for (const relativePath of [
 assertIncludes(macosInternalBuild, "急急如律令.app", "macOS internal build doc names the app bundle");
 assertIncludes(macosInternalBuild, "不包含签名、公证、DMG", "macOS internal build doc keeps release scope explicit");
 assertIncludes(macosInternalBuild, "MACOS_SELF_USE_INSTALL.md", "macOS internal build doc links self-use install doc");
+assertIncludes(macosInternalBuild, "SELF_USE_RELEASE_LOG.md", "macOS internal build doc links self-use release log");
 assertIncludes(macosSelfUseInstall, "com.damon.jijirululing", "macOS self-use install doc names app data directory");
 assertIncludes(macosSelfUseInstall, "替换 `.app` 前先退出旧应用", "macOS self-use install doc guards app replacement");
+assert(packageJson.version === tauriConfig.version, "package.json and Tauri app version match");
 
 if (failures.length > 0) {
   console.error("Self-use readiness check failed:");

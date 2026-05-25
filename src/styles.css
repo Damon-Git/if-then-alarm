@@ -295,6 +295,54 @@ select {
   gap: 8px;
 }
 
+.settings-metadata-list {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: minmax(180px, 0.8fr) minmax(260px, 1.2fr);
+  gap: 16px;
+  border-top: 1px solid #eadfd5;
+  padding-top: 14px;
+}
+
+.settings-metadata-list > span {
+  display: grid;
+  align-content: start;
+  gap: 4px;
+}
+
+.settings-metadata-list strong {
+  color: #2b2622;
+}
+
+.settings-metadata-list small {
+  color: #6f655d;
+  line-height: 1.5;
+}
+
+.settings-metadata {
+  display: grid;
+  gap: 8px 14px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 0;
+}
+
+.settings-metadata div {
+  min-width: 0;
+}
+
+.settings-metadata dt {
+  color: #7b7066;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.settings-metadata dd {
+  margin: 2px 0 0;
+  color: #2b2622;
+  font-size: 0.9rem;
+  overflow-wrap: anywhere;
+}
+
 .dev-fixtures {
   grid-column: 1 / -1;
   display: grid;
@@ -2020,6 +2068,11 @@ select {
 
   .settings-action-buttons {
     justify-content: flex-start;
+  }
+
+  .settings-metadata-list,
+  .settings-metadata {
+    grid-template-columns: 1fr;
   }
 
   .dev-fixtures__grid {
