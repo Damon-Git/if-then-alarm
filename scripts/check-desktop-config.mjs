@@ -485,7 +485,9 @@ assertTextIncludes(talismanVisual, 'data-talisman-interaction-role={interactionR
 assertTextIncludes(ritualStage, "getAltarAssetUrl", "RitualStage uses the altar background asset manifest");
 assertTextIncludes(ritualStage, "altar-scene__slots", "RitualStage renders shared altar scene slots");
 assertTextIncludes(ritualStage, "onRequestReview", "RitualStage exposes an explicit review entry after completion");
-assertTextIncludes(ritualStage, "ritual-completion-note", "RitualStage marks completed ritual without auto-opening review");
+assertTextIncludes(ritualStage, "ritual-completion-card", "RitualStage marks completed ritual without auto-opening review");
+assertTextIncludes(ritualStage, "本轮香尽", "RitualStage uses calm completion copy before review");
+assertTextIncludes(ritualStage, "data-ritual-complete", "RitualStage exposes completed ritual styling state");
 assertTextIncludes(intentSlot, "prevention-list__items", "IntentSlot groups prevention talismans for horizontal stage layout");
 assertTextIncludes(intentSlot, "getStageIntentVisualSemantics", "IntentSlot derives full-stage UI semantics centrally");
 assertTextIncludes(intentSlot, "data-stage-metadata-visibility", "IntentSlot exposes metadata visibility semantics");
@@ -509,6 +511,8 @@ assertTextIncludes(compactWindowCheck, "manual narrow viewport should not enter 
 assertTextIncludes(compactWindowCheck, "compact censer click should not change business state", "Compact check verifies compact censer click is non-mutating");
 assertTextIncludes(stylesCss, 'html[data-window-mode="compact"] .stage-grid--full', "CSS hides full stage only under explicit compact window mode");
 assertTextIncludes(stylesCss, 'html[data-window-mode="compact"] .app-shell--ritual .compact-stage', "CSS shows compact stage only under explicit compact ritual mode");
+assertTextIncludes(stylesCss, 'html[data-window-mode="compact"] .app-shell--ritual .ritual-completion-card', "CSS keeps completion review entry out of compact window mode");
+assertTextIncludes(stylesCss, '.ritual-panel[data-ritual-complete="true"] .ritual-abandon-button', "CSS de-emphasizes abandoning after ritual completion");
 assertTextIncludes(stylesCss, ".compact-censer--idle .censer-visual--compact", "CSS differentiates idle compact censer visuals");
 assertTextIncludes(stylesCss, ".compact-censer--burning .censer-visual--compact", "CSS differentiates active compact censer visuals");
 assertTextIncludes(stylesCss, ".compact-censer--resting .censer-visual--compact", "CSS differentiates resting compact censer visuals");

@@ -48,31 +48,38 @@ const RitualStage = ({
   } as CSSProperties;
 
   return (
-    <section className="panel ritual-panel" aria-labelledby="ritual-title">
+    <section className="panel ritual-panel" data-ritual-complete={isSessionComplete} aria-labelledby="ritual-title">
       <div className="section-heading">
         <div>
           <p className="eyebrow">Ritual Stage</p>
           <h2 id="ritual-title">仪式台</h2>
         </div>
         <div className="ritual-actions">
-          {isSessionComplete ? (
-            <>
-              <span className="ritual-completion-note" aria-live="polite">
-                本轮已完成
-              </span>
-              <button className="primary-button" type="button" onClick={onRequestReview}>
-                进入复盘
-              </button>
-            </>
-          ) : null}
-          <button className="ghost-button" type="button" onClick={onRequestAbandon}>
+          <button className="ghost-button ritual-abandon-button" type="button" onClick={onRequestAbandon}>
             放弃本轮
           </button>
         </div>
       </div>
 
+      {isSessionComplete ? (
+        <div className="ritual-completion-card" role="status" aria-live="polite">
+          <div>
+            <p className="eyebrow">Completion</p>
+            <h3>本轮香尽</h3>
+            <p>记录一句复盘，再把本轮收入历史。</p>
+          </div>
+          <button className="primary-button" type="button" onClick={onRequestReview}>
+            进入复盘
+          </button>
+        </div>
+      ) : null}
+
       <div className="stage-grid stage-grid--full">
-        <div className={`altar-scene altar-scene--slots-${intentSets.length}`} style={altarSceneStyle}>
+        <div
+          className={`altar-scene altar-scene--slots-${intentSets.length}`}
+          data-ritual-complete={isSessionComplete}
+          style={altarSceneStyle}
+        >
           <div className="altar-scene__slots">
             {intentSets.map((intentSet) => {
               const isActive = intentSet.status === "burning" || intentSet.status === "resting";
