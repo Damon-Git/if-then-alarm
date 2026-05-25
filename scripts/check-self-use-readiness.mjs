@@ -51,6 +51,7 @@ const desktopRegression = await readText("docs/DESKTOP_BEHAVIOR_REGRESSION.md");
 const interactionModel = await readText("docs/INTERACTION_MODEL.md");
 const macosInternalBuild = await readText("docs/MACOS_INTERNAL_BUILD.md");
 const selfUseReadiness = await readText("docs/SELF_USE_READINESS.md");
+const selfUseRegressionRunbook = await readText("docs/SELF_USE_REGRESSION_RUNBOOK.md");
 const sessionGuards = await readText("src/lib/sessionGuards.ts");
 const tauriWindow = await readText("src/lib/tauriWindow.ts");
 
@@ -68,6 +69,7 @@ for (const relativePath of [
   "docs/INTERACTION_MODEL.md",
   "docs/MACOS_INTERNAL_BUILD.md",
   "docs/SELF_USE_READINESS.md",
+  "docs/SELF_USE_REGRESSION_RUNBOOK.md",
   "docs/TAURI_CLOSE_RESTORE_NOTES.md",
   "docs/TAURI_DESKTOP_CHECKLIST.md",
   "scripts/check-compact-window.mjs",
@@ -109,7 +111,23 @@ for (const relativePath of [
   "npm run check:self-use",
   "npm run check:compact",
   "npm run tauri:build",
+  "SELF_USE_REGRESSION_RUNBOOK.md",
 ].forEach((token) => assertIncludes(selfUseReadiness, token, `self-use readiness documents ${token}`));
+
+[
+  "准备",
+  "主流程",
+  "计时与完成",
+  "小窗",
+  "主祭台视觉",
+  "复盘与历史",
+  "桌面能力",
+  "恢复与保护",
+  "问题记录",
+  "通过标准",
+].forEach((token) =>
+  assertIncludes(selfUseRegressionRunbook, token, `self-use regression runbook covers ${token}`),
+);
 
 [
   "canEnterReviewPhase",
