@@ -83,6 +83,26 @@ describe("file transfer adapter", () => {
     });
   });
 
+  it("allows a custom Tauri save dialog title", async () => {
+    setTauriRuntime(true);
+    vi.mocked(save).mockResolvedValue("/tmp/full-backup.json");
+    vi.mocked(invoke).mockResolvedValue(undefined);
+
+    await expect(
+      downloadTextFile("full-backup.json", "{}", "application/json", {
+        dialogTitle: "导出完整备份",
+      }),
+    ).resolves.toEqual({
+      status: "completed",
+    });
+
+    expect(save).toHaveBeenCalledWith({
+      defaultPath: "full-backup.json",
+      filters: [{ extensions: ["json"], name: "JSON" }],
+      title: "导出完整备份",
+    });
+  });
+
   it("does not export when the Tauri save dialog is cancelled", async () => {
     setTauriRuntime(true);
     vi.mocked(save).mockResolvedValue(null);
@@ -109,6 +129,23 @@ describe("file transfer adapter", () => {
     });
     expect(invoke).toHaveBeenCalledWith("read_user_text_file", {
       path: "/tmp/history.json",
+    });
+  });
+
+  it("allows a custom Tauri open dialog title", async () => {
+    setTauriRuntime(true);
+    vi.mocked(open).mockResolvedValue("/tmp/full-backup.json");
+    vi.mocked(invoke).mockResolvedValue('{"version":1}');
+
+    await expect(selectAndReadTextFile({ dialogTitle: "导入完整备份" })).resolves.toEqual({
+      content: '{"version":1}',
+      status: "completed",
+    });
+
+    expect(open).toHaveBeenCalledWith({
+      filters: [{ extensions: ["json"], name: "JSON" }],
+      multiple: false,
+      title: "导入完整备份",
     });
   });
 

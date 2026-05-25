@@ -47,6 +47,7 @@ const packageJson = await readJson("package.json");
 const appTsx = await readText("src/App.tsx");
 const compactWindowCheck = await readText("scripts/check-compact-window.mjs");
 const desktopPersistenceAdapter = await readText("src/lib/desktopPersistenceAdapter.ts");
+const fullBackup = await readText("src/lib/fullBackup.ts");
 const desktopRegression = await readText("docs/DESKTOP_BEHAVIOR_REGRESSION.md");
 const interactionModel = await readText("docs/INTERACTION_MODEL.md");
 const macosInternalBuild = await readText("docs/MACOS_INTERNAL_BUILD.md");
@@ -79,6 +80,7 @@ for (const relativePath of [
   "scripts/check-self-use-readiness.mjs",
   "src/lib/desktopPersistenceAdapter.ts",
   "src/lib/fileTransferAdapter.ts",
+  "src/lib/fullBackup.ts",
   "src/lib/notificationAdapter.ts",
   "src/lib/sessionGuards.ts",
   "src/lib/soundReminder.ts",
@@ -103,6 +105,7 @@ for (const relativePath of [
   "通知时点",
   "声音提醒",
   "历史导入导出",
+  "完整备份",
   "高风险交叉场景",
 ].forEach((token) => assertIncludes(desktopRegression, token, `desktop regression covers ${token}`));
 
@@ -116,6 +119,7 @@ for (const relativePath of [
   "SELF_USE_REGRESSION_RUNBOOK.md",
   "MACOS_SELF_USE_INSTALL.md",
   "persistence.v1.json",
+  "完整备份",
 ].forEach((token) => assertIncludes(selfUseReadiness, token, `self-use readiness documents ${token}`));
 
 [
@@ -124,6 +128,8 @@ for (const relativePath of [
   "数据位置",
   "备份数据",
   "恢复数据",
+  "导出完整备份",
+  "导入完整备份",
   "重置数据",
   "安装后冒烟检查",
   "不覆盖",
@@ -159,6 +165,9 @@ for (const relativePath of [
   "cancelTimerSoundReminder",
   "downloadTextFile",
   "selectAndReadTextFile",
+  "createFullBackupPayload",
+  "parseFullBackupPayload",
+  "applyFullBackupPayload",
 ].forEach((token) => assertIncludes(appTsx, ` ${token}`, `App wires ${token}`));
 
 [
@@ -173,6 +182,13 @@ for (const relativePath of [
   "write_desktop_persistence_file",
   "backup_corrupt_desktop_persistence_file",
 ].forEach((token) => assertIncludes(desktopPersistenceAdapter, token, `desktop persistence adapter invokes ${token}`));
+
+[
+  "createFullBackupPayload",
+  "parseFullBackupPayload",
+  "applyFullBackupPayload",
+  "DESKTOP_PERSISTENCE_VERSION",
+].forEach((token) => assertIncludes(fullBackup, token, `full backup module includes ${token}`));
 
 [
   "assertCompactCenserStateDifferentiation",

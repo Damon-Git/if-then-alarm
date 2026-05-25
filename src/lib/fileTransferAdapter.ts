@@ -11,6 +11,10 @@ export type FileTransferResult =
       status: "cancelled";
     };
 
+type FileTransferDialogOptions = {
+  dialogTitle?: string;
+};
+
 const isTauriRuntime = () => typeof window !== "undefined" && Boolean((window as TauriWindow).__TAURI_INTERNALS__);
 
 const jsonDialogFilters = [
@@ -24,12 +28,13 @@ export const downloadTextFile = async (
   filename: string,
   content: string,
   mimeType = "text/plain",
+  { dialogTitle = "导出历史记录" }: FileTransferDialogOptions = {},
 ): Promise<FileTransferResult> => {
   if (isTauriRuntime()) {
     const selectedPath = await save({
       defaultPath: filename,
       filters: jsonDialogFilters,
-      title: "导出历史记录",
+      title: dialogTitle,
     });
 
     if (!selectedPath) {
@@ -60,7 +65,9 @@ export const downloadTextFile = async (
 
 export const readTextFile = (file: File) => file.text();
 
-export const selectAndReadTextFile = async (): Promise<
+export const selectAndReadTextFile = async ({
+  dialogTitle = "导入历史记录",
+}: FileTransferDialogOptions = {}): Promise<
   | {
       content: string;
       status: "completed";
@@ -72,7 +79,7 @@ export const selectAndReadTextFile = async (): Promise<
   const selectedPath = await open({
     filters: jsonDialogFilters,
     multiple: false,
-    title: "导入历史记录",
+    title: dialogTitle,
   });
 
   if (!selectedPath || Array.isArray(selectedPath)) {

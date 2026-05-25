@@ -224,13 +224,21 @@ persistence.v1.corrupt-YYYYMMDD-HHmmss.json
 
 ## 导入导出关系
 
-历史导入导出仍使用 `HistoryExportPayload`，不直接导出整个 `DesktopPersistenceJson`。
+当前保留两类用户可见的 JSON 导入导出：
 
-原因：
+1. **历史导入导出**
+   - 使用 `HistoryExportPayload`。
+   - 只包含历史记录。
+   - 适合整理、迁移或合并复盘历史。
 
-- 用户可理解的备份对象是历史记录。
-- 当前 session 和设置属于运行状态，不适合作为普通历史备份。
-- 未来如果需要完整备份，可以另做“完整数据备份”功能。
+2. **完整备份导入导出**
+   - 使用 `DesktopPersistenceJson` 结构。
+   - 包含 `history`、`currentSession`、`settings`、`version`、`createdAt` 和 `updatedAt`。
+   - 适合迁移机器、替换 `.app` 前备份、或从异常状态恢复。
+
+完整备份导入会替换当前历史、未完成轮次和设置，因此必须先弹确认。导入完成后需要刷新内存状态；如果备份中包含 `currentSession`，应用应回到 setup 并显示恢复提示，由用户决定恢复或丢弃。
+
+历史导入导出和完整备份导入导出不能混用。选择历史导出文件导入完整备份时，应被拒绝。
 
 ## 代码切分状态
 

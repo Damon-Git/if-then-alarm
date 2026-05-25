@@ -247,23 +247,35 @@ select {
   padding-top: 14px;
 }
 
-.settings-toggle {
+.settings-action-list {
+  grid-column: 1 / -1;
+  display: grid;
+  gap: 12px;
+  border-top: 1px solid #eadfd5;
+  padding-top: 14px;
+}
+
+.settings-toggle,
+.settings-action {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
 }
 
-.settings-toggle span {
+.settings-toggle span,
+.settings-action span {
   display: grid;
   gap: 4px;
 }
 
-.settings-toggle strong {
+.settings-toggle strong,
+.settings-action strong {
   color: #2b2622;
 }
 
-.settings-toggle small {
+.settings-toggle small,
+.settings-action small {
   color: #6f655d;
   line-height: 1.5;
 }
@@ -273,6 +285,14 @@ select {
   height: 22px;
   accent-color: #8a2f25;
   flex: 0 0 auto;
+}
+
+.settings-action-buttons {
+  display: flex;
+  flex: 0 0 auto;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
 }
 
 .dev-fixtures {
@@ -1991,6 +2011,15 @@ select {
 
   .settings-panel {
     grid-template-columns: 1fr;
+  }
+
+  .settings-action {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .settings-action-buttons {
+    justify-content: flex-start;
   }
 
   .dev-fixtures__grid {

@@ -15,12 +15,19 @@ import {
   DESKTOP_PERSISTENCE_WRITE_ERROR_EVENT,
   consumeDesktopPersistenceInitializationResult,
 } from "./lib/desktopPersistenceAdapter";
+import type { DesktopPersistenceJson } from "./lib/desktopPersistenceSchema";
 import {
   downloadTextFile,
   readTextFile,
   selectAndReadTextFile,
   shouldUseDesktopFileDialog,
 } from "./lib/fileTransferAdapter";
+import {
+  applyFullBackupPayload,
+  createFullBackupPayload,
+  parseFullBackupPayload,
+  stringifyFullBackupPayload,
+} from "./lib/fullBackup";
 import { cancelTimerNotification, scheduleTimerNotification } from "./lib/notificationAdapter";
 import type { TimerNotificationKind } from "./lib/notificationAdapter";
 import { clearPersistedSession, loadPersistedSession, savePersistedSession } from "./lib/sessionStorage";
@@ -75,6 +82,10 @@ type ConfirmationRequest =
     }
   | {
       type: "clear-history-records";
+    }
+  | {
+      payload: DesktopPersistenceJson;
+      type: "import-full-backup";
     };
 
 type TauriCloseRequest =
@@ -751,6 +762,36 @@ const App = () => {
       showToast("success", "已清空全部历史记录。");
     }
 
+    if (confirmationRequest.type === "import-full-backup") {
+      const resolvedSession = confirmationRequest.payload.currentSession
+        ? resolvePersistedSession(confirmationRequest.payload.currentSession)
+        : null;
+
+      clearStartAnimationTimeout();
+      void cancelTimerNotification();
+      cancelTimerSoundReminder();
+      applyFullBackupPayload(confirmationRequest.payload);
+      setHistoryRecords(confirmationRequest.payload.history);
+      setSettings(confirmationRequest.payload.settings);
+      setPendingSession(resolvedSession);
+      setPhase("setup");
+      setIntentSets([]);
+      setTimerRemaining(0);
+      setActiveTimerSegment(null);
+      setActiveModal(null);
+      setPendingStartIntentId(null);
+      setStartingIntentId(null);
+      setIsAbandonConfirmOpen(false);
+      setHasUnsavedSetupDraft(false);
+      setActiveUtilityPanel("settings");
+      showToast(
+        "success",
+        `已导入完整备份：${confirmationRequest.payload.history.length} 条历史${
+          resolvedSession ? "，含未完成轮次" : ""
+        }。`,
+      );
+    }
+
     setConfirmationRequest(null);
   };
 
@@ -809,6 +850,23 @@ const App = () => {
     }
   };
 
+  const createCurrentSessionBackup = (): PersistedSession | null => {
+    if (hasUnsavedSession && intentSets.length > 0) {
+      return {
+        activeModal,
+        activeTimerSegment,
+        intentSets,
+        phase: phase as Exclude<AppPhase, "setup">,
+        timerMode: settings.timerMode,
+        timerRemaining: activeTimerSegment ? getTimerRemainingSeconds(activeTimerSegment) : timerRemaining,
+        updatedAt: new Date().toISOString(),
+        version: 1,
+      };
+    }
+
+    return pendingSession ?? loadPersistedSession();
+  };
+
   const exportRecords = async () => {
     const payload = createHistoryExportPayload(historyRecords);
     const jsonValue = JSON.stringify(payload, null, 2);
@@ -846,6 +904,57 @@ const App = () => {
     }
   };
 
+  const exportFullBackup = async () => {
+    const payload = createFullBackupPayload({
+      currentSession: createCurrentSessionBackup(),
+      history: historyRecords,
+      settings,
+    });
+    const dateSegment = new Date().toISOString().slice(0, 10).replace(/-/g, "");
+    const result = await downloadTextFile(
+      `jiji-rululing-full-backup-${dateSegment}.json`,
+      stringifyFullBackupPayload(payload),
+      "application/json",
+      { dialogTitle: "导出完整备份" },
+    );
+
+    if (result.status === "cancelled") {
+      return;
+    }
+
+    showToast(
+      "success",
+      `已导出完整备份：${payload.history.length} 条历史${payload.currentSession ? "，含未完成轮次" : ""}。`,
+    );
+  };
+
+  const importFullBackup = async (file?: File) => {
+    if (!canChangeTimerSettings({ pendingSession, phase })) {
+      showToast("error", "当前轮次进行中，暂不能导入完整备份。");
+      return;
+    }
+
+    try {
+      const transferResult = file
+        ? {
+            content: await readTextFile(file),
+            status: "completed" as const,
+          }
+        : await selectAndReadTextFile({ dialogTitle: "导入完整备份" });
+
+      if (transferResult.status === "cancelled") {
+        return;
+      }
+
+      setConfirmationRequest({
+        payload: parseFullBackupPayload(transferResult.content),
+        type: "import-full-backup",
+      });
+    } catch {
+      showToast("error", "导入失败：请选择由本应用导出的完整备份 JSON。");
+    }
+  };
+
   const updateTimerMode = (timerMode: TimerMode) => {
     if (!canChangeTimerSettings({ pendingSession, phase })) {
       return;
@@ -880,6 +989,32 @@ const App = () => {
     pendingStartIntentId,
   }) || Boolean(startingIntentId);
   const isSettingsDisabled = !canChangeTimerSettings({ pendingSession, phase });
+  const confirmationDialog = confirmationRequest
+    ? confirmationRequest.type === "delete-history-record"
+      ? {
+          confirmLabel: "删除记录",
+          description: "这条历史记录删除后无法在应用内恢复。",
+          eyebrow: "History",
+          title: "确定要删除这条历史记录吗？",
+          variant: "danger" as const,
+        }
+      : confirmationRequest.type === "clear-history-records"
+        ? {
+            confirmLabel: "清空全部",
+            description: "全部历史记录会被清空，但不会影响当前正在进行的轮次。",
+            eyebrow: "History",
+            title: "确定要清空全部历史记录吗？",
+            variant: "danger" as const,
+          }
+        : {
+            confirmLabel: "导入并覆盖",
+            description:
+              "完整备份会替换当前历史、未完成轮次和设置。导入后如备份中包含未完成轮次，会重新显示恢复提示。",
+            eyebrow: "Backup",
+            title: "确定要导入完整备份吗？",
+            variant: "danger" as const,
+          }
+    : null;
 
   const toggleUtilityPanel = (panel: UtilityPanel) => {
     setActiveUtilityPanel((currentPanel) => (currentPanel === panel ? null : panel));
@@ -952,11 +1087,14 @@ const App = () => {
             isSoundReminderEnabled={settings.isSoundReminderEnabled}
             onAlwaysOnTopChange={updateAlwaysOnTop}
             onDockVisibleChange={updateDockVisible}
+            onExportFullBackup={exportFullBackup}
+            onImportFullBackup={importFullBackup}
             onSoundReminderChange={updateSoundReminder}
             timerMode={settings.timerMode}
             onDevSessionFixtureSaved={(message) => showToast("info", message)}
             onTimerModeChange={updateTimerMode}
             supportsWindowAlwaysOnTop={isTauriRuntime()}
+            useNativeFileDialog={shouldUseDesktopFileDialog()}
           />
         ) : null}
 
@@ -987,20 +1125,14 @@ const App = () => {
         <AbandonSessionModal onCancel={cancelAbandonSession} onConfirm={confirmAbandonSession} />
       ) : null}
 
-      {confirmationRequest ? (
+      {confirmationRequest && confirmationDialog ? (
         <ConfirmModal
           cancelLabel="取消"
-          confirmLabel={confirmationRequest.type === "delete-history-record" ? "删除记录" : "清空全部"}
-          description={
-            confirmationRequest.type === "delete-history-record"
-              ? "这条历史记录删除后无法在应用内恢复。"
-              : "全部历史记录会被清空，但不会影响当前正在进行的轮次。"
-          }
-          eyebrow="History"
-          title={
-            confirmationRequest.type === "delete-history-record" ? "确定要删除这条历史记录吗？" : "确定要清空全部历史记录吗？"
-          }
-          variant="danger"
+          confirmLabel={confirmationDialog.confirmLabel}
+          description={confirmationDialog.description}
+          eyebrow={confirmationDialog.eyebrow}
+          title={confirmationDialog.title}
+          variant={confirmationDialog.variant}
           onCancel={cancelConfirmation}
           onConfirm={confirmRequestedAction}
         />

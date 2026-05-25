@@ -214,4 +214,4 @@ cat ~/Library/Application\ Support/com.damon.jijirululing/persistence.v1.json
 - 不引入 SQLite。
 - 不清理旧 `localStorage` 数据。
 - 不提供用户可见的“重新从旧 Web 数据导入”按钮。
-- 不提供完整 manifest 导入导出。
+- 已提供完整备份导入导出，使用桌面持久化 manifest 结构覆盖历史、当前未完成轮次和设置；历史导入导出仍保持独立。

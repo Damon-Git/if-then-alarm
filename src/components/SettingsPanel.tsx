@@ -1,3 +1,4 @@
+import { useRef, type ChangeEvent } from "react";
 import { TIMER_MODE_CONFIG } from "../constants";
 import { formatDurationLabel } from "../lib/timer";
 import type { TimerMode } from "../types";
@@ -11,10 +12,13 @@ type SettingsPanelProps = {
   onAlwaysOnTopChange: (isAlwaysOnTop: boolean) => void;
   onDockVisibleChange: (isDockVisible: boolean) => void;
   onDevSessionFixtureSaved?: (message: string) => void;
+  onExportFullBackup: () => void;
+  onImportFullBackup: (file?: File) => void;
   onSoundReminderChange: (isSoundReminderEnabled: boolean) => void;
   timerMode: TimerMode;
   onTimerModeChange: (timerMode: TimerMode) => void;
   supportsWindowAlwaysOnTop: boolean;
+  useNativeFileDialog: boolean;
 };
 
 const timerModes: TimerMode[] = ["dev", "prod"];
@@ -27,12 +31,39 @@ const SettingsPanel = ({
   onAlwaysOnTopChange,
   onDockVisibleChange,
   onDevSessionFixtureSaved,
+  onExportFullBackup,
+  onImportFullBackup,
   onSoundReminderChange,
   onTimerModeChange,
   supportsWindowAlwaysOnTop,
   timerMode,
+  useNativeFileDialog,
 }: SettingsPanelProps) => {
   const currentConfig = TIMER_MODE_CONFIG[timerMode];
+  const fullBackupInputRef = useRef<HTMLInputElement>(null);
+
+  const selectFullBackupFile = () => {
+    if (disabled) {
+      return;
+    }
+
+    if (useNativeFileDialog) {
+      onImportFullBackup();
+      return;
+    }
+
+    fullBackupInputRef.current?.click();
+  };
+
+  const importFullBackupFile = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+
+    if (file) {
+      onImportFullBackup(file);
+    }
+
+    event.target.value = "";
+  };
 
   return (
     <section className="panel settings-panel" aria-labelledby="settings-title">
@@ -105,6 +136,32 @@ const SettingsPanel = ({
           </label>
         </div>
       ) : null}
+
+      <div className="settings-action-list" aria-label="完整备份">
+        <div className="settings-action">
+          <span>
+            <strong>完整备份</strong>
+            <small>导出或导入历史记录、未完成轮次和设置。导入会先确认，适合迁移或恢复自用数据。</small>
+          </span>
+          <div className="settings-action-buttons">
+            <button className="ghost-button" type="button" onClick={onExportFullBackup}>
+              导出完整备份
+            </button>
+            <button className="ghost-button" disabled={disabled} type="button" onClick={selectFullBackupFile}>
+              导入完整备份
+            </button>
+          </div>
+          {useNativeFileDialog ? null : (
+            <input
+              accept="application/json,.json"
+              className="hidden-file-input"
+              onChange={importFullBackupFile}
+              ref={fullBackupInputRef}
+              type="file"
+            />
+          )}
+        </div>
+      </div>
 
       {import.meta.env.DEV && onDevSessionFixtureSaved ? (
         <DevSessionFixturesPanel disabled={disabled} onFixtureSaved={onDevSessionFixtureSaved} />
