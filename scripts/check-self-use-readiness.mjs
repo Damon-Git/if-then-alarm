@@ -47,6 +47,8 @@ const packageJson = await readJson("package.json");
 const appTsx = await readText("src/App.tsx");
 const appMetadata = await readText("src/lib/appMetadata.ts");
 const compactWindowCheck = await readText("scripts/check-compact-window.mjs");
+const releaseSelfUseCheck = await readText("scripts/check-release-self-use.mjs");
+const releaseSummaryScript = await readText("scripts/print-self-use-release-summary.mjs");
 const desktopPersistenceAdapter = await readText("src/lib/desktopPersistenceAdapter.ts");
 const fullBackup = await readText("src/lib/fullBackup.ts");
 const desktopRegression = await readText("docs/DESKTOP_BEHAVIOR_REGRESSION.md");
@@ -65,7 +67,9 @@ assertPackageScript(packageJson, "test", "vitest run");
 assertPackageScript(packageJson, "build", "tsc --noEmit && vite build");
 assertPackageScript(packageJson, "check:desktop-config", "node scripts/check-desktop-config.mjs");
 assertPackageScript(packageJson, "check:compact", "node scripts/check-compact-window.mjs");
+assertPackageScript(packageJson, "check:release-self-use", "node scripts/check-release-self-use.mjs");
 assertPackageScript(packageJson, "check:self-use", "node scripts/check-self-use-readiness.mjs");
+assertPackageScript(packageJson, "release:self-use-summary", "node scripts/print-self-use-release-summary.mjs");
 assertPackageScript(packageJson, "tauri:build", "tauri build");
 
 for (const relativePath of [
@@ -82,7 +86,9 @@ for (const relativePath of [
   "docs/TAURI_DESKTOP_CHECKLIST.md",
   "scripts/check-compact-window.mjs",
   "scripts/check-desktop-config.mjs",
+  "scripts/check-release-self-use.mjs",
   "scripts/check-self-use-readiness.mjs",
+  "scripts/print-self-use-release-summary.mjs",
   "src/lib/desktopPersistenceAdapter.ts",
   "src/lib/appMetadata.ts",
   "src/lib/fileTransferAdapter.ts",
@@ -119,8 +125,10 @@ for (const relativePath of [
   "npm run test",
   "npm run build",
   "npm run check:desktop-config",
+  "npm run check:release-self-use",
   "npm run check:self-use",
   "npm run check:compact",
+  "npm run release:self-use-summary",
   "npm run tauri:build",
   "SELF_USE_REGRESSION_RUNBOOK.md",
   "MACOS_SELF_USE_INSTALL.md",
@@ -139,6 +147,7 @@ for (const relativePath of [
   "导出完整备份",
   "导入完整备份",
   "SELF_USE_RELEASE_LOG.md",
+  "release:self-use-summary",
   "版本信息",
   "重置数据",
   "安装后冒烟检查",
@@ -158,12 +167,16 @@ for (const relativePath of [
   "通过标准",
   "版本信息",
   "SELF_USE_RELEASE_LOG.md",
+  "check:release-self-use",
+  "release:self-use-summary",
 ].forEach((token) =>
   assertIncludes(selfUseRegressionRunbook, token, `self-use regression runbook covers ${token}`),
 );
 
 [
   "自用版本发布记录",
+  "npm run check:release-self-use",
+  "npm run release:self-use-summary",
   "Git 提交",
   "构建产物",
   "Bundle ID",
@@ -172,6 +185,25 @@ for (const relativePath of [
   "完整备份",
   "回滚方式",
 ].forEach((token) => assertIncludes(releaseLog, token, `self-use release log covers ${token}`));
+
+[
+  '["run", "test"]',
+  '["run", "build"]',
+  '["run", "check:desktop-config"]',
+  '["run", "check:self-use"]',
+  "packageJson.version !== tauriConfig.version",
+  "npm run release:self-use-summary",
+].forEach((token) => assertIncludes(releaseSelfUseCheck, token, `release self-use check includes ${token}`));
+
+[
+  "rev-parse",
+  "status",
+  "DESKTOP_PERSISTENCE_FILENAME",
+  "DESKTOP_PERSISTENCE_VERSION",
+  "SELF_USE_RELEASE_LOG.md",
+  "check:release-self-use",
+  "Build output",
+].forEach((token) => assertIncludes(releaseSummaryScript, token, `release summary script includes ${token}`));
 
 [
   "canEnterReviewPhase",

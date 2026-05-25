@@ -15,11 +15,11 @@
 每次准备作为自用版继续使用前，先跑：
 
 ```bash
-npm run test
-npm run build
-npm run check:desktop-config
-npm run check:self-use
+npm run check:release-self-use
+npm run release:self-use-summary
 ```
+
+`npm run check:release-self-use` 会串行执行 `npm run test`、`npm run build`、`npm run check:desktop-config` 和 `npm run check:self-use`，并先确认前端版本与 Tauri 版本一致。`npm run release:self-use-summary` 会打印当前版本、Git 提交、Bundle ID、数据版本和构建产物路径，方便写入 `SELF_USE_RELEASE_LOG.md`。
 
 如果本地 Playwright 和开发服务可用，再跑小窗图形回归：
 
@@ -28,7 +28,7 @@ npm run dev -- --host 127.0.0.1
 npm run check:compact
 ```
 
-`npm run check:self-use` 是静态基线检查，只确认长期自用所需的关键脚本、文档和代码入口没有被误删。它不替代单元测试、构建、Tauri 真机运行或小窗截图检查。
+`npm run check:self-use` 是静态基线检查，只确认长期自用所需的关键脚本、文档和代码入口没有被误删。它会被 `npm run check:release-self-use` 调用，但不替代 Tauri 真机运行或小窗截图检查。
 
 更完整的手动回归路径见 [SELF_USE_REGRESSION_RUNBOOK.md](SELF_USE_REGRESSION_RUNBOOK.md)。准备把某个版本作为日常自用版本前，按该清单完整走一遍。
 

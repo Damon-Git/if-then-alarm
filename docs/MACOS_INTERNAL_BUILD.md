@@ -20,9 +20,7 @@
 建议先执行：
 
 ```bash
-npm run test
-npm run check:desktop-config
-npm run build
+npm run check:release-self-use
 ```
 
 确认基础检查通过后，再执行：

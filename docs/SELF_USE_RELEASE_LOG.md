@@ -2,6 +2,15 @@
 
 本文只记录个人长期自用版本，不是公开发布 changelog。每次决定把新的 `.app` 替换到日常使用位置前，先按回归清单验证，再在这里补一条记录。
 
+发布前先执行：
+
+```bash
+npm run check:release-self-use
+npm run release:self-use-summary
+```
+
+第二个命令会打印可复制到本文的版本摘要。
+
 ## 记录原则
 
 - 只记录已经准备日常自用的版本。
@@ -18,7 +27,7 @@
 - 构建产物：`src-tauri/target/release/bundle/macos/急急如律令.app`。
 - Bundle ID：`com.damon.jijirululing`。
 - 数据版本：`persistence.v1.json` / `version: 1`。
-- 自动检查：发布时填写 `npm run test`、`npm run build`、`npm run check:desktop-config`、`npm run check:self-use`、必要时填写 `npm run check:compact`。
+- 自动检查：发布时填写 `npm run check:release-self-use`，必要时补充 `npm run check:compact`。
 - 手动验收：发布时填写是否按 `SELF_USE_REGRESSION_RUNBOOK.md` 走完。
 - 完整备份：发布时填写备份文件位置。
 - 回滚方式：退出应用，换回上一版 `.app`；如数据异常，恢复替换前备份的 `persistence.v1.json` 或完整备份 JSON。

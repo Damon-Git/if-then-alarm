@@ -14,11 +14,11 @@
 准备生成一个可以继续自用的版本前，先执行：
 
 ```bash
-npm run test
-npm run build
-npm run check:desktop-config
-npm run check:self-use
+npm run check:release-self-use
+npm run release:self-use-summary
 ```
+
+第一个命令会串起单元测试、前端构建、桌面配置检查和自用基线检查；第二个命令会输出可复制到 `docs/SELF_USE_RELEASE_LOG.md` 的发布摘要。
 
 如果本地开发服务和 Playwright 可用，再执行小窗回归：
 
@@ -39,7 +39,7 @@ npm run tauri:build
 src-tauri/target/release/bundle/macos/急急如律令.app
 ```
 
-准备把该产物作为新的日常自用版本前，在 `docs/SELF_USE_RELEASE_LOG.md` 记录 Git 提交、构建产物、数据版本、自动检查、手动验收、完整备份和回滚方式。
+准备把该产物作为新的日常自用版本前，把 `npm run release:self-use-summary` 输出的摘要复制到 `docs/SELF_USE_RELEASE_LOG.md`，并补齐手动验收、完整备份和已知问题。
 
 ## 安装方式
 

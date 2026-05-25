@@ -11,10 +11,8 @@
 先跑基础自动检查：
 
 ```bash
-npm run test
-npm run build
-npm run check:desktop-config
-npm run check:self-use
+npm run check:release-self-use
+npm run release:self-use-summary
 ```
 
 如果要检查 Tauri 桌面运行：

@@ -11,7 +11,9 @@
     "test": "vitest run",
     "check:compact": "node scripts/check-compact-window.mjs",
     "check:desktop-config": "node scripts/check-desktop-config.mjs",
+    "check:release-self-use": "node scripts/check-release-self-use.mjs",
     "check:self-use": "node scripts/check-self-use-readiness.mjs",
+    "release:self-use-summary": "node scripts/print-self-use-release-summary.mjs",
     "tauri": "tauri",
     "tauri:dev": "tauri dev",
     "tauri:build": "tauri build"
