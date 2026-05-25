@@ -12,6 +12,11 @@ type ReviewPanelProps = {
 
 const ReviewPanel = ({ intentSets, timerMode, onSave, onRequestAbandon }: ReviewPanelProps) => {
   const timerConfig = TIMER_MODE_CONFIG[timerMode];
+  const totalIncenseCount = intentSets.reduce((total, intentSet) => total + intentSet.incenseCount, 0);
+  const preventionIntentCount = intentSets.reduce(
+    (total, intentSet) => total + intentSet.preventionIntents.length,
+    0,
+  );
   const [result, setResult] = useState<ReviewResult>("completed");
   const [reviewText, setReviewText] = useState("");
   const [obstacleText, setObstacleText] = useState("");
@@ -48,6 +53,21 @@ const ReviewPanel = ({ intentSets, timerMode, onSave, onRequestAbandon }: Review
       </div>
 
       <div className="review-session-detail">
+        <div className="review-overview" aria-label="本轮摘要">
+          <div>
+            <span>执行意图</span>
+            <strong>{intentSets.length} 套</strong>
+          </div>
+          <div>
+            <span>线香</span>
+            <strong>{totalIncenseCount} 炷</strong>
+          </div>
+          <div>
+            <span>预防性符箓</span>
+            <strong>{preventionIntentCount} 张</strong>
+          </div>
+        </div>
+
         <div className="review-session-meta">
           <span>{timerConfig.label}</span>
           <span>专注 {formatDurationLabel(timerConfig.focusSeconds)}</span>
@@ -117,7 +137,7 @@ const ReviewPanel = ({ intentSets, timerMode, onSave, onRequestAbandon }: Review
           </label>
         </fieldset>
 
-        <label className="field">
+        <label className="field review-main-field">
           <span>一句复盘</span>
           <textarea
             value={reviewText}
@@ -127,25 +147,29 @@ const ReviewPanel = ({ intentSets, timerMode, onSave, onRequestAbandon }: Review
           />
         </label>
 
-        <label className="field">
-          <span>主要阻碍</span>
-          <textarea
-            value={obstacleText}
-            onChange={(event) => setObstacleText(event.target.value)}
-            placeholder="例如：启动太晚、被消息打断、任务定义不清。"
-            rows={2}
-          />
-        </label>
+        <details className="review-optional-fields">
+          <summary>补充记录</summary>
 
-        <label className="field">
-          <span>下次调整</span>
-          <textarea
-            value={nextAdjustmentText}
-            onChange={(event) => setNextAdjustmentText(event.target.value)}
-            placeholder="例如：开始前先关通知，把第一步缩小到 5 分钟内。"
-            rows={2}
-          />
-        </label>
+          <label className="field">
+            <span>主要阻碍</span>
+            <textarea
+              value={obstacleText}
+              onChange={(event) => setObstacleText(event.target.value)}
+              placeholder="例如：启动太晚、被消息打断、任务定义不清。"
+              rows={2}
+            />
+          </label>
+
+          <label className="field">
+            <span>下次调整</span>
+            <textarea
+              value={nextAdjustmentText}
+              onChange={(event) => setNextAdjustmentText(event.target.value)}
+              placeholder="例如：开始前先关通知，把第一步缩小到 5 分钟内。"
+              rows={2}
+            />
+          </label>
+        </details>
 
         {error ? <p className="error-text">{error}</p> : null}
 

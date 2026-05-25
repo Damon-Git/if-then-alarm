@@ -114,6 +114,8 @@ const incenseVisual = await readText("src/components/IncenseVisual.tsx");
 const intentSlot = await readText("src/components/IntentSlot.tsx");
 const ritualStage = await readText("src/components/RitualStage.tsx");
 const talismanVisual = await readText("src/components/TalismanVisual.tsx");
+const reviewPanel = await readText("src/components/ReviewPanel.tsx");
+const historyPanel = await readText("src/components/HistoryPanel.tsx");
 
 assertPackageScript(packageJson, "dev:tauri-frontend", "node scripts/start-tauri-frontend.mjs");
 assertPackageScript(packageJson, "check:compact", "node scripts/check-compact-window.mjs");
@@ -490,6 +492,12 @@ assertTextIncludes(ritualStage, "onRequestReview", "RitualStage exposes an expli
 assertTextIncludes(ritualStage, "ritual-completion-card", "RitualStage marks completed ritual without auto-opening review");
 assertTextIncludes(ritualStage, "本轮香尽", "RitualStage uses calm completion copy before review");
 assertTextIncludes(ritualStage, "data-ritual-complete", "RitualStage exposes completed ritual styling state");
+assertTextIncludes(reviewPanel, "review-overview", "ReviewPanel shows a lightweight session summary");
+assertTextIncludes(reviewPanel, "review-main-field", "ReviewPanel keeps the one-line review as the primary field");
+assertTextIncludes(reviewPanel, "review-optional-fields", "ReviewPanel keeps obstacle and adjustment as supplemental fields");
+assertTextIncludes(historyPanel, "history-summary__main", "HistoryPanel groups record date and result clearly");
+assertTextIncludes(historyPanel, "history-summary__metrics", "HistoryPanel groups history metrics separately from review text");
+assertTextIncludes(historyPanel, "history-reflection", "HistoryPanel keeps obstacle and adjustment out of the main summary row");
 assertTextIncludes(intentSlot, "prevention-list__items", "IntentSlot groups prevention talismans for horizontal stage layout");
 assertTextIncludes(intentSlot, "getStageIntentVisualSemantics", "IntentSlot derives full-stage UI semantics centrally");
 assertTextIncludes(intentSlot, "data-stage-metadata-visibility", "IntentSlot exposes metadata visibility semantics");
@@ -527,6 +535,9 @@ assertTextIncludes(stylesCss, ".altar-scene__slots", "CSS lays out full-stage in
 assertTextIncludes(stylesCss, "--altar-censer-center-y", "CSS pins full-stage censers to a shared horizontal line");
 assertTextIncludes(stylesCss, 'data-stage-metadata-visibility="censer-hover"', "CSS reveals full-stage metadata only through explicit censer hover semantics");
 assertTextIncludes(stylesCss, ".censer-visual__metadata", "CSS treats full-stage metadata as one card");
+assertTextIncludes(stylesCss, ".review-overview", "CSS supports lightweight review summary cards");
+assertTextIncludes(stylesCss, ".review-optional-fields", "CSS keeps supplemental review fields visually secondary");
+assertTextIncludes(stylesCss, ".history-summary__metrics", "CSS keeps history metrics scannable");
 assertTextIncludes(stylesCss, 'data-stage-situation-visibility="dismissed"', "CSS dismisses situation talismans after an intent starts");
 assertTextIncludes(stylesCss, 'data-stage-prevention-visibility="dismissed"', "CSS dismisses prevention talismans after an intent completes");
 assertTextIncludes(stylesCss, 'data-stage-censer-emphasis="muted"', "CSS weakens completed full-stage censers");

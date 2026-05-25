@@ -45,6 +45,8 @@ const timerModeLabels: Record<TimerMode, string> = {
   prod: "正式模式",
 };
 
+const getResultClassName = (result: ReviewResult) => `result-badge result-badge--${result}`;
+
 const formatDateTime = (value: string) => {
   return new Date(value).toLocaleString("zh-CN", {
     year: "numeric",
@@ -235,25 +237,40 @@ const HistoryPanel = ({
                       <div className="history-record__header">
                         <details className="history-record__details">
                           <summary className="history-summary">
-                            <span className="history-summary__date">{formatDateTime(record.createdAt)}</span>
-                            <strong>{resultLabels[record.result]}</strong>
-                            <span>{summary.intentSetCount} 套</span>
-                            <span>{summary.totalIncenseCount} 炷香</span>
-                            <span>约 {summary.totalFocusMinutes} 分钟</span>
-                            {record.timerMode ? <span>{timerModeLabels[record.timerMode]}</span> : null}
-                            <span className="history-summary__review">复盘：{record.reviewText}</span>
-                            {record.obstacleText ? (
-                              <span className="history-summary__review">阻碍：{record.obstacleText}</span>
-                            ) : null}
-                            {record.nextAdjustmentText ? (
-                              <span className="history-summary__review">下次：{record.nextAdjustmentText}</span>
-                            ) : null}
+                            <span className="history-summary__main">
+                              <span className="history-summary__date">{formatDateTime(record.createdAt)}</span>
+                              <strong className={getResultClassName(record.result)}>{resultLabels[record.result]}</strong>
+                            </span>
+                            <span className="history-summary__metrics">
+                              <span>{summary.intentSetCount} 套</span>
+                              <span>{summary.totalIncenseCount} 炷香</span>
+                              <span>约 {summary.totalFocusMinutes} 分钟</span>
+                            </span>
+                            <span className="history-summary__review">“{record.reviewText}”</span>
                           </summary>
 
                           <div className="history-metrics" aria-label="历史记录摘要">
+                            {record.timerMode ? <span>{timerModeLabels[record.timerMode]}</span> : null}
                             <span>情境性符箓 {summary.intentSetCount} 张</span>
                             <span>预防性符箓 {summary.preventionIntentCount} 张</span>
                           </div>
+
+                          {record.obstacleText || record.nextAdjustmentText ? (
+                            <div className="history-reflection">
+                              {record.obstacleText ? (
+                                <p>
+                                  <span>阻碍</span>
+                                  {record.obstacleText}
+                                </p>
+                              ) : null}
+                              {record.nextAdjustmentText ? (
+                                <p>
+                                  <span>下次</span>
+                                  {record.nextAdjustmentText}
+                                </p>
+                              ) : null}
+                            </div>
+                          ) : null}
 
                           <div className="history-record__intents">
                             {record.intentSets.map((intentSet, index) => (
