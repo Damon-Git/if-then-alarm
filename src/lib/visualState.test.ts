@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { getCenserLidState, getStageIntentVisualSemantics, isStageTimerIntentStatus } from "./visualState";
+import {
+  getCenserLidState,
+  getIncenseVisualState,
+  getStageIntentVisualSemantics,
+  isStageTimerIntentStatus,
+} from "./visualState";
 
 describe("visual state", () => {
   it("keeps censer lids open until the whole intent set is completed", () => {
@@ -53,5 +58,14 @@ describe("visual state", () => {
     expect(isStageTimerIntentStatus("burning")).toBe(true);
     expect(isStageTimerIntentStatus("resting")).toBe(true);
     expect(isStageTimerIntentStatus("completed")).toBe(false);
+  });
+
+  it("maps each incense stick to pending, active, and burned states from left to right", () => {
+    expect(getIncenseVisualState(1, 1, "idle")).toBe("pending");
+    expect(getIncenseVisualState(1, 2, "burning")).toBe("burned");
+    expect(getIncenseVisualState(2, 2, "burning")).toBe("burning");
+    expect(getIncenseVisualState(3, 2, "burning")).toBe("pending");
+    expect(getIncenseVisualState(2, 2, "resting")).toBe("resting");
+    expect(getIncenseVisualState(3, 3, "completed")).toBe("burned");
   });
 });

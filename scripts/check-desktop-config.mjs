@@ -474,6 +474,8 @@ assertTextIncludes(visualState, "censerEmphasis", "Visual state controls complet
 assertTextIncludes(visualState, "shouldRenderTimerPanel", "Full-stage timer panel visibility is derived from visual state");
 assertTextIncludes(incenseVisual, "INCENSE_ASSET_LAYERS.map", "IncenseVisual uses central incense layer order");
 assertTextIncludes(incenseVisual, 'data-incense-click-action="none"', "IncenseVisual is explicitly non-clickable");
+assertTextIncludes(incenseVisual, "getIncenseVisualState", "IncenseVisual maps each stick through central visual state");
+assertTextIncludes(incenseVisual, "data-incense-stick-progress", "IncenseVisual exposes per-stick progress for visual burning");
 assertTextIncludes(talismanVisual, "TALISMAN_TEMPLATE_ASSET_LAYERS.map", "TalismanVisual uses central talisman image layer order");
 assertTextIncludes(talismanVisual, "splitIntentText", "TalismanVisual splits intent text into side columns");
 assertTextIncludes(talismanVisual, "talisman-visual__column--right", "TalismanVisual renders right text column");
@@ -531,6 +533,14 @@ assertTextIncludes(stylesCss, ".censer-visual--stage .censer-visual__lid.visual-
 assertTextIncludes(stylesCss, '.censer-visual[data-censer-lid-state="open"] .censer-visual__lid', "CSS keeps censer lids visually open before completion");
 assertTextIncludes(stylesCss, '.censer-visual[data-censer-lid-state="closed"] .incense-visual', "CSS hides incense after the censer lid closes");
 assertTextIncludes(stylesCss, ".incense-visual .visual-layer--with-asset .visual-layer__asset", "CSS stretches incense PNG layers inside progress-driven boxes");
+assertTextIncludes(stylesCss, 'data-incense-state="burning"', "CSS styles the currently burning incense stick by explicit state");
+assertTextIncludes(stylesCss, "clip-path: inset(var(--incense-stick-progress) 0 0 0)", "CSS shortens the current incense stick as progress advances");
+assertTextIncludes(stylesCss, 'data-incense-state="burned"', "CSS styles already burned incense sticks by explicit state");
+assertTextIncludes(
+  stylesCss,
+  '.incense-visual__unit[data-incense-state="burned"] .incense-visual__ash,\n.incense-visual__unit[data-incense-state="resting"] .incense-visual__ash',
+  "CSS keeps burned and resting incense ash at full height",
+);
 
 await Promise.all(
   [

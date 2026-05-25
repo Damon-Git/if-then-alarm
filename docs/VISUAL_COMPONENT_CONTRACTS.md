@@ -141,6 +141,8 @@ type IncenseVisualProps = {
 - `size`：选择主祭台或小窗素材族。
 - `status`：用于把每根线香映射为 `pending`、`burning`、`burned` 或 `resting`。
 - `data-incense-click-action="none"`：线香是进度视觉，不承担点击交互。
+- 每根线香会输出 `data-incense-state` 和 `data-incense-stick-progress`。`pending` 进度为 0，`burning` 使用当前倒计时进度，`burned/resting` 进度为 100。
+- 当前最小视觉进度只表达静态状态：当前线香的深色香体随进度缩短并露出灰色香灰，已烧完线香保持灰色，未烧线香保持完整深色。
 
 ### 预留图层
 
@@ -153,6 +155,7 @@ type IncenseVisualProps = {
 
 - 用户选择 1 / 2 / 3 炷香时，必须分别渲染 1 / 2 / 3 根线香。
 - 进入计时后，从左侧第一根开始显示当前进度；续香后依次推进。
+- 当前线香进度只能来自外部传入的 `progress`，不能在 `IncenseVisual` 里自行估算或另起 timer。
 - 火星、烟雾和香灰可以由视觉状态和 `progress` 驱动，但不能改变计时结果。
 - 不在 `IncenseVisual` 内启动、暂停或清理 timer。
 - 小窗线香素材以 `src/lib/visualAssets.ts` 中的 `VISUAL_ASSET_FAMILY_SPECS.incense.compact` 为尺寸锚点。

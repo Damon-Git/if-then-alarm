@@ -851,6 +851,11 @@ select {
   height: 100%;
   border-radius: 999px;
   background: #7e4c37;
+  clip-path: inset(0 0 0 0);
+  transition:
+    clip-path 180ms linear,
+    filter 180ms ease,
+    opacity 180ms ease;
 }
 
 .incense-visual__ash {
@@ -860,6 +865,10 @@ select {
   max-height: 100%;
   border-radius: 999px;
   background: #d7d1cc;
+  opacity: 0;
+  transition:
+    height 180ms linear,
+    opacity 180ms ease;
 }
 
 .incense-visual__ember {
@@ -869,6 +878,43 @@ select {
   border-radius: 999px;
   background: #b95d4c;
   opacity: 0;
+  transform: translate(-50%, -50%);
+  transition:
+    opacity 120ms ease,
+    top 180ms linear;
+}
+
+.incense-visual__unit[data-incense-state="pending"] .incense-visual__stick {
+  clip-path: inset(0 0 0 0);
+  filter: none;
+  opacity: 1;
+}
+
+.incense-visual__unit[data-incense-state="pending"] .incense-visual__ash {
+  height: 0;
+  opacity: 0;
+}
+
+.incense-visual__unit[data-incense-state="burning"] .incense-visual__stick {
+  clip-path: inset(var(--incense-stick-progress) 0 0 0);
+}
+
+.incense-visual__unit[data-incense-state="burning"] .incense-visual__ash,
+.incense-visual__unit[data-incense-state="burned"] .incense-visual__ash,
+.incense-visual__unit[data-incense-state="resting"] .incense-visual__ash {
+  opacity: 1;
+}
+
+.incense-visual__unit[data-incense-state="burned"] .incense-visual__stick,
+.incense-visual__unit[data-incense-state="resting"] .incense-visual__stick {
+  clip-path: inset(100% 0 0 0);
+  opacity: 0.2;
+  filter: grayscale(1) brightness(1.25);
+}
+
+.incense-visual__unit[data-incense-state="burned"] .incense-visual__ash,
+.incense-visual__unit[data-incense-state="resting"] .incense-visual__ash {
+  height: 100%;
 }
 
 .incense-visual__unit--burning .incense-visual__ember {
@@ -885,11 +931,11 @@ select {
 }
 
 .incense-visual__unit--burning .incense-visual__smoke {
-  opacity: 0.42;
+  opacity: 0;
 }
 
 .incense-visual__unit--resting .incense-visual__smoke {
-  opacity: 0.18;
+  opacity: 0;
 }
 
 .incense-visual__progress {
