@@ -22,16 +22,16 @@ npm run release:self-use-summary
 
 ### 2026-05-25 · v0.2.0 · 内部自用版
 
-- 状态：长期自用候选基线；自动检查和 `.app` 构建已通过，待手动验收和备份。
+- 状态：长期自用基线；已完成安装后核心路径验收。
 - Git 提交：aa102a2。
 - 构建产物：`src-tauri/target/release/bundle/macos/急急如律令.app`。
 - Bundle ID：`com.damon.jijirululing`。
 - Rust crate：`jiji-rululing v0.2.0`。
 - 数据版本：`persistence.v1.json` / `version: 1`。
 - 自动检查：`npm run check:release-self-use` 已通过；`npm run tauri:build` 已通过；Info.plist 版本为 `0.2.0`。
-- 手动验收：发布前按 `SELF_USE_REGRESSION_RUNBOOK.md` 填写。
-- 完整备份：替换自用 `.app` 前填写备份文件位置。
-- 已知问题：发布前填写或写“无阻断问题”。
+- 手动验收：2026-05-26 已按核心路径验收通过；修复并复验 Tauri hover 交互差异。
+- 完整备份：`~/Desktop/jiji-rululing-backup-v0.2.0`。
+- 已知问题：无阻断问题。
 - 回滚方式：退出应用，换回上一版 `.app`；如数据异常，恢复替换前备份的 `persistence.v1.json` 或完整备份 JSON。
 
 ### 2026-05-25 · v0.1.0 · 内部自用版
