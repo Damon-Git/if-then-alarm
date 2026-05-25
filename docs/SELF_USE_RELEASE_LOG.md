@@ -23,7 +23,7 @@ npm run release:self-use-summary
 ### 2026-05-25 · v0.2.0 · 内部自用版
 
 - 状态：长期自用候选基线；自动检查和 `.app` 构建已通过，待手动验收和备份。
-- Git 提交：提交本次版本后填写。
+- Git 提交：aa102a2。
 - 构建产物：`src-tauri/target/release/bundle/macos/急急如律令.app`。
 - Bundle ID：`com.damon.jijirululing`。
 - Rust crate：`jiji-rululing v0.2.0`。
