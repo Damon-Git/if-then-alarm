@@ -2403,7 +2403,10 @@ html[data-window-mode="compact"] .app-shell--ritual .compact-censer--completed .
   filter: saturate(0.72) brightness(1.08);
 }
 
-html[data-window-mode="compact"] .app-shell--ritual .compact-censer--resting .incense-visual,
-html[data-window-mode="compact"] .app-shell--ritual .compact-censer--completed .incense-visual {
+html[data-window-mode="compact"] .app-shell--ritual .compact-censer--resting .incense-visual {
   opacity: 0.42;
+}
+
+html[data-window-mode="compact"] .app-shell--ritual .compact-censer--completed .incense-visual {
+  opacity: 0;
 }
