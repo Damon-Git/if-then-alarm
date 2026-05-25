@@ -21,7 +21,7 @@
 - [ ] 生成 `src-tauri/target/release/bundle/macos/急急如律令.app`。
 - [ ] `.app/Contents/MacOS/jiji-rululing` 存在。
 - [ ] `.app/Contents/Info.plist` 中 `CFBundleIdentifier` 为 `com.damon.jijirululing`。
-- [ ] `.app/Contents/Info.plist` 中版本为 `0.1.0`。
+- [ ] `.app/Contents/Info.plist` 中版本为 `0.2.0`。
 - [ ] 双击或右键打开 `.app` 后能启动窗口。
 - [ ] 打包版初始窗口接近 `960px × 760px`。
 - [ ] 打包版菜单栏右侧能看到临时“令”入口。

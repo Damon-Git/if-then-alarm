@@ -20,12 +20,27 @@ npm run release:self-use-summary
 
 ## 当前基线
 
+### 2026-05-25 · v0.2.0 · 内部自用版
+
+- 状态：长期自用候选基线；自动检查和 `.app` 构建已通过，待手动验收和备份。
+- Git 提交：提交本次版本后填写。
+- 构建产物：`src-tauri/target/release/bundle/macos/急急如律令.app`。
+- Bundle ID：`com.damon.jijirululing`。
+- Rust crate：`jiji-rululing v0.2.0`。
+- 数据版本：`persistence.v1.json` / `version: 1`。
+- 自动检查：`npm run check:release-self-use` 已通过；`npm run tauri:build` 已通过；Info.plist 版本为 `0.2.0`。
+- 手动验收：发布前按 `SELF_USE_REGRESSION_RUNBOOK.md` 填写。
+- 完整备份：替换自用 `.app` 前填写备份文件位置。
+- 已知问题：发布前填写或写“无阻断问题”。
+- 回滚方式：退出应用，换回上一版 `.app`；如数据异常，恢复替换前备份的 `persistence.v1.json` 或完整备份 JSON。
+
 ### 2026-05-25 · v0.1.0 · 内部自用版
 
 - 状态：开发中自用基线。
 - Git 提交：发布时填写。
 - 构建产物：`src-tauri/target/release/bundle/macos/急急如律令.app`。
 - Bundle ID：`com.damon.jijirululing`。
+- Rust crate：`jiji-rululing v0.1.0`。
 - 数据版本：`persistence.v1.json` / `version: 1`。
 - 自动检查：发布时填写 `npm run check:release-self-use`，必要时补充 `npm run check:compact`。
 - 手动验收：发布时填写是否按 `SELF_USE_REGRESSION_RUNBOOK.md` 走完。
@@ -41,6 +56,7 @@ npm run release:self-use-summary
 - Git 提交：
 - 构建产物：
 - Bundle ID：
+- Rust crate：
 - 数据版本：
 - 自动检查：
 - 手动验收：

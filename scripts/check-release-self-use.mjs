@@ -8,6 +8,7 @@ const projectRoot = path.resolve(scriptDirectory, "..");
 
 const readJson = async (relativePath) =>
   JSON.parse(await readFile(path.join(projectRoot, relativePath), "utf8"));
+const readText = (relativePath) => readFile(path.join(projectRoot, relativePath), "utf8");
 
 const fail = (message) => {
   console.error(`Self-use release check failed: ${message}`);
@@ -32,9 +33,15 @@ const runStep = ({ args, label }) => {
 
 const packageJson = await readJson("package.json");
 const tauriConfig = await readJson("src-tauri/tauri.conf.json");
+const cargoToml = await readText("src-tauri/Cargo.toml");
+const cargoVersion = /^version = "([^"]+)"/m.exec(cargoToml)?.[1];
 
 if (packageJson.version !== tauriConfig.version) {
   fail(`package.json version ${packageJson.version} does not match Tauri version ${tauriConfig.version}`);
+}
+
+if (cargoVersion !== packageJson.version) {
+  fail(`Cargo package version ${cargoVersion ?? "unknown"} does not match package.json version ${packageJson.version}`);
 }
 
 if (tauriConfig.identifier !== "com.damon.jijirululing") {

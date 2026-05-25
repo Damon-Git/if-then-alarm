@@ -1,6 +1,6 @@
 [package]
 name = "jiji-rululing"
-version = "0.1.0"
+version = "0.2.0"
 description = "A ritual-focused intent and pomodoro desktop tool."
 authors = ["Damon"]
 edition = "2021"

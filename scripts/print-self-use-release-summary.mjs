@@ -41,10 +41,12 @@ const formatLocalDate = () =>
 
 const packageJson = await readJson("package.json");
 const tauriConfig = await readJson("src-tauri/tauri.conf.json");
+const cargoToml = await readText("src-tauri/Cargo.toml");
 const persistenceSchema = await readText("src/lib/desktopPersistenceSchema.ts");
 
 const dataFilename = getConstant(persistenceSchema, "DESKTOP_PERSISTENCE_FILENAME");
 const dataVersion = getConstant(persistenceSchema, "DESKTOP_PERSISTENCE_VERSION");
+const cargoVersion = /^version = "([^"]+)"/m.exec(cargoToml)?.[1] ?? "unknown";
 const shortCommit = runGit(["rev-parse", "--short", "HEAD"]) || "unknown";
 const status = runGit(["status", "--short"]);
 const workingTreeState = status ? "有未提交改动" : "干净";
@@ -57,6 +59,7 @@ const releaseEntry = `### ${today} · v${packageJson.version} · 内部自用版
 - Git 提交：${shortCommit}（工作区：${workingTreeState}）。
 - 构建产物：\`${buildPath}\`。
 - Bundle ID：\`${tauriConfig.identifier}\`。
+- Rust crate：\`jiji-rululing v${cargoVersion}\`。
 - 数据版本：\`${dataFilename}\` / \`version: ${dataVersion}\`。
 - 自动检查：\`npm run check:release-self-use\`。
 - 手动验收：按 \`SELF_USE_REGRESSION_RUNBOOK.md\` 填写。
@@ -68,6 +71,7 @@ console.log("Self-use release summary");
 console.log(`- App: ${tauriConfig.productName}`);
 console.log(`- Version: v${packageJson.version}`);
 console.log(`- Bundle ID: ${tauriConfig.identifier}`);
+console.log(`- Rust crate: jiji-rululing v${cargoVersion}`);
 console.log(`- Git commit: ${shortCommit}`);
 console.log(`- Working tree: ${workingTreeState}`);
 console.log(`- Data: ${dataFilename} / version ${dataVersion}`);

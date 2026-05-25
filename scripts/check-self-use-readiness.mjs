@@ -47,6 +47,7 @@ const packageJson = await readJson("package.json");
 const appTsx = await readText("src/App.tsx");
 const appMetadata = await readText("src/lib/appMetadata.ts");
 const compactWindowCheck = await readText("scripts/check-compact-window.mjs");
+const cargoToml = await readText("src-tauri/Cargo.toml");
 const releaseSelfUseCheck = await readText("scripts/check-release-self-use.mjs");
 const releaseSummaryScript = await readText("scripts/print-self-use-release-summary.mjs");
 const desktopPersistenceAdapter = await readText("src/lib/desktopPersistenceAdapter.ts");
@@ -180,6 +181,7 @@ for (const relativePath of [
   "Git 提交",
   "构建产物",
   "Bundle ID",
+  "Rust crate",
   "数据版本",
   "自动检查",
   "完整备份",
@@ -192,6 +194,7 @@ for (const relativePath of [
   '["run", "check:desktop-config"]',
   '["run", "check:self-use"]',
   "packageJson.version !== tauriConfig.version",
+  "cargoVersion !== packageJson.version",
   "npm run release:self-use-summary",
 ].forEach((token) => assertIncludes(releaseSelfUseCheck, token, `release self-use check includes ${token}`));
 
@@ -202,6 +205,7 @@ for (const relativePath of [
   "DESKTOP_PERSISTENCE_VERSION",
   "SELF_USE_RELEASE_LOG.md",
   "check:release-self-use",
+  "Rust crate",
   "Build output",
 ].forEach((token) => assertIncludes(releaseSummaryScript, token, `release summary script includes ${token}`));
 
@@ -276,6 +280,7 @@ assertIncludes(macosInternalBuild, "SELF_USE_RELEASE_LOG.md", "macOS internal bu
 assertIncludes(macosSelfUseInstall, "com.damon.jijirululing", "macOS self-use install doc names app data directory");
 assertIncludes(macosSelfUseInstall, "替换 `.app` 前先退出旧应用", "macOS self-use install doc guards app replacement");
 assert(packageJson.version === tauriConfig.version, "package.json and Tauri app version match");
+assertIncludes(cargoToml, `version = "${packageJson.version}"`, "Cargo package version matches package.json");
 
 if (failures.length > 0) {
   console.error("Self-use readiness check failed:");

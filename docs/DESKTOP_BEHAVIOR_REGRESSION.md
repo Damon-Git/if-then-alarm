@@ -51,7 +51,7 @@ npm run check:compact
 - 执行 `npm run tauri:build`。
 - 确认生成 `src-tauri/target/release/bundle/macos/急急如律令.app`。
 - 确认 `.app/Contents/MacOS/jiji-rululing`、`.app/Contents/Info.plist` 和 `.app/Contents/Resources/急急如律令.icns` 存在。
-- 确认 `Info.plist` 中 bundle identifier 为 `com.damon.jijirululing`，版本为 `0.1.0`。
+- 确认 `Info.plist` 中 bundle identifier 为 `com.damon.jijirululing`，版本为 `0.2.0`。
 - 双击或右键打开 `.app` 后能启动窗口。
 - 打包版完成一轮复盘后重新打开，历史记录仍可查看。
 
