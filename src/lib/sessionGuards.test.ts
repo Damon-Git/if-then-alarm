@@ -2,14 +2,13 @@ import { describe, expect, it } from "vitest";
 import {
   areAllIntentSetsCompleted,
   canChangeTimerSettings,
+  canEnterReviewPhase,
   getFocusTimerNotificationKind,
   getActiveIntentSet,
-  getPhaseAfterFullWindowOpen,
   hasBlockingRitualAction,
   hasUnsavedRitualSession,
   hasUnsavedSetupDraft,
   isTimerRestorable,
-  shouldEnterReviewPhase,
 } from "./sessionGuards";
 import type { IntentSet, IntentSetDraft, PersistedSession } from "../types";
 
@@ -69,87 +68,27 @@ describe("session guards", () => {
     expect(areAllIntentSetsCompleted([createIntentSet("completed"), createIntentSet("idle")])).toBe(false);
   });
 
-  it("does not auto-enter review from compact window mode", () => {
+  it("allows review only as an explicit action after all intent sets complete", () => {
     const completedIntentSets = [createIntentSet("completed")];
 
     expect(
-      shouldEnterReviewPhase({
+      canEnterReviewPhase({
         intentSets: completedIntentSets,
-        isCompactWindow: false,
         phase: "ritual",
       }),
     ).toBe(true);
     expect(
-      shouldEnterReviewPhase({
-        intentSets: completedIntentSets,
-        isCompactWindow: true,
-        phase: "ritual",
-      }),
-    ).toBe(false);
-    expect(
-      shouldEnterReviewPhase({
-        intentSets: completedIntentSets,
-        isCompactWindow: false,
-        phase: "review",
-      }),
-    ).toBe(false);
-  });
-
-  it("enters review after opening the full window only when the ritual is complete", () => {
-    expect(
-      getPhaseAfterFullWindowOpen({
-        didOpenFullWindow: true,
-        intentSets: [createIntentSet("completed")],
-        phase: "ritual",
-      }),
-    ).toBe("review");
-    expect(
-      getPhaseAfterFullWindowOpen({
-        didOpenFullWindow: true,
+      canEnterReviewPhase({
         intentSets: [createIntentSet("completed"), createIntentSet("idle")],
         phase: "ritual",
       }),
-    ).toBe("ritual");
-    expect(
-      getPhaseAfterFullWindowOpen({
-        didOpenFullWindow: true,
-        intentSets: [createIntentSet("completed")],
-        phase: "setup",
-      }),
-    ).toBe("setup");
-    expect(
-      getPhaseAfterFullWindowOpen({
-        didOpenFullWindow: false,
-        intentSets: [createIntentSet("completed")],
-        phase: "ritual",
-      }),
-    ).toBe("ritual");
-  });
-
-  it("keeps compact completion in ritual until full window expansion succeeds", () => {
-    const completedIntentSets = [createIntentSet("completed")];
-
-    expect(
-      shouldEnterReviewPhase({
-        intentSets: completedIntentSets,
-        isCompactWindow: true,
-        phase: "ritual",
-      }),
     ).toBe(false);
     expect(
-      getPhaseAfterFullWindowOpen({
-        didOpenFullWindow: false,
+      canEnterReviewPhase({
         intentSets: completedIntentSets,
-        phase: "ritual",
+        phase: "review",
       }),
-    ).toBe("ritual");
-    expect(
-      getPhaseAfterFullWindowOpen({
-        didOpenFullWindow: true,
-        intentSets: completedIntentSets,
-        phase: "ritual",
-      }),
-    ).toBe("review");
+    ).toBe(false);
   });
 
   it("uses a completion notification only for the final incense of the final remaining set", () => {

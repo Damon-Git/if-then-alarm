@@ -13,6 +13,7 @@ type RitualStageProps = {
   onStartIntent: (intentSetId: string) => void;
   onOpenFullView: () => void;
   onRequestAbandon: () => void;
+  onRequestReview: () => void;
 };
 
 const clampProgress = (progress: number) => Math.min(1, Math.max(0, progress));
@@ -38,6 +39,7 @@ const RitualStage = ({
   onStartIntent,
   onOpenFullView,
   onRequestAbandon,
+  onRequestReview,
 }: RitualStageProps) => {
   const isSessionComplete = intentSets.length > 0 && intentSets.every((intentSet) => intentSet.status === "completed");
   const altarBackgroundUrl = getAltarAssetUrl("background");
@@ -52,9 +54,21 @@ const RitualStage = ({
           <p className="eyebrow">Ritual Stage</p>
           <h2 id="ritual-title">仪式台</h2>
         </div>
-        <button className="ghost-button" type="button" onClick={onRequestAbandon}>
-          放弃本轮
-        </button>
+        <div className="ritual-actions">
+          {isSessionComplete ? (
+            <>
+              <span className="ritual-completion-note" aria-live="polite">
+                本轮已完成
+              </span>
+              <button className="primary-button" type="button" onClick={onRequestReview}>
+                进入复盘
+              </button>
+            </>
+          ) : null}
+          <button className="ghost-button" type="button" onClick={onRequestAbandon}>
+            放弃本轮
+          </button>
+        </div>
       </div>
 
       <div className="stage-grid stage-grid--full">

@@ -155,6 +155,25 @@ select {
   margin-bottom: 18px;
 }
 
+.ritual-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.ritual-completion-note {
+  border: 1px solid rgb(138 47 37 / 22%);
+  border-radius: 999px;
+  padding: 5px 10px;
+  background: rgb(255 250 244 / 76%);
+  color: #7c2c23;
+  font-size: 0.82rem;
+  line-height: 1;
+  white-space: nowrap;
+}
+
 .setup-form,
 .review-form {
   display: grid;
@@ -1905,10 +1924,20 @@ select {
     font-size: 1.1rem;
   }
 
+  .ritual-panel .section-heading .primary-button,
   .ritual-panel .section-heading .ghost-button {
     min-height: 30px;
     padding: 0 10px;
     font-size: 0.84rem;
+  }
+
+  .ritual-actions {
+    gap: 6px;
+  }
+
+  .ritual-completion-note {
+    padding: 4px 8px;
+    font-size: 0.76rem;
   }
 
   .compact-censer__button {

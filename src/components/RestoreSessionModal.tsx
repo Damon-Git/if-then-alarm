@@ -33,6 +33,7 @@ const formatDateTime = (value: string) => {
 const RestoreSessionModal = ({ session, onDiscard, onRestore }: RestoreSessionModalProps) => {
   const totalIncenseCount = session.intentSets.reduce((total, intentSet) => total + intentSet.incenseCount, 0);
   const completedIntentSetCount = session.intentSets.filter((intentSet) => intentSet.status === "completed").length;
+  const isSessionComplete = completedIntentSetCount === session.intentSets.length && session.intentSets.length > 0;
   const activeIntentSetIndex = session.intentSets.findIndex(
     (intentSet) => intentSet.status === "burning" || intentSet.status === "resting",
   );
@@ -48,7 +49,7 @@ const RestoreSessionModal = ({ session, onDiscard, onRestore }: RestoreSessionMo
     <div className="modal-backdrop" role="presentation">
       <div className="modal-panel" role="dialog" aria-modal="true" aria-labelledby="restore-modal-title">
         <p className="eyebrow">Saved Session</p>
-        <h2 id="restore-modal-title">发现未完成的本轮仪式</h2>
+        <h2 id="restore-modal-title">发现未保存的本轮仪式</h2>
         <p className="modal-copy">
           上次停在{phaseLabels[session.phase]}，共有 {session.intentSets.length} 套执行意图，保存于{" "}
           {formatDateTime(session.updatedAt)}。
@@ -66,7 +67,13 @@ const RestoreSessionModal = ({ session, onDiscard, onRestore }: RestoreSessionMo
               {formatSeconds(session.timerRemaining)}
             </span>
           ) : (
-            <span>{session.phase === "review" ? "当前：等待保存复盘" : "当前：尚未开始倒计时"}</span>
+            <span>
+              {session.phase === "review"
+                ? "当前：等待保存复盘"
+                : isSessionComplete
+                  ? "当前：本轮已完成，等待进入复盘"
+                  : "当前：尚未开始倒计时"}
+            </span>
           )}
           {modalText ? <span>提醒：{modalText}</span> : null}
         </div>

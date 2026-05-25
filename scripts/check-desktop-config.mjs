@@ -484,6 +484,8 @@ assertTextIncludes(talismanVisual, 'data-talisman-click-action={clickAction}', "
 assertTextIncludes(talismanVisual, 'data-talisman-interaction-role={interactionRole}', "TalismanVisual distinguishes start entry and view-only talismans");
 assertTextIncludes(ritualStage, "getAltarAssetUrl", "RitualStage uses the altar background asset manifest");
 assertTextIncludes(ritualStage, "altar-scene__slots", "RitualStage renders shared altar scene slots");
+assertTextIncludes(ritualStage, "onRequestReview", "RitualStage exposes an explicit review entry after completion");
+assertTextIncludes(ritualStage, "ritual-completion-note", "RitualStage marks completed ritual without auto-opening review");
 assertTextIncludes(intentSlot, "prevention-list__items", "IntentSlot groups prevention talismans for horizontal stage layout");
 assertTextIncludes(intentSlot, "getStageIntentVisualSemantics", "IntentSlot derives full-stage UI semantics centrally");
 assertTextIncludes(intentSlot, "data-stage-metadata-visibility", "IntentSlot exposes metadata visibility semantics");

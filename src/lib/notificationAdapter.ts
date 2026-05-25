@@ -17,7 +17,7 @@ const getNotificationCopy = (kind: TimerNotificationKind) => {
   }
 
   if (kind === "ritual-completed") {
-    return isCurrentDocumentWindowCompact() ? "本轮已完成，点击香炉回到完整窗口复盘。" : "本轮已完成，请填写复盘。";
+    return isCurrentDocumentWindowCompact() ? "本轮已完成，点击香炉回到完整窗口复盘。" : "本轮已完成，请进入复盘。";
   }
 
   return "这一炷香已经烧完。";

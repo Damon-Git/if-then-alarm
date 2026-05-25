@@ -30,7 +30,6 @@ import {
   closeCurrentTauriWindow,
   compactCurrentTauriWindow,
   expandCurrentTauriWindow,
-  isCurrentDocumentWindowCompact,
   isTauriRuntime,
   listenForTauriCloseRequest,
   setCurrentTauriWindowAlwaysOnTop,
@@ -39,13 +38,12 @@ import {
 import { loadAppSettings, saveAppSettings } from "./lib/settingsStorage";
 import {
   canChangeTimerSettings,
+  canEnterReviewPhase,
   getFocusTimerNotificationKind,
   getActiveIntentSet,
-  getPhaseAfterFullWindowOpen,
   hasBlockingRitualAction,
   hasUnsavedRitualSession,
   isTimerRestorable,
-  shouldEnterReviewPhase,
 } from "./lib/sessionGuards";
 import {
   clearHistoryRecords,
@@ -144,7 +142,7 @@ const resolvePersistedSession = (session: PersistedSession): PersistedSession =>
     activeModal: null,
     activeTimerSegment: null,
     intentSets: nextIntentSets,
-    phase: nextIntentSets.every((intentSet) => intentSet.status === "completed") ? "review" : session.phase,
+    phase: session.phase,
     timerRemaining: 0,
   };
 };
@@ -366,18 +364,6 @@ const App = () => {
   ]);
 
   useEffect(() => {
-    if (
-      shouldEnterReviewPhase({
-        intentSets,
-        isCompactWindow: isCurrentDocumentWindowCompact(),
-        phase,
-      })
-    ) {
-      setPhase("review");
-    }
-  }, [intentSets, phase]);
-
-  useEffect(() => {
     if (!hasUnsavedSession) {
       return;
     }
@@ -481,19 +467,9 @@ const App = () => {
     }
 
     isOpeningFullWindowRef.current = true;
-    const currentIntentSets = intentSets;
-    const currentPhase = phase;
 
     expandCurrentTauriWindow()
       .then((didOpenFullWindow) => {
-        setPhase(
-          getPhaseAfterFullWindowOpen({
-            didOpenFullWindow,
-            intentSets: currentIntentSets,
-            phase: currentPhase,
-          }),
-        );
-
         if (!didOpenFullWindow) {
           showToast("error", "完整窗口未能打开。");
         }
@@ -504,6 +480,15 @@ const App = () => {
       .finally(() => {
         isOpeningFullWindowRef.current = false;
       });
+  };
+
+  const requestReview = () => {
+    if (!canEnterReviewPhase({ intentSets, phase })) {
+      return;
+    }
+
+    setActiveUtilityPanel(null);
+    setPhase("review");
   };
 
   const cancelStartIntent = () => {
@@ -944,6 +929,7 @@ const App = () => {
             startingIntentId={startingIntentId}
             onOpenFullView={requestFullRitualView}
             onRequestAbandon={requestAbandonSession}
+            onRequestReview={requestReview}
             onStartIntent={requestStartIntent}
             timerRemaining={timerRemaining}
           />

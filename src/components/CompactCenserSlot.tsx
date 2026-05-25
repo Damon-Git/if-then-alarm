@@ -31,7 +31,7 @@ const getStatusHint = (intentSet: IntentSet, formattedRemaining: string, isSessi
   }
 
   if (isSessionComplete) {
-    return "全部香已完成，点击展开完整窗口并复盘";
+    return "全部香已完成，点击展开完整窗口查看复盘入口";
   }
 
   return "本套已完成，点击查看完整状态";

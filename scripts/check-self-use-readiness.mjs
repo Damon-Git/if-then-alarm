@@ -89,7 +89,7 @@ for (const relativePath of [
   "应用可见性",
   "退出与恢复",
   "点击小窗香炉",
-  "小窗完成态只有在完整窗口展开成功后才进入 `review`",
+  "只有用户在完整窗口点击“进入复盘”后，才进入 `review`",
 ].forEach((token) => assertIncludes(interactionModel, token, `interaction model preserves ${token}`));
 
 [
@@ -112,8 +112,7 @@ for (const relativePath of [
 ].forEach((token) => assertIncludes(selfUseReadiness, token, `self-use readiness documents ${token}`));
 
 [
-  "shouldEnterReviewPhase",
-  "getPhaseAfterFullWindowOpen",
+  "canEnterReviewPhase",
   "areAllIntentSetsCompleted",
   "hasBlockingRitualAction",
 ].forEach((token) => assertIncludes(sessionGuards, token, `session guards include ${token}`));

@@ -18,25 +18,13 @@ export const hasUnsavedRitualSession = (phase: AppPhase) => phase === "ritual" |
 export const areAllIntentSetsCompleted = (intentSets: IntentSet[]) =>
   intentSets.length > 0 && intentSets.every((intentSet) => intentSet.status === "completed");
 
-export const shouldEnterReviewPhase = ({
-  intentSets,
-  isCompactWindow,
-  phase,
-}: {
-  intentSets: IntentSet[];
-  isCompactWindow: boolean;
-  phase: AppPhase;
-}) => phase === "ritual" && areAllIntentSetsCompleted(intentSets) && !isCompactWindow;
-
-export const getPhaseAfterFullWindowOpen = ({
-  didOpenFullWindow,
+export const canEnterReviewPhase = ({
   intentSets,
   phase,
 }: {
-  didOpenFullWindow: boolean;
   intentSets: IntentSet[];
   phase: AppPhase;
-}): AppPhase => (didOpenFullWindow && phase === "ritual" && areAllIntentSetsCompleted(intentSets) ? "review" : phase);
+}) => phase === "ritual" && areAllIntentSetsCompleted(intentSets);
 
 export const getFocusTimerNotificationKind = ({
   intentSetId,

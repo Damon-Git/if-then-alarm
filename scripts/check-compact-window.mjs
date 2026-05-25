@@ -260,8 +260,8 @@ const assertCompactCompletionStaysOutOfReviewWhenFullOpenFails = async (page) =>
 
   const completedCenserLabel = await page.locator(".compact-censer__button").first().getAttribute("aria-label");
   assert(
-    completedCenserLabel?.includes("点击展开完整窗口并复盘"),
-    `completed compact censer should point to full-window review: ${completedCenserLabel}`,
+    completedCenserLabel?.includes("点击展开完整窗口查看复盘入口"),
+    `completed compact censer should point to the full-window review entry: ${completedCenserLabel}`,
   );
 
   await page.locator(".compact-censer__button").first().click();
