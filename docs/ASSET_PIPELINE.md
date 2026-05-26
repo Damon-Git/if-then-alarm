@@ -89,7 +89,7 @@ src/assets/visuals/talisman/situation/template.png
 
 同一类素材优先保持相同文件名，只通过目录区分 `stage` 和 `compact`。
 
-真实素材进入项目时，应在对应目录更新 README，记录素材来源、用途和替换范围。当前 `censer/compact/`、`censer/stage/` 和 `incense/stage/` 下的 PNG 是临时测试素材，不代表正式视觉风格。
+真实素材进入项目时，应在对应目录更新 README，记录素材来源、用途和替换范围。当前 `censer/compact/`、`censer/stage/`、`incense/stage/` 和 `incense/compact/` 下的 PNG 是临时测试素材，不代表正式视觉风格。
 
 ## 素材格式
 
@@ -144,12 +144,12 @@ src/assets/visuals/talisman/situation/template.png
 主祭台线香当前已接入临时 PNG 测试素材，素材规格固定如下：
 
 - 主祭台线香素材必须是透明背景，不允许自带香炉、祭台背景或符箓。
-- 主祭台线香使用 `incense/stage` 素材族，小窗线香未来使用 `incense/compact` 素材族。
+- 主祭台线香使用 `incense/stage` 素材族，小窗线香使用 `incense/compact` 素材族。
 - 主祭台线香推荐源素材画布为 `240px × 240px`。
 - `stick.png`、`ash.png`、`ember.png`、`smoke.png` 继续保持独立图层。
 - 线香数量由 `IncenseVisual` 按用户选择重复渲染，不为 1 / 2 / 3 炷香分别烘焙整图。
 - 当前香灰高度和火星位置由倒计时进度驱动；烟雾只允许静态显隐，不做动画。
-- 当前临时线香 PNG 由 `scripts/generate-stage-incense-assets.mjs` 确定性生成。
+- 当前临时线香 PNG 由 `scripts/generate-stage-incense-assets.mjs` 确定性生成；脚本可按目标目录和画布尺寸生成 `stage` 或 `compact` 素材。
 
 ## 接入边界
 

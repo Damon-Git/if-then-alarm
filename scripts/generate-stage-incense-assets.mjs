@@ -3,7 +3,13 @@ import path from "node:path";
 import zlib from "node:zlib";
 
 const outputDirectory = process.argv[2] ?? "src/assets/visuals/incense/stage";
-const canvasSize = 240;
+const baseCanvasSize = 240;
+const canvasSize = Number.parseInt(process.argv[3] ?? `${baseCanvasSize}`, 10);
+const assetFamilyLabel = process.argv[4] ?? (outputDirectory.includes("/compact") ? "compact" : "stage");
+
+if (!Number.isInteger(canvasSize) || canvasSize <= 0) {
+  throw new Error(`Canvas size must be a positive integer. Received: ${process.argv[3]}`);
+}
 
 const makeCrcTable = () => {
   const table = new Uint32Array(256);
@@ -77,6 +83,8 @@ const encodePng = (width, height, rgba) => {
 
 const createCanvas = () => Buffer.alloc(canvasSize * canvasSize * 4);
 
+const scaleValue = (value) => (value / baseCanvasSize) * canvasSize;
+
 const hexToRgba = (hex, alpha = 255) => {
   const value = hex.replace("#", "");
 
@@ -113,15 +121,19 @@ const blendPixel = (canvas, x, y, color) => {
 };
 
 const drawCapsule = (canvas, centerX, top, bottom, width, color) => {
-  const radius = width / 2;
-  const left = centerX - radius;
-  const right = centerX + radius;
+  const scaledCenterX = scaleValue(centerX);
+  const scaledTop = scaleValue(top);
+  const scaledBottom = scaleValue(bottom);
+  const scaledWidth = scaleValue(width);
+  const radius = scaledWidth / 2;
+  const left = scaledCenterX - radius;
+  const right = scaledCenterX + radius;
 
-  for (let y = Math.floor(top - radius); y <= Math.ceil(bottom + radius); y += 1) {
+  for (let y = Math.floor(scaledTop - radius); y <= Math.ceil(scaledBottom + radius); y += 1) {
     for (let x = Math.floor(left); x <= Math.ceil(right); x += 1) {
-      const insideBody = y >= top && y <= bottom && x >= left && x <= right;
-      const topDistance = Math.hypot(x - centerX, y - top);
-      const bottomDistance = Math.hypot(x - centerX, y - bottom);
+      const insideBody = y >= scaledTop && y <= scaledBottom && x >= left && x <= right;
+      const topDistance = Math.hypot(x - scaledCenterX, y - scaledTop);
+      const bottomDistance = Math.hypot(x - scaledCenterX, y - scaledBottom);
 
       if (insideBody || topDistance <= radius || bottomDistance <= radius) {
         blendPixel(canvas, x, y, color);
@@ -131,9 +143,13 @@ const drawCapsule = (canvas, centerX, top, bottom, width, color) => {
 };
 
 const drawCircle = (canvas, centerX, centerY, radius, color) => {
-  for (let y = Math.floor(centerY - radius); y <= Math.ceil(centerY + radius); y += 1) {
-    for (let x = Math.floor(centerX - radius); x <= Math.ceil(centerX + radius); x += 1) {
-      if (Math.hypot(x - centerX, y - centerY) <= radius) {
+  const scaledCenterX = scaleValue(centerX);
+  const scaledCenterY = scaleValue(centerY);
+  const scaledRadius = scaleValue(radius);
+
+  for (let y = Math.floor(scaledCenterY - scaledRadius); y <= Math.ceil(scaledCenterY + scaledRadius); y += 1) {
+    for (let x = Math.floor(scaledCenterX - scaledRadius); x <= Math.ceil(scaledCenterX + scaledRadius); x += 1) {
+      if (Math.hypot(x - scaledCenterX, y - scaledCenterY) <= scaledRadius) {
         blendPixel(canvas, x, y, color);
       }
     }
@@ -195,4 +211,4 @@ for (const [assetName, render] of Object.entries(assets)) {
   await writeFile(path.join(outputDirectory, `${assetName}.png`), encodePng(canvasSize, canvasSize, render()));
 }
 
-console.log(`Wrote stage incense assets to ${outputDirectory}`);
+console.log(`Wrote ${assetFamilyLabel} incense assets to ${outputDirectory} at ${canvasSize}px`);

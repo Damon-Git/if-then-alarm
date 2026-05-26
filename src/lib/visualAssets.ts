@@ -215,10 +215,10 @@ export const VISUAL_ASSET_REPLACEMENT_REGISTRY = {
       "incense/compact/ember",
       "incense/compact/smoke",
     ],
-    notes: "小窗线香未来独立替换；当前未接入 PNG 时继续使用 CSS 占位。",
+    notes: "小窗线香已接入临时 PNG，用于验证 compact 线香素材链路；正式线香仍可按同一插槽替换。",
     renderBox: VISUAL_ASSET_FAMILY_SPECS.incense.compact.renderBox,
     sourceCanvas: VISUAL_ASSET_FAMILY_SPECS.incense.compact.sourceCanvas,
-    status: "ready-for-replacement",
+    status: "temporary-test",
     transparentBackground: true,
   },
 } as const satisfies Record<string, VisualAssetReplacementTarget>;

@@ -46,7 +46,7 @@
 | `talismanSituation` | 临时测试素材 | `src/assets/visuals/talisman/situation` | 左右竖排文字栏和中央符文分区 |
 | `talismanPrevention` | 临时测试素材 | `src/assets/visuals/talisman/prevention` | 左右竖排文字栏和中央符文分区 |
 | `incenseStage` | 临时测试素材 | `src/assets/visuals/incense/stage` | 香炉炉口中心线和左到右燃烧顺序 |
-| `incenseCompact` | 待替换 | `src/assets/visuals/incense/compact` | 小窗香炉炉口中心线和左到右燃烧顺序 |
+| `incenseCompact` | 临时测试素材 | `src/assets/visuals/incense/compact` | 小窗香炉炉口中心线和左到右燃烧顺序 |
 
 ## 四、主祭台背景
 

@@ -118,7 +118,7 @@
 
 `censer/stage/` 中的 `body.png`、`lid.png`、`mouth.png`、`ash.png`、`feet.png` 是 AI 生成的临时主祭台香炉测试素材，使用 `scripts/extract-stage-censer-layers.mjs` 从绿色背景源图本地移除背景并切分到透明 PNG。`lid.png` 对应香炉上方完整盖子，包括顶部钮和镂空盖面；未来开盖动画应移动这一层。
 
-`incense/stage/` 中的 `stick.png`、`ash.png`、`ember.png`、`smoke.png` 是确定性脚本生成的临时主祭台线香测试素材，使用 `scripts/generate-stage-incense-assets.mjs` 生成。它们用于验证主祭台线香图片图层、香数重复渲染和当前炷香进度驱动，不代表最终线香设计。
+`incense/stage/` 和 `incense/compact/` 中的 `stick.png`、`ash.png`、`ember.png`、`smoke.png` 是确定性脚本生成的临时线香测试素材，使用 `scripts/generate-stage-incense-assets.mjs` 生成。它们用于验证主祭台和小窗线香图片图层、香数重复渲染和当前炷香进度驱动，不代表最终线香设计。
 
 `talisman/situation/template.png` 和 `talisman/prevention/template.png` 是 AI 生成的临时符箓模板测试素材。它们用于验证主祭台符箓图片模板、左右竖排文本覆盖层和 manifest 引用链路，不代表最终符箓设计，也不宣称宗教、玄学或超自然功效。
 

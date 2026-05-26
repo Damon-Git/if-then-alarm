@@ -159,6 +159,7 @@
 - [ ] 小窗香炉由 `CenserVisual` 渲染。
 - [ ] 小窗线香由 `IncenseVisual` 渲染。
 - [ ] 小窗香炉和线香使用 `compact` 视觉素材插槽。
+- [ ] 小窗线香使用 `incense/compact` 临时 PNG 测试素材，不退回 CSS 占位图。
 - [ ] 小窗香炉使用 `censer/compact` 临时 PNG 测试素材，不退回 CSS 占位图。
 - [ ] 小窗香炉的 `body/lid/mouth/ash/feet` 图层都能正常叠放，没有散开、溢出或明显错位。
 - [ ] 小窗香炉内的线香根数与所选香数一致。

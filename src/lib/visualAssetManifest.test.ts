@@ -41,6 +41,10 @@ describe("visual asset manifest", () => {
       "censer/stage/feet",
       "censer/stage/lid",
       "censer/stage/mouth",
+      "incense/compact/ash",
+      "incense/compact/ember",
+      "incense/compact/smoke",
+      "incense/compact/stick",
       "incense/stage/ash",
       "incense/stage/ember",
       "incense/stage/smoke",
@@ -52,6 +56,10 @@ describe("visual asset manifest", () => {
     expect(getVisualAssetUrl("censer/stage/body")).toEqual(expect.stringContaining("body"));
     expect(getCenserAssetUrl("stage", "body")).toEqual(expect.stringContaining("body"));
     expect(getCenserAssetUrl("compact", "body")).toEqual(expect.stringContaining("body"));
+    expect(getIncenseAssetUrl("compact", "stick")).toEqual(expect.stringContaining("stick"));
+    expect(getIncenseAssetUrl("compact", "ash")).toEqual(expect.stringContaining("ash"));
+    expect(getIncenseAssetUrl("compact", "ember")).toEqual(expect.stringContaining("ember"));
+    expect(getIncenseAssetUrl("compact", "smoke")).toEqual(expect.stringContaining("smoke"));
     expect(getIncenseAssetUrl("stage", "stick")).toEqual(expect.stringContaining("stick"));
     expect(getIncenseAssetUrl("stage", "ash")).toEqual(expect.stringContaining("ash"));
     expect(getIncenseAssetUrl("stage", "ember")).toEqual(expect.stringContaining("ember"));
@@ -141,7 +149,8 @@ describe("visual asset manifest", () => {
     expect(getCenserAssetUrl("stage", "body")).toBeDefined();
     expect(getCenserAssetUrl("stage", "body")).not.toBe(getCenserAssetUrl("compact", "body"));
     expect(getIncenseAssetUrl("stage", "stick")).toBeDefined();
-    expect(getIncenseAssetUrl("compact", "stick")).toBeUndefined();
+    expect(getIncenseAssetUrl("compact", "stick")).toBeDefined();
+    expect(getIncenseAssetUrl("stage", "stick")).not.toBe(getIncenseAssetUrl("compact", "stick"));
   });
 
   it("keeps talisman image slots explicit while text stays a React overlay", () => {
@@ -199,6 +208,16 @@ describe("visual asset manifest", () => {
       transparentBackground: true,
     });
     expect(VISUAL_ASSET_REPLACEMENT_REGISTRY.talismanSituation.doNotBake).toContain("用户执行意图文本");
+    expect(VISUAL_ASSET_REPLACEMENT_REGISTRY.incenseCompact).toMatchObject({
+      manifestSlots: [
+        "incense/compact/stick",
+        "incense/compact/ash",
+        "incense/compact/ember",
+        "incense/compact/smoke",
+      ],
+      status: "temporary-test",
+      transparentBackground: true,
+    });
   });
 
   it("exposes render boxes as CSS custom properties for visual components", () => {

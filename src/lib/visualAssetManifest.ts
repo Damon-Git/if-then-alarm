@@ -17,6 +17,10 @@ import compactCenserBodyUrl from "../assets/visuals/censer/compact/body.png";
 import compactCenserFeetUrl from "../assets/visuals/censer/compact/feet.png";
 import compactCenserLidUrl from "../assets/visuals/censer/compact/lid.png";
 import compactCenserMouthUrl from "../assets/visuals/censer/compact/mouth.png";
+import compactIncenseAshUrl from "../assets/visuals/incense/compact/ash.png";
+import compactIncenseEmberUrl from "../assets/visuals/incense/compact/ember.png";
+import compactIncenseSmokeUrl from "../assets/visuals/incense/compact/smoke.png";
+import compactIncenseStickUrl from "../assets/visuals/incense/compact/stick.png";
 import stageCenserAshUrl from "../assets/visuals/censer/stage/ash.png";
 import stageCenserBodyUrl from "../assets/visuals/censer/stage/body.png";
 import stageCenserFeetUrl from "../assets/visuals/censer/stage/feet.png";
@@ -43,6 +47,10 @@ export const visualAssetManifest = {
   "censer/stage/feet": stageCenserFeetUrl,
   "censer/stage/lid": stageCenserLidUrl,
   "censer/stage/mouth": stageCenserMouthUrl,
+  "incense/compact/ash": compactIncenseAshUrl,
+  "incense/compact/ember": compactIncenseEmberUrl,
+  "incense/compact/smoke": compactIncenseSmokeUrl,
+  "incense/compact/stick": compactIncenseStickUrl,
   "incense/stage/ash": stageIncenseAshUrl,
   "incense/stage/ember": stageIncenseEmberUrl,
   "incense/stage/smoke": stageIncenseSmokeUrl,
