@@ -1,6 +1,7 @@
 import type { CSSProperties } from "react";
 import {
   getIncenseVisualSlot,
+  getVisualAssetRenderVars,
   INCENSE_ASSET_LAYERS,
   type IncenseAssetLayer,
   type VisualAssetSize,
@@ -66,6 +67,7 @@ const IncenseVisual = ({ currentIncenseIndex, incenseCount, progress, size, stat
   const normalizedProgress = clampProgress(progress);
   const progressPercent = Math.round(normalizedProgress * 100);
   const incenseNumbers = Array.from({ length: incenseCount }, (_, index) => index + 1);
+  const renderStyle = getVisualAssetRenderVars("incense", size) as CSSProperties;
 
   return (
     <div
@@ -75,6 +77,7 @@ const IncenseVisual = ({ currentIncenseIndex, incenseCount, progress, size, stat
       data-incense-current={currentIncenseIndex}
       data-incense-progress={progressPercent}
       data-incense-size={size}
+      style={renderStyle}
     >
       {incenseNumbers.map((incenseNumber) => {
         const visualState = getIncenseVisualState(incenseNumber, currentIncenseIndex, status);

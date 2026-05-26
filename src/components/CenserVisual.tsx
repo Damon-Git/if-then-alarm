@@ -1,6 +1,8 @@
+import type { CSSProperties } from "react";
 import {
   CENSER_ASSET_LAYERS,
   getCenserVisualSlot,
+  getVisualAssetRenderVars,
   type CenserAssetLayer,
   type VisualAssetSize,
 } from "../lib/visualAssets";
@@ -66,6 +68,7 @@ const CenserVisual = ({
 }: CenserVisualProps) => {
   const incenseLabel = `第 ${currentIncenseIndex} / ${incenseCount} 炷`;
   const incenseProgressPercent = Math.round(Math.min(1, Math.max(0, incenseProgress)) * 100);
+  const renderStyle = getVisualAssetRenderVars("censer", size) as CSSProperties;
   const visualState = getCenserVisualState(status);
   const lidState = getCenserLidState(status);
   const statusLabel = getStageIntentVisualSemantics(status).statusLabel;
@@ -84,6 +87,7 @@ const CenserVisual = ({
       data-censer-size={size}
       data-censer-state={visualState}
       role={size === "stage" ? "img" : undefined}
+      style={renderStyle}
     >
       <div className="censer-visual__asset" aria-hidden="true">
         <IncenseVisual

@@ -18,10 +18,13 @@ import {
   getIncenseVisualSlot,
   getAltarVisualSlot,
   getTalismanVisualSlot,
+  getVisualAssetRenderVars,
   STAGE_CENSER_ASSET_REQUIREMENTS,
   TALISMAN_ASSET_LAYERS,
   TALISMAN_ASSET_REQUIREMENTS,
   VISUAL_ASSET_FAMILY_SPECS,
+  VISUAL_ASSET_REPLACEMENT_ORDER,
+  VISUAL_ASSET_REPLACEMENT_REGISTRY,
 } from "./visualAssets";
 
 describe("visual asset manifest", () => {
@@ -86,7 +89,7 @@ describe("visual asset manifest", () => {
       tone: "restrained-cute",
     });
     expect(VISUAL_ASSET_FAMILY_SPECS.censer.compact.sourceCanvas).toEqual({ height: 256, width: 256 });
-    expect(VISUAL_ASSET_FAMILY_SPECS.censer.compact.renderBox).toEqual({ height: 84, width: 74 });
+    expect(VISUAL_ASSET_FAMILY_SPECS.censer.compact.renderBox).toEqual({ height: 90, width: 82 });
     expect(VISUAL_ASSET_FAMILY_SPECS.incense.compact.sourceCanvas).toEqual({ height: 192, width: 192 });
   });
 
@@ -166,5 +169,46 @@ describe("visual asset manifest", () => {
       tableLayout: "single-table-even-slots",
     });
     expect(ALTAR_ASSET_LAYERS.map((layer) => getAltarVisualSlot(layer))).toEqual(["altar/background"]);
+  });
+
+  it("keeps replacement registry explicit for real asset handoff", () => {
+    expect(VISUAL_ASSET_REPLACEMENT_ORDER).toEqual([
+      "altarBackground",
+      "censerStage",
+      "censerCompact",
+      "talismanSituation",
+      "talismanPrevention",
+      "incenseStage",
+      "incenseCompact",
+    ]);
+    expect(VISUAL_ASSET_REPLACEMENT_REGISTRY.altarBackground).toMatchObject({
+      directory: "src/assets/visuals/altar",
+      manifestSlots: ["altar/background"],
+      status: "temporary-test",
+      transparentBackground: false,
+    });
+    expect(VISUAL_ASSET_REPLACEMENT_REGISTRY.censerStage).toMatchObject({
+      alignmentAnchor: "香炉底部中心点和盖子闭合位置",
+      manifestSlots: [
+        "censer/stage/lid",
+        "censer/stage/mouth",
+        "censer/stage/ash",
+        "censer/stage/body",
+        "censer/stage/feet",
+      ],
+      transparentBackground: true,
+    });
+    expect(VISUAL_ASSET_REPLACEMENT_REGISTRY.talismanSituation.doNotBake).toContain("用户执行意图文本");
+  });
+
+  it("exposes render boxes as CSS custom properties for visual components", () => {
+    expect(getVisualAssetRenderVars("censer", "stage")).toEqual({
+      "--censer-render-height": "118px",
+      "--censer-render-width": "118px",
+    });
+    expect(getVisualAssetRenderVars("incense", "compact")).toEqual({
+      "--incense-render-height": "50px",
+      "--incense-render-width": "72px",
+    });
   });
 });

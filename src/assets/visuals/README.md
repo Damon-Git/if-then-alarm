@@ -86,7 +86,7 @@
 - 香炉和线香必须保持分层，不把 1 / 2 / 3 炷香烘焙成整张香炉图。
 - 视觉风格为克制可爱，避免加入背景板、说明文字或符箓元素。
 
-代码层规格见 `src/lib/visualAssets.ts` 的 `VISUAL_ASSET_FAMILY_SPECS` 和 `COMPACT_CENSER_ASSET_REQUIREMENTS`。
+代码层规格见 `src/lib/visualAssets.ts` 的 `VISUAL_ASSET_FAMILY_SPECS`、`VISUAL_ASSET_REPLACEMENT_REGISTRY` 和 `COMPACT_CENSER_ASSET_REQUIREMENTS`。
 
 ## 主祭台素材规格
 
@@ -110,7 +110,7 @@
 - 主祭台素材可以比小窗更正式，但仍保持图层拆分，方便后续开盖、燃烧和状态变化。
 - 香炉默认开盖，只有该香炉对应的全部线香烧完并进入完成态后才闭盖；闭盖后必须隐藏线香，避免线香穿出盖子。
 
-代码层规格见 `src/lib/visualAssets.ts` 的 `STAGE_CENSER_ASSET_REQUIREMENTS` 和 `TALISMAN_ASSET_REQUIREMENTS`。
+代码层规格见 `src/lib/visualAssets.ts` 的 `VISUAL_ASSET_REPLACEMENT_REGISTRY`、`STAGE_CENSER_ASSET_REQUIREMENTS` 和 `TALISMAN_ASSET_REQUIREMENTS`。正式替换步骤见 `docs/VISUAL_ASSET_REPLACEMENT_CHECKLIST.md`。
 
 ## 当前测试素材
 

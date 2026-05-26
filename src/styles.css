@@ -762,8 +762,8 @@ select {
 }
 
 .censer-visual--compact .censer-visual__asset {
-  width: 82px;
-  height: 90px;
+  width: var(--censer-render-width, 82px);
+  height: var(--censer-render-height, 90px);
 }
 
 .censer-visual__lid,
@@ -869,8 +869,8 @@ select {
 }
 
 .censer-visual--stage .censer-visual__asset:has(.visual-layer--with-asset) {
-  width: 118px;
-  height: 118px;
+  width: var(--censer-render-width, 118px);
+  height: var(--censer-render-height, 118px);
 }
 
 .censer-visual--stage .censer-visual__lid.visual-layer--with-asset,
@@ -919,8 +919,8 @@ select {
   display: flex;
   justify-content: center;
   gap: 9px;
-  width: 92px;
-  height: 62px;
+  width: var(--incense-render-width, 92px);
+  height: var(--incense-render-height, 62px);
   transform: translateX(-50%);
   pointer-events: none;
 }
@@ -928,8 +928,6 @@ select {
 .incense-visual--compact {
   bottom: 34px;
   gap: 6px;
-  width: 72px;
-  height: 50px;
 }
 
 .incense-visual--stage:has(.visual-layer--with-asset) {

@@ -1,6 +1,6 @@
 # 视觉素材接入管线
 
-本文件约定未来真实符箓、香炉、线香素材如何进入项目。当前版本已接入主祭台背景、符箓模板、小窗 Q 版香炉、主祭台香炉和主祭台线香的临时测试 PNG，用于验证素材链路；情境符箓已有最小燃烧淡出动画，其他复杂动画暂不做。素材目录内的执行清单见 `src/assets/visuals/README.md`。
+本文件约定未来真实符箓、香炉、线香素材如何进入项目。当前版本已接入主祭台背景、符箓模板、小窗 Q 版香炉、主祭台香炉和主祭台线香的临时测试 PNG，用于验证素材链路；情境符箓已有最小燃烧淡出动画，其他复杂动画暂不做。素材目录内的执行清单见 `src/assets/visuals/README.md`，正式替换步骤见 `docs/VISUAL_ASSET_REPLACEMENT_CHECKLIST.md`。
 
 ## 目录结构
 
@@ -65,6 +65,16 @@ src/assets/visuals/
 - `incense/compact/ember`
 - `incense/compact/smoke`
 
+## Registry 约定
+
+`src/lib/visualAssets.ts` 现在同时维护三类视觉资产契约：
+
+- `VISUAL_ASSET_FAMILY_SPECS`：香炉和线香的源画布建议、当前渲染盒尺寸。
+- `VISUAL_ASSET_REPLACEMENT_REGISTRY`：每组正式素材的目录、插槽、透明背景要求、对齐基准和禁止烘焙内容。
+- `VISUAL_ASSET_REPLACEMENT_ORDER`：建议替换顺序。
+
+`CenserVisual` 和 `IncenseVisual` 会从 registry 读取当前渲染盒尺寸，并通过 CSS 变量传给样式层。后续真实素材如果需要微调渲染盒，优先更新 registry，再评估 CSS；不要在组件里直接写某张图片的尺寸。
+
 ## 命名建议
 
 未来真实图片可以按插槽层级命名：
@@ -96,7 +106,7 @@ src/assets/visuals/talisman/situation/template.png
 
 - 小窗香炉素材必须是透明背景，不允许自带白底、灰底、米色底或面板背景。
 - 小窗最多显示 3 个香炉槽位，用户创建几套就显示几套，不补空位。
-- 每个小窗香炉渲染框约为 `74px × 84px`，建议源素材画布为 `256px × 256px`。
+- 每个小窗香炉渲染框约为 `82px × 90px`，建议源素材画布为 `256px × 256px`。
 - 小窗线香渲染框约为 `72px × 50px`，建议源素材画布为 `192px × 192px`。
 - 视觉风格为克制可爱，不做夸张表情、强装饰边框或喧宾夺主的背景。
 - 香炉主体、盖、炉口、香灰层、底足继续使用独立图层，方便未来做开盖或状态变化。
@@ -145,6 +155,7 @@ src/assets/visuals/talisman/situation/template.png
 
 - 业务状态到视觉状态的映射只放在 `src/lib/visualState.ts`。
 - 视觉插槽和素材目录约定只放在 `src/lib/visualAssets.ts` 和本文档。
+- 正式素材替换范围、对齐基准和禁止烘焙内容记录在 `VISUAL_ASSET_REPLACEMENT_REGISTRY` 和 `docs/VISUAL_ASSET_REPLACEMENT_CHECKLIST.md`。
 - 真实素材 URL 只通过 `src/lib/visualAssetManifest.ts` 接入。
 - 接入真实素材时，优先修改 `TalismanVisual`、`CenserVisual`、`IncenseVisual` 的内部结构和 CSS。
 - 不应为了接素材修改计时、复盘、历史、本地存储等业务逻辑。
