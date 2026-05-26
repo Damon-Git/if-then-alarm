@@ -180,6 +180,12 @@ npm run check:visual-assets
 
 该检查会校验 `VISUAL_ASSET_REPLACEMENT_REGISTRY`、`visualAssetManifest`、本地 PNG 文件、固定画布尺寸，以及要求透明背景素材的四角 alpha。它不会判断美术风格，只负责发现漏配、尺寸不符和带底色这类低级错误。
 
+## 开发预览面板
+
+开发环境顶部会出现“素材”入口，打开后进入 `VisualAssetPreviewPanel`。这个面板复用正式的 `IntentSlot`、`TalismanVisual`、`CenserVisual` 和 `IncenseVisual`，用于在不跑完整业务流程的情况下检查主祭台背景、三香炉位、情境符箓、预防符箓、线香状态和素材 registry。
+
+面板可以切换香炉状态、香数、当前香、线香进度和预防符箓数量；下方同步列出每个素材目标的 slot、源画布、渲染盒、尺寸策略、透明边界要求和当前状态。替换真实素材后，应先通过 `npm run check:visual-assets`，再打开该面板检查对齐。
+
 ## 当前阶段不做
 
 - 不导入正式视觉素材。

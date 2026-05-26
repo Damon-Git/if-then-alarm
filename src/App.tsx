@@ -11,6 +11,7 @@ import SettingsPanel from "./components/SettingsPanel";
 import StartIntentConfirmModal from "./components/StartIntentConfirmModal";
 import SetupForm from "./components/SetupForm";
 import ToastHost from "./components/ToastHost";
+import VisualAssetPreviewPanel from "./components/VisualAssetPreviewPanel";
 import {
   DESKTOP_PERSISTENCE_WRITE_ERROR_EVENT,
   consumeDesktopPersistenceInitializationResult,
@@ -73,7 +74,7 @@ import type {
   ToastMessage,
 } from "./types";
 
-type UtilityPanel = "history" | "settings";
+type UtilityPanel = "history" | "settings" | "visual-assets";
 
 type ConfirmationRequest =
   | {
@@ -1020,6 +1021,8 @@ const App = () => {
     setActiveUtilityPanel((currentPanel) => (currentPanel === panel ? null : panel));
   };
 
+  const isVisualAssetPreviewEnabled = import.meta.env.DEV;
+
   return (
     <div className={`app-shell app-shell--${phase}`}>
       <header className="app-header">
@@ -1048,6 +1051,16 @@ const App = () => {
           >
             设置
           </button>
+          {isVisualAssetPreviewEnabled ? (
+            <button
+              aria-pressed={activeUtilityPanel === "visual-assets"}
+              className={activeUtilityPanel === "visual-assets" ? "ghost-button is-active" : "ghost-button"}
+              type="button"
+              onClick={() => toggleUtilityPanel("visual-assets")}
+            >
+              素材
+            </button>
+          ) : null}
         </nav>
       </header>
 
@@ -1108,6 +1121,8 @@ const App = () => {
             useNativeFileDialog={shouldUseDesktopFileDialog()}
           />
         ) : null}
+
+        {activeUtilityPanel === "visual-assets" && isVisualAssetPreviewEnabled ? <VisualAssetPreviewPanel /> : null}
       </main>
 
       <ToastHost toasts={toasts} onDismiss={dismissToast} />

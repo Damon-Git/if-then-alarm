@@ -31,6 +31,8 @@ npm run check:visual-assets
 
 该命令会检查 registry、manifest、本地 PNG 文件、固定画布尺寸和透明素材边角 alpha。通过后再进入界面验收。
 
+开发环境可通过顶部“素材”入口打开 `VisualAssetPreviewPanel`。替换真实素材时，先在该面板切换香炉状态、香数、当前香、线香进度和预防符箓数量，确认对齐后再跑完整业务流程。
+
 ## 二、通用准入规则
 
 - 文件名使用英文小写，不使用中文文件名。
@@ -187,6 +189,7 @@ npm run check:visual-assets
 - [ ] `npm run test -- src/lib/visualAssetManifest.test.ts`
 - [ ] `npm run check:visual-assets`
 - [ ] `npm run build`
+- [ ] 开发环境“素材”面板中，主祭台三香炉位、符箓位、线香位对齐。
 - [ ] Web 版主祭台 1 / 2 / 3 套布局。
 - [ ] Tauri 小窗 1 / 2 / 3 个香炉并排。
 - [ ] 情境符箓 hover 放大。

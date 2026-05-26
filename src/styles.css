@@ -394,6 +394,128 @@ select {
   font-size: 0.88rem;
 }
 
+.visual-asset-preview {
+  display: grid;
+  gap: 18px;
+}
+
+.visual-asset-preview__badge {
+  border: 1px solid rgb(138 47 37 / 24%);
+  border-radius: 999px;
+  padding: 4px 10px;
+  background: #f7eee7;
+  color: #8a2f25;
+  font-size: 0.72rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.visual-asset-preview__controls {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+  border-top: 1px solid #eadfd5;
+  border-bottom: 1px solid #eadfd5;
+  padding: 14px 0;
+}
+
+.visual-asset-preview__control {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  min-width: 0;
+}
+
+.visual-asset-preview__control > span {
+  color: #5e534a;
+  font-size: 0.84rem;
+  font-weight: 800;
+}
+
+.visual-asset-preview__control select {
+  min-height: 38px;
+  border: 1px solid #cdbfb1;
+  border-radius: 6px;
+  padding: 0 10px;
+  background: #fff;
+}
+
+.visual-asset-preview__control input[type="range"] {
+  width: 100%;
+  accent-color: #8a2f25;
+}
+
+.visual-asset-preview__control strong {
+  color: #2f2822;
+  font-size: 0.88rem;
+}
+
+.visual-asset-preview__status-control {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  width: 100%;
+}
+
+.visual-asset-preview__prevention-control {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  width: 100%;
+}
+
+.visual-asset-preview__scene {
+  min-height: clamp(560px, 58vw, 720px);
+}
+
+.visual-asset-preview__registry {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 12px;
+}
+
+.visual-asset-preview__registry-card {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+  border: 1px solid #dfd0c0;
+  border-radius: 8px;
+  padding: 12px;
+  background: #fffcf8;
+}
+
+.visual-asset-preview__registry-card h3 {
+  margin: 0;
+  color: #2f2822;
+  font-size: 0.95rem;
+}
+
+.visual-asset-preview__registry-card p {
+  margin: 3px 0 0;
+  color: #6f655d;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.visual-asset-preview__registry-card dl {
+  display: grid;
+  gap: 7px;
+  margin: 0;
+}
+
+.visual-asset-preview__registry-card div {
+  min-width: 0;
+}
+
+.visual-asset-preview__registry-card dt {
+  color: #8a2f25;
+  font-size: 0.72rem;
+  font-weight: 900;
+}
+
+.visual-asset-preview__registry-card dd {
+  margin: 1px 0 0;
+  color: #2f2822;
+  font-size: 0.78rem;
+  overflow-wrap: anywhere;
+}
+
 .intent-form {
   display: grid;
   gap: 14px;

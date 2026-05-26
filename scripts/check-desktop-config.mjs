@@ -115,6 +115,7 @@ const incenseVisual = await readText("src/components/IncenseVisual.tsx");
 const intentSlot = await readText("src/components/IntentSlot.tsx");
 const ritualStage = await readText("src/components/RitualStage.tsx");
 const talismanVisual = await readText("src/components/TalismanVisual.tsx");
+const visualAssetPreviewPanel = await readText("src/components/VisualAssetPreviewPanel.tsx");
 const reviewPanel = await readText("src/components/ReviewPanel.tsx");
 const historyPanel = await readText("src/components/HistoryPanel.tsx");
 
@@ -496,6 +497,13 @@ assertTextIncludes(visualAssetsCheck, "VISUAL_ASSET_REPLACEMENT_REGISTRY", "Visu
 assertTextIncludes(visualAssetsCheck, "visualAssetManifest", "Visual asset check reads the manifest");
 assertTextIncludes(visualAssetsCheck, "assertTransparentCorners", "Visual asset check validates transparent PNG corners");
 assertTextIncludes(visualAssetsCheck, "exact-source-canvas", "Visual asset check validates exact source canvas dimensions");
+assertTextIncludes(appTsx, "VisualAssetPreviewPanel", "App exposes the visual asset preview panel");
+assertTextIncludes(appTsx, "import.meta.env.DEV", "Visual asset preview stays behind the dev-only gate");
+assertTextIncludes(visualAssetPreviewPanel, "VISUAL_ASSET_REPLACEMENT_REGISTRY", "Visual asset preview reads the replacement registry");
+assertTextIncludes(visualAssetPreviewPanel, "VISUAL_ASSET_REPLACEMENT_ORDER", "Visual asset preview follows registry order");
+assertTextIncludes(visualAssetPreviewPanel, "IntentSlot", "Visual asset preview reuses the production stage slot");
+assertTextIncludes(visualAssetPreviewPanel, "dimensionPolicy", "Visual asset preview surfaces dimension policy");
+assertTextIncludes(visualAssetPreviewPanel, "transparentBackground", "Visual asset preview surfaces transparency expectations");
 assertTextIncludes(talismanVisual, "TALISMAN_TEMPLATE_ASSET_LAYERS.map", "TalismanVisual uses central talisman image layer order");
 assertTextIncludes(talismanVisual, "splitIntentText", "TalismanVisual splits intent text into side columns");
 assertTextIncludes(talismanVisual, "talisman-visual__column--right", "TalismanVisual renders right text column");
@@ -603,6 +611,7 @@ await Promise.all(
     "src/lib/tauriWindow.ts",
     "src/lib/visualAssetManifest.ts",
     "src/lib/visualAssetManifest.test.ts",
+    "src/components/VisualAssetPreviewPanel.tsx",
     "src-tauri/src/main.rs",
     "src-tauri/icons/README.md",
     "src-tauri/icons/app-icon/README.md",
