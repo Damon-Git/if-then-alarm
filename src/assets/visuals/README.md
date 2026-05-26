@@ -18,6 +18,8 @@
 
 真实素材 URL 通过 `src/lib/visualAssetManifest.ts` 与下列插槽对应。manifest 为空时，组件继续使用现有 CSS 占位图层。
 
+替换或新增素材后，先执行 `npm run check:visual-assets`，确认 manifest、PNG 文件、固定画布尺寸和透明背景边角检查通过。
+
 主祭台：
 
 - `altar/background`

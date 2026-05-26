@@ -191,6 +191,7 @@ describe("visual asset manifest", () => {
       "incenseCompact",
     ]);
     expect(VISUAL_ASSET_REPLACEMENT_REGISTRY.altarBackground).toMatchObject({
+      dimensionPolicy: "exact-source-canvas",
       directory: "src/assets/visuals/altar",
       manifestSlots: ["altar/background"],
       status: "temporary-test",
@@ -198,6 +199,7 @@ describe("visual asset manifest", () => {
     });
     expect(VISUAL_ASSET_REPLACEMENT_REGISTRY.censerStage).toMatchObject({
       alignmentAnchor: "香炉底部中心点和盖子闭合位置",
+      dimensionPolicy: "exact-source-canvas",
       manifestSlots: [
         "censer/stage/lid",
         "censer/stage/mouth",
@@ -207,8 +209,10 @@ describe("visual asset manifest", () => {
       ],
       transparentBackground: true,
     });
+    expect(VISUAL_ASSET_REPLACEMENT_REGISTRY.censerCompact.dimensionPolicy).toBe("cropped-layer");
     expect(VISUAL_ASSET_REPLACEMENT_REGISTRY.talismanSituation.doNotBake).toContain("用户执行意图文本");
     expect(VISUAL_ASSET_REPLACEMENT_REGISTRY.incenseCompact).toMatchObject({
+      dimensionPolicy: "exact-source-canvas",
       manifestSlots: [
         "incense/compact/stick",
         "incense/compact/ash",

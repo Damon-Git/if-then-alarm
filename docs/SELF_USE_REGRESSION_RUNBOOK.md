@@ -20,6 +20,12 @@ npm run check:release-self-use
 npm run release:self-use-summary
 ```
 
+如果本轮替换或新增视觉素材，可以单独先跑：
+
+```bash
+npm run check:visual-assets
+```
+
 如果本轮改过小窗布局或响应式样式，并且本地开发服务可用，再执行：
 
 ```bash

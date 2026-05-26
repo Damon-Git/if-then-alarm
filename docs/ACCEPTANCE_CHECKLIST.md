@@ -31,6 +31,7 @@
 - [ ] 执行 `npm install` 后依赖安装正常。
 - [ ] 执行 `npm run dev` 后页面可以打开。
 - [ ] 执行 `npm run check:desktop-config` 通过。
+- [ ] 执行 `npm run check:visual-assets` 通过。
 - [ ] 执行 `npm run build` 通过。
 - [ ] 执行 `npm run test` 通过。
 - [ ] 执行 `cargo check` 通过。

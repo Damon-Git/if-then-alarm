@@ -103,6 +103,7 @@ const fileTransferAdapter = await readText("src/lib/fileTransferAdapter.ts");
 const notificationAdapter = await readText("src/lib/notificationAdapter.ts");
 const soundReminder = await readText("src/lib/soundReminder.ts");
 const compactWindowCheck = await readText("scripts/check-compact-window.mjs");
+const visualAssetsCheck = await readText("scripts/check-visual-assets.mjs");
 const stylesCss = await readText("src/styles.css");
 const tauriWindow = await readText("src/lib/tauriWindow.ts");
 const visualAssetManifest = await readText("src/lib/visualAssetManifest.ts");
@@ -121,6 +122,7 @@ assertPackageScript(packageJson, "dev:tauri-frontend", "node scripts/start-tauri
 assertPackageScript(packageJson, "check:compact", "node scripts/check-compact-window.mjs");
 assertPackageScript(packageJson, "check:desktop-config", "node scripts/check-desktop-config.mjs");
 assertPackageScript(packageJson, "check:self-use", "node scripts/check-self-use-readiness.mjs");
+assertPackageScript(packageJson, "check:visual-assets", "node scripts/check-visual-assets.mjs");
 assertPackageScript(packageJson, "tauri:dev", "tauri dev");
 assertPackageScript(packageJson, "tauri:build", "tauri build");
 
@@ -490,6 +492,10 @@ assertTextIncludes(incenseVisual, "INCENSE_ASSET_LAYERS.map", "IncenseVisual use
 assertTextIncludes(incenseVisual, 'data-incense-click-action="none"', "IncenseVisual is explicitly non-clickable");
 assertTextIncludes(incenseVisual, "getIncenseVisualState", "IncenseVisual maps each stick through central visual state");
 assertTextIncludes(incenseVisual, "data-incense-stick-progress", "IncenseVisual exposes per-stick progress for visual burning");
+assertTextIncludes(visualAssetsCheck, "VISUAL_ASSET_REPLACEMENT_REGISTRY", "Visual asset check reads the replacement registry");
+assertTextIncludes(visualAssetsCheck, "visualAssetManifest", "Visual asset check reads the manifest");
+assertTextIncludes(visualAssetsCheck, "assertTransparentCorners", "Visual asset check validates transparent PNG corners");
+assertTextIncludes(visualAssetsCheck, "exact-source-canvas", "Visual asset check validates exact source canvas dimensions");
 assertTextIncludes(talismanVisual, "TALISMAN_TEMPLATE_ASSET_LAYERS.map", "TalismanVisual uses central talisman image layer order");
 assertTextIncludes(talismanVisual, "splitIntentText", "TalismanVisual splits intent text into side columns");
 assertTextIncludes(talismanVisual, "talisman-visual__column--right", "TalismanVisual renders right text column");
@@ -587,6 +593,7 @@ await Promise.all(
     "docs/DESKTOP_BEHAVIOR_REGRESSION.md",
     "scripts/extract-stage-censer-layers.mjs",
     "scripts/generate-stage-incense-assets.mjs",
+    "scripts/check-visual-assets.mjs",
     "scripts/check-self-use-readiness.mjs",
     "src/lib/desktopPersistenceAdapter.ts",
     "src/lib/desktopPersistenceSchema.ts",

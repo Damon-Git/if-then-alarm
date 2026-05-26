@@ -70,6 +70,7 @@ assertPackageScript(packageJson, "check:desktop-config", "node scripts/check-des
 assertPackageScript(packageJson, "check:compact", "node scripts/check-compact-window.mjs");
 assertPackageScript(packageJson, "check:release-self-use", "node scripts/check-release-self-use.mjs");
 assertPackageScript(packageJson, "check:self-use", "node scripts/check-self-use-readiness.mjs");
+assertPackageScript(packageJson, "check:visual-assets", "node scripts/check-visual-assets.mjs");
 assertPackageScript(packageJson, "release:self-use-summary", "node scripts/print-self-use-release-summary.mjs");
 assertPackageScript(packageJson, "tauri:build", "tauri build");
 
@@ -89,6 +90,7 @@ for (const relativePath of [
   "scripts/check-desktop-config.mjs",
   "scripts/check-release-self-use.mjs",
   "scripts/check-self-use-readiness.mjs",
+  "scripts/check-visual-assets.mjs",
   "scripts/print-self-use-release-summary.mjs",
   "src/lib/desktopPersistenceAdapter.ts",
   "src/lib/appMetadata.ts",
@@ -157,18 +159,20 @@ for (const relativePath of [
 
 [
   "准备",
-  "主流程",
-  "计时与完成",
+  "自动检查",
+  "测试数据",
+  "最短核心路径",
+  "完整桌面路径",
   "小窗",
-  "主祭台视觉",
-  "复盘与历史",
+  "视觉状态路径",
   "桌面能力",
-  "恢复与保护",
+  "恢复提示",
   "问题记录",
   "通过标准",
   "版本信息",
   "SELF_USE_RELEASE_LOG.md",
   "check:release-self-use",
+  "check:visual-assets",
   "release:self-use-summary",
 ].forEach((token) =>
   assertIncludes(selfUseRegressionRunbook, token, `self-use regression runbook covers ${token}`),
@@ -191,6 +195,7 @@ for (const relativePath of [
 [
   '["run", "test"]',
   '["run", "build"]',
+  '["run", "check:visual-assets"]',
   '["run", "check:desktop-config"]',
   '["run", "check:self-use"]',
   "packageJson.version !== tauriConfig.version",

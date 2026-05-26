@@ -73,8 +73,11 @@ export const VISUAL_ASSET_FAMILY_SPECS = {
 
 export type VisualAssetRegistryStatus = "temporary-test" | "ready-for-replacement" | "final";
 
+export type VisualAssetDimensionPolicy = "exact-source-canvas" | "cropped-layer";
+
 export type VisualAssetReplacementTarget = {
   alignmentAnchor: string;
+  dimensionPolicy: VisualAssetDimensionPolicy;
   directory: string;
   doNotBake: readonly string[];
   manifestSlots: readonly VisualAssetSlot[];
@@ -127,6 +130,7 @@ export const VISUAL_ASSET_DIRECTORIES = {
 export const VISUAL_ASSET_REPLACEMENT_REGISTRY = {
   altarBackground: {
     alignmentAnchor: "桌面前沿和三香炉水平摆放基准",
+    dimensionPolicy: "exact-source-canvas",
     directory: VISUAL_ASSET_DIRECTORIES.altar,
     doNotBake: ["香炉", "符箓", "线香", "状态文字", "交互提示"],
     manifestSlots: ["altar/background"],
@@ -137,6 +141,7 @@ export const VISUAL_ASSET_REPLACEMENT_REGISTRY = {
   },
   talismanSituation: {
     alignmentAnchor: "左右竖排文字栏和中央符文分区",
+    dimensionPolicy: "exact-source-canvas",
     directory: VISUAL_ASSET_DIRECTORIES.talismanSituation,
     doNotBake: ["用户执行意图文本", "燃烧状态", "完成状态"],
     manifestSlots: ["talisman/situation/template", "talisman/situation/state", "talisman/situation/text"],
@@ -147,6 +152,7 @@ export const VISUAL_ASSET_REPLACEMENT_REGISTRY = {
   },
   talismanPrevention: {
     alignmentAnchor: "左右竖排文字栏和中央符文分区",
+    dimensionPolicy: "exact-source-canvas",
     directory: VISUAL_ASSET_DIRECTORIES.talismanPrevention,
     doNotBake: ["用户执行意图文本", "退场状态", "完成状态"],
     manifestSlots: ["talisman/prevention/template", "talisman/prevention/state", "talisman/prevention/text"],
@@ -157,6 +163,7 @@ export const VISUAL_ASSET_REPLACEMENT_REGISTRY = {
   },
   censerStage: {
     alignmentAnchor: "香炉底部中心点和盖子闭合位置",
+    dimensionPolicy: "exact-source-canvas",
     directory: VISUAL_ASSET_DIRECTORIES.censerStage,
     doNotBake: ["线香", "符箓", "桌面背景", "状态文字"],
     manifestSlots: [
@@ -174,6 +181,7 @@ export const VISUAL_ASSET_REPLACEMENT_REGISTRY = {
   },
   censerCompact: {
     alignmentAnchor: "小窗香炉底部中心点和并排槽位中心",
+    dimensionPolicy: "cropped-layer",
     directory: VISUAL_ASSET_DIRECTORIES.censerCompact,
     doNotBake: ["线香", "符箓", "窗口背景", "状态文字"],
     manifestSlots: [
@@ -191,6 +199,7 @@ export const VISUAL_ASSET_REPLACEMENT_REGISTRY = {
   },
   incenseStage: {
     alignmentAnchor: "香炉炉口中心线和左到右燃烧顺序",
+    dimensionPolicy: "exact-source-canvas",
     directory: VISUAL_ASSET_DIRECTORIES.incenseStage,
     doNotBake: ["香炉", "桌面背景", "香数状态"],
     manifestSlots: [
@@ -207,6 +216,7 @@ export const VISUAL_ASSET_REPLACEMENT_REGISTRY = {
   },
   incenseCompact: {
     alignmentAnchor: "小窗香炉炉口中心线和左到右燃烧顺序",
+    dimensionPolicy: "exact-source-canvas",
     directory: VISUAL_ASSET_DIRECTORIES.incenseCompact,
     doNotBake: ["香炉", "窗口背景", "香数状态"],
     manifestSlots: [

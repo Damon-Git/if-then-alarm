@@ -172,6 +172,14 @@ src/assets/visuals/talisman/situation/template.png
 
 在 Vite 中，建议先在 `visualAssetManifest.ts` 中 import 图片，让构建器生成最终 URL，再把 import 结果填入 manifest。
 
+替换或新增素材后，先执行：
+
+```bash
+npm run check:visual-assets
+```
+
+该检查会校验 `VISUAL_ASSET_REPLACEMENT_REGISTRY`、`visualAssetManifest`、本地 PNG 文件、固定画布尺寸，以及要求透明背景素材的四角 alpha。它不会判断美术风格，只负责发现漏配、尺寸不符和带底色这类低级错误。
+
 ## 当前阶段不做
 
 - 不导入正式视觉素材。
