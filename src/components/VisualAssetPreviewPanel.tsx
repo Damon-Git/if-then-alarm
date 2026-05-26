@@ -1,8 +1,10 @@
 import { useMemo, useState, type CSSProperties } from "react";
 import { getAltarAssetUrl } from "../lib/visualAssetManifest";
 import {
+  ALTAR_BACKGROUND_ALIGNMENT_GUIDES,
   VISUAL_ASSET_REPLACEMENT_ORDER,
   VISUAL_ASSET_REPLACEMENT_REGISTRY,
+  type AltarBackgroundAlignmentGuide,
   type VisualAssetReplacementTarget,
 } from "../lib/visualAssets";
 import type { IntentSet, IntentSetStatus } from "../types";
@@ -79,12 +81,18 @@ const registryEntries = VISUAL_ASSET_REPLACEMENT_ORDER.map((key) => ({
   target: VISUAL_ASSET_REPLACEMENT_REGISTRY[key] as VisualAssetReplacementTarget,
 })) satisfies RegistryEntry[];
 
+const getGuideStyle = (guide: AltarBackgroundAlignmentGuide) =>
+  guide.axis === "horizontal"
+    ? ({ top: `${guide.positionPercent}%` } as CSSProperties)
+    : ({ left: `${guide.positionPercent}%` } as CSSProperties);
+
 const VisualAssetPreviewPanel = () => {
   const [status, setStatus] = useState<IntentSetStatus>("idle");
   const [incenseCount, setIncenseCount] = useState(3);
   const [currentIncenseIndex, setCurrentIncenseIndex] = useState(1);
   const [incenseProgress, setIncenseProgress] = useState(45);
   const [preventionCount, setPreventionCount] = useState(3);
+  const [showAlignmentGuides, setShowAlignmentGuides] = useState(true);
 
   const normalizedCurrentIncenseIndex = getPreviewCurrentIncenseIndex(status, incenseCount, currentIncenseIndex);
   const previewIntentSets = useMemo(
@@ -193,12 +201,36 @@ const VisualAssetPreviewPanel = () => {
             ))}
           </div>
         </div>
+
+        <label className="visual-asset-preview__control visual-asset-preview__toggle">
+          <span>背景参考线</span>
+          <input
+            checked={showAlignmentGuides}
+            onChange={(event) => setShowAlignmentGuides(event.target.checked)}
+            type="checkbox"
+          />
+        </label>
       </div>
 
       <div
         className="altar-scene altar-scene--slots-3 visual-asset-preview__scene"
+        data-alignment-guides={showAlignmentGuides ? "visible" : "hidden"}
         style={{ "--altar-background-image": `url(${altarBackgroundUrl})` } as CSSProperties}
       >
+        {showAlignmentGuides ? (
+          <div className="visual-asset-preview__alignment-guides" aria-hidden="true">
+            {ALTAR_BACKGROUND_ALIGNMENT_GUIDES.map((guide) => (
+              <span
+                className={`visual-asset-preview__guide visual-asset-preview__guide--${guide.axis}`}
+                data-alignment-guide={guide.key}
+                key={guide.key}
+                style={getGuideStyle(guide)}
+              >
+                <span className="visual-asset-preview__guide-label">{guide.label}</span>
+              </span>
+            ))}
+          </div>
+        ) : null}
         <div className="altar-scene__slots">
           {previewIntentSets.map((intentSet) => (
             <IntentSlot
@@ -212,6 +244,18 @@ const VisualAssetPreviewPanel = () => {
             />
           ))}
         </div>
+      </div>
+
+      <div className="visual-asset-preview__guide-list" aria-label="背景参考线说明">
+        {ALTAR_BACKGROUND_ALIGNMENT_GUIDES.map((guide) => (
+          <article className="visual-asset-preview__guide-card" key={guide.key}>
+            <strong>{guide.label}</strong>
+            <span>
+              {guide.axis === "horizontal" ? "水平" : "垂直"} {guide.positionPercent}%
+            </span>
+            <p>{guide.description}</p>
+          </article>
+        ))}
       </div>
 
       <div className="visual-asset-preview__registry" aria-label="素材插槽清单">

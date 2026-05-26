@@ -499,8 +499,11 @@ assertTextIncludes(visualAssetsCheck, "assertTransparentCorners", "Visual asset 
 assertTextIncludes(visualAssetsCheck, "exact-source-canvas", "Visual asset check validates exact source canvas dimensions");
 assertTextIncludes(appTsx, "VisualAssetPreviewPanel", "App exposes the visual asset preview panel");
 assertTextIncludes(appTsx, "import.meta.env.DEV", "Visual asset preview stays behind the dev-only gate");
+assertTextIncludes(visualAssets, "ALTAR_BACKGROUND_ALIGNMENT_GUIDES", "Visual asset contracts define altar background guides");
 assertTextIncludes(visualAssetPreviewPanel, "VISUAL_ASSET_REPLACEMENT_REGISTRY", "Visual asset preview reads the replacement registry");
 assertTextIncludes(visualAssetPreviewPanel, "VISUAL_ASSET_REPLACEMENT_ORDER", "Visual asset preview follows registry order");
+assertTextIncludes(visualAssetPreviewPanel, "ALTAR_BACKGROUND_ALIGNMENT_GUIDES", "Visual asset preview renders altar alignment guides");
+assertTextIncludes(visualAssetPreviewPanel, "data-alignment-guides", "Visual asset preview can toggle altar alignment guides");
 assertTextIncludes(visualAssetPreviewPanel, "IntentSlot", "Visual asset preview reuses the production stage slot");
 assertTextIncludes(visualAssetPreviewPanel, "dimensionPolicy", "Visual asset preview surfaces dimension policy");
 assertTextIncludes(visualAssetPreviewPanel, "transparentBackground", "Visual asset preview surfaces transparency expectations");

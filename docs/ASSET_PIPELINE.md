@@ -184,7 +184,9 @@ npm run check:visual-assets
 
 开发环境顶部会出现“素材”入口，打开后进入 `VisualAssetPreviewPanel`。这个面板复用正式的 `IntentSlot`、`TalismanVisual`、`CenserVisual` 和 `IncenseVisual`，用于在不跑完整业务流程的情况下检查主祭台背景、三香炉位、情境符箓、预防符箓、线香状态和素材 registry。
 
-面板可以切换香炉状态、香数、当前香、线香进度和预防符箓数量；下方同步列出每个素材目标的 slot、源画布、渲染盒、尺寸策略、透明边界要求和当前状态。替换真实素材后，应先通过 `npm run check:visual-assets`，再打开该面板检查对齐。
+面板可以切换香炉状态、香数、当前香、线香进度和预防符箓数量；也可以打开背景参考线，检查情境符箓上沿、三香炉中心线、预防符箓贴边和三个香炉槽位中心。下方同步列出每个素材目标的 slot、源画布、渲染盒、尺寸策略、透明边界要求和当前状态。替换真实素材后，应先通过 `npm run check:visual-assets`，再打开该面板检查对齐。
+
+背景参考线的规格统一维护在 `src/lib/visualAssets.ts` 的 `ALTAR_BACKGROUND_ALIGNMENT_GUIDES`。如果未来调整桌子前沿、香炉中心线或三香炉横向间距，应先更新这个常量，再调整 CSS 中对应的主祭台布局变量。
 
 ## 当前阶段不做
 

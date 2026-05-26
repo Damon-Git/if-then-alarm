@@ -445,6 +445,17 @@ select {
   accent-color: #8a2f25;
 }
 
+.visual-asset-preview__toggle {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+}
+
+.visual-asset-preview__toggle input {
+  width: 22px;
+  height: 22px;
+  accent-color: #8a2f25;
+}
+
 .visual-asset-preview__control strong {
   color: #2f2822;
   font-size: 0.88rem;
@@ -462,6 +473,90 @@ select {
 
 .visual-asset-preview__scene {
   min-height: clamp(560px, 58vw, 720px);
+}
+
+.visual-asset-preview__alignment-guides {
+  position: absolute;
+  inset: 0;
+  z-index: 18;
+  pointer-events: none;
+}
+
+.visual-asset-preview__guide {
+  position: absolute;
+  color: #641f18;
+  font-size: 0.72rem;
+  font-weight: 900;
+  line-height: 1;
+  text-shadow:
+    0 1px 0 rgb(255 250 244 / 94%),
+    0 -1px 0 rgb(255 250 244 / 78%);
+}
+
+.visual-asset-preview__guide--horizontal {
+  right: 0;
+  left: 0;
+  border-top: 1px dashed rgb(148 42 30 / 78%);
+}
+
+.visual-asset-preview__guide--vertical {
+  top: 0;
+  bottom: 0;
+  border-left: 1px dashed rgb(38 78 94 / 70%);
+}
+
+.visual-asset-preview__guide-label {
+  position: absolute;
+  border: 1px solid rgb(138 47 37 / 28%);
+  border-radius: 999px;
+  padding: 4px 7px;
+  background: rgb(255 250 244 / 82%);
+  white-space: nowrap;
+}
+
+.visual-asset-preview__guide--horizontal .visual-asset-preview__guide-label {
+  top: -12px;
+  left: 10px;
+}
+
+.visual-asset-preview__guide--vertical .visual-asset-preview__guide-label {
+  top: 10px;
+  left: 5px;
+  color: #234c5d;
+}
+
+.visual-asset-preview__guide-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 10px;
+}
+
+.visual-asset-preview__guide-card {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+  border: 1px solid #dfd0c0;
+  border-radius: 8px;
+  padding: 10px;
+  background: #fffcf8;
+}
+
+.visual-asset-preview__guide-card strong {
+  color: #2f2822;
+  font-size: 0.9rem;
+}
+
+.visual-asset-preview__guide-card span {
+  color: #8a2f25;
+  font-size: 0.72rem;
+  font-weight: 900;
+}
+
+.visual-asset-preview__guide-card p {
+  margin: 0;
+  color: #6f655d;
+  font-size: 0.8rem;
+  font-weight: 700;
 }
 
 .visual-asset-preview__registry {

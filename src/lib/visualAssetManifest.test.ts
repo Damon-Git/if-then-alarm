@@ -9,6 +9,7 @@ import {
   type VisualAssetManifest,
 } from "./visualAssetManifest";
 import {
+  ALTAR_BACKGROUND_ALIGNMENT_GUIDES,
   ALTAR_ASSET_REQUIREMENTS,
   ALTAR_ASSET_LAYERS,
   CENSER_ASSET_LAYERS,
@@ -178,6 +179,18 @@ describe("visual asset manifest", () => {
       tableLayout: "single-table-even-slots",
     });
     expect(ALTAR_ASSET_LAYERS.map((layer) => getAltarVisualSlot(layer))).toEqual(["altar/background"]);
+    expect(ALTAR_BACKGROUND_ALIGNMENT_GUIDES.map((guide) => guide.key)).toEqual([
+      "situation-talisman-top",
+      "censer-center-line",
+      "prevention-talisman-edge",
+      "left-censer-center",
+      "middle-censer-center",
+      "right-censer-center",
+    ]);
+    expect(ALTAR_BACKGROUND_ALIGNMENT_GUIDES.find((guide) => guide.key === "censer-center-line")).toMatchObject({
+      axis: "horizontal",
+      positionPercent: 64,
+    });
   });
 
   it("keeps replacement registry explicit for real asset handoff", () => {

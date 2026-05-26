@@ -46,7 +46,60 @@ export type VisualAssetFamilySpec = {
   renderBox: VisualAssetPixelSize;
 };
 
+export type AltarBackgroundAlignmentGuide = {
+  axis: "horizontal" | "vertical";
+  description: string;
+  key: string;
+  label: string;
+  positionPercent: number;
+};
+
 export const VISUAL_ASSET_ROOT = "src/assets/visuals";
+
+export const ALTAR_BACKGROUND_ALIGNMENT_GUIDES = [
+  {
+    axis: "horizontal",
+    description: "情境性符箓的默认悬挂上沿，背景主体不要压到这里。",
+    key: "situation-talisman-top",
+    label: "情境符箓上沿",
+    positionPercent: 17,
+  },
+  {
+    axis: "horizontal",
+    description: "三个主祭台香炉的中心水平线，香炉不应因状态变化上下跳动。",
+    key: "censer-center-line",
+    label: "香炉中心线",
+    positionPercent: 64,
+  },
+  {
+    axis: "horizontal",
+    description: "预防性符箓贴近桌子前沿水平排列的基准。",
+    key: "prevention-talisman-edge",
+    label: "预防符箓贴边",
+    positionPercent: 81,
+  },
+  {
+    axis: "vertical",
+    description: "左侧香炉槽位中心。",
+    key: "left-censer-center",
+    label: "左香炉",
+    positionPercent: 31.33,
+  },
+  {
+    axis: "vertical",
+    description: "中间香炉槽位中心。",
+    key: "middle-censer-center",
+    label: "中香炉",
+    positionPercent: 50,
+  },
+  {
+    axis: "vertical",
+    description: "右侧香炉槽位中心。",
+    key: "right-censer-center",
+    label: "右香炉",
+    positionPercent: 68.67,
+  },
+] as const satisfies readonly AltarBackgroundAlignmentGuide[];
 
 export const VISUAL_ASSET_FAMILY_SPECS = {
   censer: {
