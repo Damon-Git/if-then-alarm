@@ -110,7 +110,7 @@ describe("visual asset manifest", () => {
       maxCenserSlots: 3,
       maxIncenseCount: 3,
       minIncenseCount: 1,
-      tone: "ritual-placeholder",
+      tone: "formal-ritual",
     });
     expect(VISUAL_ASSET_FAMILY_SPECS.censer.stage.sourceCanvas).toEqual({ height: 320, width: 320 });
     expect(VISUAL_ASSET_FAMILY_SPECS.censer.stage.renderBox).toEqual({ height: 118, width: 118 });
@@ -235,6 +235,7 @@ describe("visual asset manifest", () => {
         "censer/stage/body",
         "censer/stage/feet",
       ],
+      status: "final",
       transparentBackground: true,
     });
     expect(VISUAL_ASSET_REPLACEMENT_REGISTRY.censerCompact.dimensionPolicy).toBe("cropped-layer");

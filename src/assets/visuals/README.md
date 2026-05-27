@@ -119,7 +119,7 @@
 
 `censer/compact/` 中的 `body.png`、`lid.png`、`mouth.png`、`ash.png`、`feet.png` 是 AI 生成的临时测试素材，使用绿色背景生成后本地移除背景并裁切为透明 PNG。它们只用于验证真实图片接入、manifest 引用和小窗渲染链路，不代表最终 Q 版香炉设计。
 
-`censer/stage/` 中的 `body.png`、`lid.png`、`mouth.png`、`ash.png`、`feet.png` 是 AI 生成的临时主祭台香炉测试素材，使用 `scripts/extract-stage-censer-layers.mjs` 从绿色背景源图本地移除背景并切分到透明 PNG。`lid.png` 对应香炉上方完整盖子，包括顶部钮和镂空盖面；未来开盖动画应移动这一层。
+`censer/stage/` 中的 `body.png`、`lid.png`、`mouth.png`、`ash.png`、`feet.png` 是主祭台香炉 v1 素材，使用 AI 生成的绿幕青铜香炉源图经本地去底、归一化和分层后得到。`lid.png` 对应香炉上方完整盖子，包括顶部钮和镂空盖面；`mouth.png` 只保留炉口、灰床边缘和盖下过渡；未来开盖动画应移动 `lid` 这一层。
 
 `incense/stage/` 和 `incense/compact/` 中的 `stick.png`、`ash.png`、`ember.png`、`smoke.png` 是确定性脚本生成的临时线香测试素材，使用 `scripts/generate-stage-incense-assets.mjs` 生成。它们用于验证主祭台和小窗线香图片图层、香数重复渲染和当前炷香进度驱动，不代表最终线香设计。
 
@@ -129,7 +129,7 @@
 
 ## 当前不做
 
-- 不导入正式视觉素材。
-- 不导入正式符箓、香炉或线香素材；当前 PNG 仍是测试资产。
+- 不导入本轮范围外的正式视觉素材。
+- 不导入正式符箓、小窗香炉或线香素材；当前主祭台香炉以外的 PNG 仍是测试资产。
 - 不做复杂符箓燃烧、香炉开盖、烟雾或香灰动画。
 - 不把桌面应用图标放进本目录。

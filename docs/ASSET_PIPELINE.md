@@ -1,6 +1,6 @@
 # 视觉素材接入管线
 
-本文件约定未来真实符箓、香炉、线香素材如何进入项目。当前版本已接入主祭台背景 v1，并保留符箓模板、小窗 Q 版香炉、主祭台香炉和主祭台线香的临时测试 PNG，用于验证素材链路；情境符箓已有最小燃烧淡出动画，其他复杂动画暂不做。素材目录内的执行清单见 `src/assets/visuals/README.md`，正式素材职责边界见 `docs/VISUAL_ASSET_BOUNDARIES.md`，正式替换步骤见 `docs/VISUAL_ASSET_REPLACEMENT_CHECKLIST.md`。
+本文件约定未来真实符箓、香炉、线香素材如何进入项目。当前版本已接入主祭台背景 v1 和主祭台香炉 v1，并保留符箓模板、小窗 Q 版香炉和主祭台线香的临时测试 PNG，用于验证素材链路；情境符箓已有最小燃烧淡出动画，其他复杂动画暂不做。素材目录内的执行清单见 `src/assets/visuals/README.md`，正式素材职责边界见 `docs/VISUAL_ASSET_BOUNDARIES.md`，正式替换步骤见 `docs/VISUAL_ASSET_REPLACEMENT_CHECKLIST.md`。
 
 ## 目录结构
 
@@ -90,7 +90,7 @@ src/assets/visuals/talisman/situation/template.png
 
 同一类素材优先保持相同文件名，只通过目录区分 `stage` 和 `compact`。
 
-真实素材进入项目时，应在对应目录更新 README，记录素材来源、用途和替换范围。当前 `censer/compact/`、`censer/stage/`、`incense/stage/` 和 `incense/compact/` 下的 PNG 是临时测试素材，不代表正式视觉风格。
+真实素材进入项目时，应在对应目录更新 README，记录素材来源、用途和替换范围。当前 `censer/compact/`、`incense/stage/` 和 `incense/compact/` 下的 PNG 是临时测试素材，不代表正式视觉风格；`censer/stage/` 已接入主祭台香炉 v1。
 
 ## 素材格式
 
@@ -121,7 +121,7 @@ src/assets/visuals/talisman/situation/template.png
 
 ## 主祭台香炉规格
 
-主祭台香炉当前已接入临时 PNG 测试素材，素材规格固定如下：
+主祭台香炉当前已接入主祭台香炉 v1 PNG 素材，素材规格固定如下：
 
 - 主祭台香炉素材必须是透明背景，不允许自带祭台背景、符箓或线香。
 - 主祭台香炉使用 `censer/stage` 素材族，不能复用小窗 `compact` Q 版素材。
@@ -192,7 +192,7 @@ npm run check:visual-assets
 
 ## 当前阶段不做
 
-- 不导入正式视觉素材。
+- 不导入本轮范围外的正式视觉素材。
 - 不做复杂符箓燃烧粒子、烧纸碎片或正式燃烧素材。
 - 不做香炉开盖动画。
 - 不做线香燃烧、香灰掉落、火星闪动或烟雾动画。

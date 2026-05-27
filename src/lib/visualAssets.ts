@@ -177,7 +177,7 @@ export const STAGE_CENSER_ASSET_REQUIREMENTS = {
   maxCenserSlots: 3,
   maxIncenseCount: 3,
   minIncenseCount: 1,
-  tone: "ritual-placeholder",
+  tone: "formal-ritual",
 } as const;
 
 export const TALISMAN_ASSET_REQUIREMENTS = {
@@ -248,10 +248,10 @@ export const VISUAL_ASSET_REPLACEMENT_REGISTRY = {
       "censer/stage/body",
       "censer/stage/feet",
     ],
-    notes: "主祭台香炉使用正式感素材；lid 必须是完整盖子，包括顶部钮和镂空盖面。",
+    notes: "主祭台香炉 v1 使用正式感青铜香炉素材；lid 是完整盖子，mouth 只负责炉口和盖下过渡。",
     renderBox: VISUAL_ASSET_FAMILY_SPECS.censer.stage.renderBox,
     sourceCanvas: VISUAL_ASSET_FAMILY_SPECS.censer.stage.sourceCanvas,
-    status: "temporary-test",
+    status: "final",
     transparentBackground: true,
   },
   censerCompact: {
