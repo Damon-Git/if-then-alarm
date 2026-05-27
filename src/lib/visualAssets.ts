@@ -256,7 +256,7 @@ export const VISUAL_ASSET_REPLACEMENT_REGISTRY = {
   },
   censerCompact: {
     alignmentAnchor: "小窗香炉底部中心点和并排槽位中心",
-    dimensionPolicy: "cropped-layer",
+    dimensionPolicy: "exact-source-canvas",
     directory: VISUAL_ASSET_DIRECTORIES.censerCompact,
     doNotBake: ["线香", "符箓", "窗口背景", "状态文字"],
     manifestSlots: [
@@ -266,10 +266,10 @@ export const VISUAL_ASSET_REPLACEMENT_REGISTRY = {
       "censer/compact/body",
       "censer/compact/feet",
     ],
-    notes: "小窗香炉使用克制可爱的 Q 版素材；不携带任何背景面板。",
+    notes: "小窗香炉 v1 使用克制可爱的 Q 版素材；五层共享 256px 透明坐标系，不携带任何背景面板。",
     renderBox: VISUAL_ASSET_FAMILY_SPECS.censer.compact.renderBox,
     sourceCanvas: VISUAL_ASSET_FAMILY_SPECS.censer.compact.sourceCanvas,
-    status: "temporary-test",
+    status: "final",
     transparentBackground: true,
   },
   incenseStage: {

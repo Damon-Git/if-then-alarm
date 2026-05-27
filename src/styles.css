@@ -1085,6 +1085,49 @@ select {
   height: 12px;
 }
 
+.censer-visual--compact .censer-visual__lid.visual-layer--with-asset,
+.censer-visual--compact .censer-visual__mouth.visual-layer--with-asset,
+.censer-visual--compact .censer-visual__ash.visual-layer--with-asset,
+.censer-visual--compact .censer-visual__body.visual-layer--with-asset,
+.censer-visual--compact .censer-visual__feet.visual-layer--with-asset {
+  inset: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  transform: none;
+}
+
+.censer-visual--compact .visual-layer--with-asset .visual-layer__asset {
+  object-fit: fill;
+}
+
+.censer-visual--compact .incense-visual {
+  z-index: 1;
+}
+
+.censer-visual--compact .censer-visual__feet.visual-layer--with-asset {
+  z-index: 2;
+}
+
+.censer-visual--compact .censer-visual__body.visual-layer--with-asset {
+  z-index: 3;
+}
+
+.censer-visual--compact .censer-visual__mouth.visual-layer--with-asset {
+  z-index: 4;
+}
+
+.censer-visual--compact .censer-visual__ash.visual-layer--with-asset {
+  z-index: 5;
+}
+
+.censer-visual--compact .censer-visual__lid.visual-layer--with-asset {
+  z-index: 6;
+}
+
 .censer-visual--stage .censer-visual__asset:has(.visual-layer--with-asset) {
   width: var(--censer-render-width, 118px);
   height: var(--censer-render-height, 118px);

@@ -30,7 +30,7 @@ import {
 } from "./visualAssets";
 
 describe("visual asset manifest", () => {
-  it("configures altar, stage, compact, and talisman test assets", () => {
+  it("configures altar, censer, incense, and talisman assets", () => {
     expect(Object.keys(visualAssetManifest).sort()).toEqual([
       "altar/background",
       "censer/compact/ash",
@@ -238,7 +238,11 @@ describe("visual asset manifest", () => {
       status: "final",
       transparentBackground: true,
     });
-    expect(VISUAL_ASSET_REPLACEMENT_REGISTRY.censerCompact.dimensionPolicy).toBe("cropped-layer");
+    expect(VISUAL_ASSET_REPLACEMENT_REGISTRY.censerCompact).toMatchObject({
+      dimensionPolicy: "exact-source-canvas",
+      status: "final",
+      transparentBackground: true,
+    });
     expect(VISUAL_ASSET_REPLACEMENT_REGISTRY.talismanSituation.doNotBake).toContain("用户执行意图文本");
     expect(VISUAL_ASSET_REPLACEMENT_REGISTRY.incenseCompact).toMatchObject({
       dimensionPolicy: "exact-source-canvas",
