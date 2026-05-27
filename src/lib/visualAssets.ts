@@ -209,9 +209,9 @@ export const VISUAL_ASSET_REPLACEMENT_REGISTRY = {
     directory: VISUAL_ASSET_DIRECTORIES.altar,
     doNotBake: ["香炉", "符箓", "线香", "状态文字", "交互提示"],
     manifestSlots: ["altar/background"],
-    notes: "当前背景是空桌测试图。正式背景可以保留山水与桌面氛围，但不能自带固定香炉。",
+    notes: "当前背景是主祭台背景 v1，保留山水与桌面氛围，但不自带固定香炉、符箓或线香。",
     sourceCanvas: { height: 941, width: 1672 },
-    status: "temporary-test",
+    status: "final",
     transparentBackground: false,
   },
   talismanSituation: {

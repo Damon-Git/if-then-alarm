@@ -222,7 +222,7 @@ describe("visual asset manifest", () => {
       dimensionPolicy: "exact-source-canvas",
       directory: "src/assets/visuals/altar",
       manifestSlots: ["altar/background"],
-      status: "temporary-test",
+      status: "final",
       transparentBackground: false,
     });
     expect(VISUAL_ASSET_REPLACEMENT_REGISTRY.censerStage).toMatchObject({
