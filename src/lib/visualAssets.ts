@@ -141,6 +141,28 @@ export type VisualAssetReplacementTarget = {
   transparentBackground: boolean;
 };
 
+export type TalismanTextSafeZone = {
+  bottomPercent: number;
+  innerEdgePercent: number;
+  outerEdgePercent: number;
+  topPercent: number;
+};
+
+export const TALISMAN_TEXT_SAFE_ZONES = {
+  leftColumn: {
+    bottomPercent: 84,
+    innerEdgePercent: 35,
+    outerEdgePercent: 18,
+    topPercent: 18,
+  },
+  rightColumn: {
+    bottomPercent: 84,
+    innerEdgePercent: 65,
+    outerEdgePercent: 82,
+    topPercent: 18,
+  },
+} as const satisfies Record<"leftColumn" | "rightColumn", TalismanTextSafeZone>;
+
 export const COMPACT_CENSER_ASSET_REQUIREMENTS = {
   background: "transparent",
   maxCenserSlots: 3,

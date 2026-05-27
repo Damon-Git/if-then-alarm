@@ -1,6 +1,6 @@
 # 视觉素材接入管线
 
-本文件约定未来真实符箓、香炉、线香素材如何进入项目。当前版本已接入主祭台背景、符箓模板、小窗 Q 版香炉、主祭台香炉和主祭台线香的临时测试 PNG，用于验证素材链路；情境符箓已有最小燃烧淡出动画，其他复杂动画暂不做。素材目录内的执行清单见 `src/assets/visuals/README.md`，正式替换步骤见 `docs/VISUAL_ASSET_REPLACEMENT_CHECKLIST.md`。
+本文件约定未来真实符箓、香炉、线香素材如何进入项目。当前版本已接入主祭台背景、符箓模板、小窗 Q 版香炉、主祭台香炉和主祭台线香的临时测试 PNG，用于验证素材链路；情境符箓已有最小燃烧淡出动画，其他复杂动画暂不做。素材目录内的执行清单见 `src/assets/visuals/README.md`，正式素材职责边界见 `docs/VISUAL_ASSET_BOUNDARIES.md`，正式替换步骤见 `docs/VISUAL_ASSET_REPLACEMENT_CHECKLIST.md`。
 
 ## 目录结构
 
@@ -72,6 +72,7 @@ src/assets/visuals/
 - `VISUAL_ASSET_FAMILY_SPECS`：香炉和线香的源画布建议、当前渲染盒尺寸。
 - `VISUAL_ASSET_REPLACEMENT_REGISTRY`：每组正式素材的目录、插槽、透明背景要求、对齐基准和禁止烘焙内容。
 - `VISUAL_ASSET_REPLACEMENT_ORDER`：建议替换顺序。
+- `TALISMAN_TEXT_SAFE_ZONES`：符箓左右竖排文字栏的安全区边界。
 
 `CenserVisual` 和 `IncenseVisual` 会从 registry 读取当前渲染盒尺寸，并通过 CSS 变量传给样式层。后续真实素材如果需要微调渲染盒，优先更新 registry，再评估 CSS；不要在组件里直接写某张图片的尺寸。
 
@@ -95,6 +96,7 @@ src/assets/visuals/talisman/situation/template.png
 
 - 优先使用透明背景 PNG 或 WebP。
 - 符箓模板可以是完整背景图，但执行意图文字必须继续作为文本层覆盖，不要烘焙进图片。
+- 符箓正式模板必须按 `TALISMAN_TEXT_SAFE_ZONES` 给左右竖排文字留出清晰安全区，中央符文不能侵入文字区。
 - 香炉应拆成独立图层，至少包括主体、盖、炉口、香灰层。
 - 线香应拆成独立图层，至少包括香体、香灰、火星、烟雾。
 - 素材建议按 2x 导出，CSS 中按目标尺寸缩放，避免小窗下发虚。

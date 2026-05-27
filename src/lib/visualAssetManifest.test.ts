@@ -23,6 +23,7 @@ import {
   STAGE_CENSER_ASSET_REQUIREMENTS,
   TALISMAN_ASSET_LAYERS,
   TALISMAN_ASSET_REQUIREMENTS,
+  TALISMAN_TEXT_SAFE_ZONES,
   VISUAL_ASSET_FAMILY_SPECS,
   VISUAL_ASSET_REPLACEMENT_ORDER,
   VISUAL_ASSET_REPLACEMENT_REGISTRY,
@@ -170,6 +171,20 @@ describe("visual asset manifest", () => {
       "talisman/prevention/state",
       "talisman/prevention/text",
     ]);
+    expect(TALISMAN_TEXT_SAFE_ZONES).toEqual({
+      leftColumn: {
+        bottomPercent: 84,
+        innerEdgePercent: 35,
+        outerEdgePercent: 18,
+        topPercent: 18,
+      },
+      rightColumn: {
+        bottomPercent: 84,
+        innerEdgePercent: 65,
+        outerEdgePercent: 82,
+        topPercent: 18,
+      },
+    });
   });
 
   it("keeps altar background slot explicit for the shared stage", () => {

@@ -105,6 +105,9 @@ const soundReminder = await readText("src/lib/soundReminder.ts");
 const compactWindowCheck = await readText("scripts/check-compact-window.mjs");
 const visualAssetsCheck = await readText("scripts/check-visual-assets.mjs");
 const stylesCss = await readText("src/styles.css");
+const assetPipelineDoc = await readText("docs/ASSET_PIPELINE.md");
+const visualAssetBoundariesDoc = await readText("docs/VISUAL_ASSET_BOUNDARIES.md");
+const visualAssetReplacementChecklistDoc = await readText("docs/VISUAL_ASSET_REPLACEMENT_CHECKLIST.md");
 const tauriWindow = await readText("src/lib/tauriWindow.ts");
 const visualAssetManifest = await readText("src/lib/visualAssetManifest.ts");
 const visualAssets = await readText("src/lib/visualAssets.ts");
@@ -452,6 +455,7 @@ assertTextIncludes(
   "ALTAR_ASSET_LAYERS",
   "STAGE_CENSER_ASSET_REQUIREMENTS",
   "TALISMAN_ASSET_REQUIREMENTS",
+  "TALISMAN_TEXT_SAFE_ZONES",
   "TALISMAN_ASSET_LAYERS",
   "TALISMAN_TEMPLATE_ASSET_LAYERS",
   "CENSER_ASSET_LAYERS",
@@ -507,6 +511,32 @@ assertTextIncludes(visualAssetPreviewPanel, "data-alignment-guides", "Visual ass
 assertTextIncludes(visualAssetPreviewPanel, "IntentSlot", "Visual asset preview reuses the production stage slot");
 assertTextIncludes(visualAssetPreviewPanel, "dimensionPolicy", "Visual asset preview surfaces dimension policy");
 assertTextIncludes(visualAssetPreviewPanel, "transparentBackground", "Visual asset preview surfaces transparency expectations");
+assertTextIncludes(assetPipelineDoc, "docs/VISUAL_ASSET_BOUNDARIES.md", "Asset pipeline links to the formal asset boundaries");
+assertTextIncludes(assetPipelineDoc, "TALISMAN_TEXT_SAFE_ZONES", "Asset pipeline documents talisman text safe zones");
+assertTextIncludes(
+  visualAssetReplacementChecklistDoc,
+  "docs/VISUAL_ASSET_BOUNDARIES.md",
+  "Visual asset replacement checklist links to the formal asset boundaries",
+);
+assertTextIncludes(
+  visualAssetReplacementChecklistDoc,
+  "TALISMAN_TEXT_SAFE_ZONES",
+  "Visual asset replacement checklist checks talisman text safe zones",
+);
+[
+  "背景只负责环境氛围，不负责业务状态。",
+  "香炉只负责容器本体，不包含线香、符箓、状态文字或桌面背景。",
+  "符箓模板只负责固定符纹和纸张质感，不包含用户填写的执行意图文本。",
+  "只有该香炉全部线香烧完并进入 `completed` 后才闭盖。",
+  "小窗只显示用户创建的 1-3 个香炉，单行并排。",
+  "文本安全区维护在 `src/lib/visualAssets.ts` 的 `TALISMAN_TEXT_SAFE_ZONES`。",
+].forEach((boundaryToken) =>
+  assertTextIncludes(
+    visualAssetBoundariesDoc,
+    boundaryToken,
+    `Visual asset boundaries document includes ${boundaryToken}`,
+  ),
+);
 assertTextIncludes(talismanVisual, "TALISMAN_TEMPLATE_ASSET_LAYERS.map", "TalismanVisual uses central talisman image layer order");
 assertTextIncludes(talismanVisual, "splitIntentText", "TalismanVisual splits intent text into side columns");
 assertTextIncludes(talismanVisual, "talisman-visual__column--right", "TalismanVisual renders right text column");
@@ -602,6 +632,7 @@ await Promise.all(
     "docs/SELF_USE_READINESS.md",
     "docs/DESKTOP_PERSISTENCE_JSON_SPEC.md",
     "docs/DESKTOP_BEHAVIOR_REGRESSION.md",
+    "docs/VISUAL_ASSET_BOUNDARIES.md",
     "scripts/extract-stage-censer-layers.mjs",
     "scripts/generate-stage-incense-assets.mjs",
     "scripts/check-visual-assets.mjs",
