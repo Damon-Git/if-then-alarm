@@ -144,6 +144,8 @@ npm run tauri:dev
 - [ ] 进行中轮次点击“保留并收起”后，如果当前段计时结束，系统仍能发出通知。
 - [ ] 系统通知中的应用识别表现单独验收；不要把菜单栏文字“令”或未来 template icon 当作通知图标。
 
+2026-05-31 阻塞记录：从 `/Users/damon/Applications/急急如律令.app` 明确启动新 bundle 并触发 10 秒开发模式通知后，通知仍显示旧红色圆形占位图。安装路径和工作区 bundle 的 ICNS 已一致为 `1024px × 1024px` 应用图标 v1；LaunchServices 仍索引包含旧 `128px × 128px` 占位 ICNS 的 `/Users/damon/Desktop/急急如律令.app`。当前按 LaunchServices 或通知中心缓存问题处理，通知应用识别图标 v1 不标记为通过。
+
 ## 复盘与历史
 
 - [ ] 复盘页在小窗下可以滚动到保存按钮。

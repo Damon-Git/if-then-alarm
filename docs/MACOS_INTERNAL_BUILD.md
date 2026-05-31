@@ -114,6 +114,15 @@ src-tauri/target/release/bundle/macos/急急如律令.app
 - 菜单栏入口仍只使用文字“令”，不复用应用图标；这不是正式 template icon。
 - `src-tauri/icons/menubar-icon/` 和 `src-tauri/icons/notification-icon/` 只保留接入边界，不放单独素材。
 
+## 通知应用识别图标验收阻塞
+
+2026-05-31 手动验收仍未通过：把工作区新 bundle 复制到 `/Users/damon/Applications/急急如律令.app`，并从该明确路径启动后，10 秒开发模式通知仍显示旧红色圆形占位图。
+
+- 日常安装路径和工作区 bundle 的 `CFBundleIdentifier` 均为 `com.damon.jijirululing`。
+- 两者的 `CFBundleIconFile` 均为 `急急如律令.icns`，ICNS 均为 `1024px × 1024px` 应用图标 v1。
+- LaunchServices 仍索引 `/Users/damon/Desktop/急急如律令.app`；该旧副本仍包含 `128px × 128px` 红色圆形占位 ICNS。
+- 当前阻塞记为 LaunchServices 或通知中心缓存问题。未重置通知权限，未修改系统设置，未清理系统数据库，未强杀系统进程。
+
 ## 当前不做
 
 - 不手工生成完整 macOS iconset。
