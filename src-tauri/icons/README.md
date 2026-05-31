@@ -13,16 +13,18 @@
 ## 当前资产
 
 - `app-icon/placeholder-icon.png`：临时占位应用图标，只用于让 Tauri dev/build 和内部 `.app` 冒烟流程可以通过。
-- `menubar-icon/`：当前没有正式素材；应用仍使用文字“令”作为临时菜单栏入口。
+- `menubar-icon/`：当前没有正式素材；应用仍使用文字“令”和默认应用图标回退作为临时菜单栏入口。
 - `notification-icon/`：当前没有正式素材；通知图标不做单独正式验收。
 
 `app-icon/placeholder-icon.png` 不是正式品牌图标，不代表最终视觉方向，也不应作为后续 Dock、打包安装包、菜单栏或通知图标的设计基准。
 
 ## 当前菜单栏入口
 
-当前 macOS 菜单栏右侧状态区使用文字“令”作为临时入口。
+当前 macOS 菜单栏右侧状态区使用文字“令”作为临时入口。`src-tauri/src/main.rs` 还会读取 `app.default_window_icon()`，把默认应用图标作为 tray icon，并通过 `.icon_as_template(true)` 按 template icon 处理。
 
-这样做是为了先验证窗口显示/隐藏、计时不中断、通知不中断等桌面行为。它不是正式菜单栏图标方案，也不是未来 template icon 的素材草案。
+这样做是为了先验证窗口显示/隐藏、计时不中断、通知不中断等桌面行为。默认应用图标回退是已知临时耦合，不是正式菜单栏图标方案，也不是未来 template icon 的素材草案。
+
+下一阶段接入正式应用图标前，必须先移除 `default_window_icon()` 到 tray icon 的回退，继续保留文字“令”作为临时菜单栏入口。后续单独准备菜单栏 template icon 时，再从 `menubar-icon/` 接入专用素材。
 
 ## 当前不做
 

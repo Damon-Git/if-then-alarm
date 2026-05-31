@@ -80,6 +80,7 @@ npm run tauri:dev
 - [ ] `src-tauri/icons/app-icon/placeholder-icon.png` 仍是临时占位应用图标。
 - [ ] 应用图标、菜单栏图标和通知图标的职责已在 `src-tauri/icons/README.md` 和各子目录 README 中分开记录。
 - [ ] 当前阶段不把“令”字入口当作正式菜单栏 template icon。
+- [ ] 当前 tray icon 仍临时回退到默认应用图标；接入正式应用图标前先移除这条回退。
 
 ## 填写页
 

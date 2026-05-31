@@ -13,7 +13,14 @@
 
 - `placeholder-icon.png`：临时占位图标，只用于内部 `.app` 冒烟和开发构建。
 
-该文件不是正式图标，不代表最终品牌方向。
+该文件是 `128px × 128px` RGBA PNG，不是正式图标，不代表最终品牌方向。`src-tauri/tauri.conf.json` 当前把它配置到 `bundle.icon`；`src-tauri/src/main.rs` 还会临时把默认应用图标回退给菜单栏 tray icon。
+
+## 下一阶段输入
+
+- 准备一张 `1024px × 1024px` 的 `app-icon-v1.png` 源图，用于下一轮应用图标 v1 接入。
+- 接入前先移除 `default_window_icon()` 到 tray icon 的临时回退，避免把正式彩色应用图标当作菜单栏 template icon。
+- 内部 `.app` 阶段先把 `bundle.icon` 切到新的源 PNG，并确认构建产物中的 `.icns`、Dock、`.app` 和系统通知识别表现。
+- 完整 iconset 和其他平台输出留到正式发布准备阶段生成。
 
 ## 未来验收标准
 

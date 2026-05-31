@@ -108,6 +108,7 @@ const stylesCss = await readText("src/styles.css");
 const assetPipelineDoc = await readText("docs/ASSET_PIPELINE.md");
 const visualAssetBoundariesDoc = await readText("docs/VISUAL_ASSET_BOUNDARIES.md");
 const visualAssetReplacementChecklistDoc = await readText("docs/VISUAL_ASSET_REPLACEMENT_CHECKLIST.md");
+const desktopIconsReadme = await readText("src-tauri/icons/README.md");
 const tauriWindow = await readText("src/lib/tauriWindow.ts");
 const visualAssetManifest = await readText("src/lib/visualAssetManifest.ts");
 const visualAssets = await readText("src/lib/visualAssets.ts");
@@ -283,6 +284,14 @@ assertTextIncludes(
   "Rust registers the main tray icon",
 );
 assertTextIncludes(mainRust, '.title("令")', "Rust tray icon uses the temporary 令 title");
+assertTextIncludes(mainRust, ".icon_as_template(true)", "Rust treats the temporary tray image as a macOS template");
+assertTextIncludes(mainRust, "app.default_window_icon().cloned()", "Rust temporarily falls back to the default app icon for the tray");
+assertTextIncludes(mainRust, "tray = tray.icon(icon);", "Rust applies the temporary default app icon tray fallback");
+assertTextIncludes(
+  desktopIconsReadme,
+  "必须先移除 `default_window_icon()` 到 tray icon 的回退",
+  "Desktop icon docs require decoupling the tray fallback before the final app icon",
+);
 [
   "backup_corrupt_desktop_persistence_file",
   "read_desktop_persistence_file",
