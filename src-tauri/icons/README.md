@@ -26,6 +26,8 @@
 
 文字“令”继续用于验证窗口显示/隐藏、计时不中断、通知不中断等桌面行为。后续单独准备菜单栏 template icon 时，再从 `menubar-icon/` 接入专用素材。
 
+2026-05-31 已审计正式 menubar icon v1 接入条件：仓库内没有可以直接复用的透明单色小图。彩色应用图标和仪式台分层 PNG 都不适合作为 macOS 状态栏 template icon，因此本轮不修改 Rust 接入，不擅自生成视觉资产。建议规格和后续最小接入方式见 `menubar-icon/README.md`。
+
 ## 当前不做
 
 - 不制作正式菜单栏 template icon。

@@ -114,6 +114,18 @@ src-tauri/target/release/bundle/macos/急急如律令.app
 - 菜单栏入口仍只使用文字“令”，不复用应用图标；这不是正式 template icon。
 - `src-tauri/icons/menubar-icon/` 和 `src-tauri/icons/notification-icon/` 只保留接入边界，不放单独素材。
 
+## 正式 menubar icon v1 接入阻塞
+
+2026-05-31 已完成接入审计，但没有修改 Rust 壳层：
+
+- macOS 菜单栏需要专用 template icon，由系统适配深色和浅色菜单栏。
+- 仓库内没有可以直接复用的 `16px × 16px` 和 `32px × 32px` 透明单色素材。
+- 彩色应用图标和仪式台分层 PNG 不适合作为状态栏 template icon。
+- 当前继续保留文字“令”，没有生成或接入未经确认的视觉资产。
+- 素材补齐后，最小 Rust 改动是使用 `tauri::include_image!` 嵌入 `menubar-icon-v1@2x.png`，调用 `.icon(...)` 和 `.icon_as_template(true)`，并移除 `.title("令")`。原有 tooltip、点击行为和窗口恢复逻辑保持不变。
+
+建议素材规格和命名见 `src-tauri/icons/menubar-icon/README.md`。由于素材缺失，本轮无法执行“菜单栏不再显示文字令”的 release bundle 手动验收。
+
 ## 通知应用识别图标验收阻塞
 
 2026-05-31 手动验收仍未通过：把工作区新 bundle 复制到 `/Users/damon/Applications/急急如律令.app`，并从该明确路径启动后，10 秒开发模式通知仍显示旧红色圆形占位图。
