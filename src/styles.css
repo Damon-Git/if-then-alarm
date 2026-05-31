@@ -1444,11 +1444,19 @@ select {
 }
 
 .altar-scene .talisman-visual--situation {
+  --talisman-column-edge: 18%;
   position: absolute;
   top: var(--altar-situation-top);
   left: 50%;
+  width: clamp(45px, 4.8vw, 64px);
+  min-height: 0;
+  aspect-ratio: 2 / 5;
   transform: translateX(-50%);
   transform-origin: center bottom;
+}
+
+.altar-scene .talisman-visual--situation .talisman-visual__template .visual-layer__asset {
+  object-fit: fill;
 }
 
 .altar-scene .talisman-visual--prevention {

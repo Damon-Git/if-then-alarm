@@ -55,7 +55,7 @@ npm run check:visual-assets
 | `altarBackground` | 主祭台背景 v1 | `src/assets/visuals/altar` | 桌面前沿和三香炉水平摆放基准 |
 | `censerStage` | 主祭台香炉 v1 | `src/assets/visuals/censer/stage` | 香炉底部中心点和盖子闭合位置 |
 | `censerCompact` | 临时测试素材 | `src/assets/visuals/censer/compact` | 小窗香炉底部中心点和并排槽位中心 |
-| `talismanSituation` | 临时测试素材 | `src/assets/visuals/talisman/situation` | 左右竖排文字栏和中央符文分区 |
+| `talismanSituation` | 情境符箓 v1 | `src/assets/visuals/talisman/situation` | 左右竖排文字栏和中央符文分区 |
 | `talismanPrevention` | 临时测试素材 | `src/assets/visuals/talisman/prevention` | 左右竖排文字栏和中央符文分区 |
 | `incenseStage` | 临时测试素材 | `src/assets/visuals/incense/stage` | 香炉炉口中心线和左到右燃烧顺序 |
 | `incenseCompact` | 临时测试素材 | `src/assets/visuals/incense/compact` | 小窗香炉炉口中心线和左到右燃烧顺序 |

@@ -243,6 +243,12 @@ describe("visual asset manifest", () => {
       status: "final",
       transparentBackground: true,
     });
+    expect(VISUAL_ASSET_REPLACEMENT_REGISTRY.talismanSituation).toMatchObject({
+      dimensionPolicy: "exact-source-canvas",
+      sourceCanvas: { height: 1280, width: 512 },
+      status: "final",
+      transparentBackground: false,
+    });
     expect(VISUAL_ASSET_REPLACEMENT_REGISTRY.talismanSituation.doNotBake).toContain("用户执行意图文本");
     expect(VISUAL_ASSET_REPLACEMENT_REGISTRY.incenseCompact).toMatchObject({
       dimensionPolicy: "exact-source-canvas",

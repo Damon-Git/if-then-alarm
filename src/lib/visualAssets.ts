@@ -220,9 +220,9 @@ export const VISUAL_ASSET_REPLACEMENT_REGISTRY = {
     directory: VISUAL_ASSET_DIRECTORIES.talismanSituation,
     doNotBake: ["用户执行意图文本", "燃烧状态", "完成状态"],
     manifestSlots: ["talisman/situation/template", "talisman/situation/state", "talisman/situation/text"],
-    notes: "正式情境符箓只替换模板图；执行意图继续由 React 文本层覆盖。",
+    notes: "情境符箓 v1 使用正式黄纸朱砂模板；执行意图继续由 React 文本层覆盖。",
     sourceCanvas: { height: 1280, width: 512 },
-    status: "temporary-test",
+    status: "final",
     transparentBackground: false,
   },
   talismanPrevention: {

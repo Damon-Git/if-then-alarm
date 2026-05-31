@@ -123,13 +123,15 @@
 
 `incense/stage/` 和 `incense/compact/` 中的 `stick.png`、`ash.png`、`ember.png`、`smoke.png` 是确定性脚本生成的临时线香测试素材，使用 `scripts/generate-stage-incense-assets.mjs` 生成。它们用于验证主祭台和小窗线香图片图层、香数重复渲染和当前炷香进度驱动，不代表最终线香设计。
 
-`talisman/situation/template.png` 和 `talisman/prevention/template.png` 是 AI 生成的临时符箓模板测试素材。它们用于验证主祭台符箓图片模板、左右竖排文本覆盖层和 manifest 引用链路，不代表最终符箓设计，也不宣称宗教、玄学或超自然功效。
+`talisman/situation/template.png` 是 AI 生成的情境符箓 v1 正式模板。它使用黄纸朱砂构图，为左右竖排 React 文本层保留安全区，并保持中央抽象符纹不侵入文字栏；它不宣称宗教、玄学或超自然功效。
+
+`talisman/prevention/template.png` 是 AI 生成的临时符箓模板测试素材。它用于验证预防性符箓图片模板、左右竖排文本覆盖层和 manifest 引用链路，不代表最终符箓设计，也不宣称宗教、玄学或超自然功效。
 
 `altar/background.png` 是 AI 生成的主祭台背景 v1。它用于提供共享桌面、三香炉并排和预防性符箓水平贴边的空间基准。背景图不能自带固定香炉、符箓、线香或状态文字；香炉必须继续由组件独立渲染。
 
 ## 当前不做
 
 - 不导入本轮范围外的正式视觉素材。
-- 不导入正式符箓、小窗香炉或线香素材；当前主祭台香炉以外的 PNG 仍是测试资产。
+- 不导入本轮范围外的正式符箓或线香素材；情境符箓已接入 v1 模板。
 - 不做复杂符箓燃烧、香炉开盖、烟雾或香灰动画。
 - 不把桌面应用图标放进本目录。
