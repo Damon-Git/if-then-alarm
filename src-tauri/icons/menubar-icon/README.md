@@ -9,9 +9,9 @@
 
 ## 当前状态
 
-当前没有正式菜单栏图标素材。应用仍使用文字“令”作为临时入口；`src-tauri/src/main.rs` 还会读取 `app.default_window_icon()`，把默认应用图标临时回退为 tray icon，并通过 `.icon_as_template(true)` 按 template icon 处理。
+当前没有正式菜单栏图标素材。应用仍只使用文字“令”作为临时入口。
 
-这只是内部冒烟基线。正式应用图标接入前，应先移除这条默认应用图标回退，继续保留文字“令”；后续再从本目录接入专用菜单栏素材。
+应用图标 v1 接入时，`default_window_icon()` 到 tray icon 的临时回退和无素材可处理的 `.icon_as_template(true)` 已移除。后续再从本目录接入专用菜单栏素材，并在接入 template icon 时恢复对应设置。
 
 ## 未来验收标准
 

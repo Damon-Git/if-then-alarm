@@ -20,11 +20,14 @@
 - [ ] 执行 `npm run tauri:build` 通过。
 - [ ] 生成 `src-tauri/target/release/bundle/macos/急急如律令.app`。
 - [ ] `.app/Contents/MacOS/jiji-rululing` 存在。
+- [ ] `.app/Contents/Resources/急急如律令.icns` 存在。
 - [ ] `.app/Contents/Info.plist` 中 `CFBundleIdentifier` 为 `com.damon.jijirululing`。
 - [ ] `.app/Contents/Info.plist` 中版本为 `0.2.0`。
 - [ ] 双击或右键打开 `.app` 后能启动窗口。
 - [ ] 打包版初始窗口接近 `960px × 760px`。
+- [ ] Dock 和 `.app` 显示 `app-icon-v1.png` 对应的新应用图标。
 - [ ] 打包版菜单栏右侧能看到临时“令”入口。
+- [ ] 打包版菜单栏临时“令”入口没有复用彩色应用图标。
 - [ ] 打包版保存复盘后重新打开，历史记录仍可查看。
 - [ ] 当前只验收内部 `.app`，不验收 DMG、签名、公证或正式发布。
 
@@ -77,10 +80,13 @@ npm run tauri:dev
 
 ## 图标资产
 
-- [ ] `src-tauri/icons/app-icon/placeholder-icon.png` 仍是临时占位应用图标。
+- [ ] `src-tauri/icons/app-icon/app-icon-v1.png` 是 `1024px × 1024px` RGBA 应用图标 v1 源图。
+- [ ] `src-tauri/icons/app-icon/app-icon-v1@2x.png` 与源图内容一致，用于 Tauri Retina ICNS 打包。
+- [ ] `bundle.icon` 只接入 `icons/app-icon/app-icon-v1@2x.png`。
+- [ ] `src-tauri/icons/app-icon/placeholder-icon.png` 仍保留，但不再接入 bundle。
 - [ ] 应用图标、菜单栏图标和通知图标的职责已在 `src-tauri/icons/README.md` 和各子目录 README 中分开记录。
 - [ ] 当前阶段不把“令”字入口当作正式菜单栏 template icon。
-- [ ] 当前 tray icon 仍临时回退到默认应用图标；接入正式应用图标前先移除这条回退。
+- [ ] 当前 tray 只保留文字“令”，不回退到默认应用图标，也不复用应用图标 v1。
 
 ## 填写页
 
@@ -136,6 +142,7 @@ npm run tauri:dev
 - [ ] 开始下一段计时后，不会继续保留上一段的待触发通知。
 - [ ] 放弃本轮、保存复盘或丢弃恢复轮次后，不会继续触发旧通知。
 - [ ] 进行中轮次点击“保留并收起”后，如果当前段计时结束，系统仍能发出通知。
+- [ ] 系统通知中的应用识别表现单独验收；不要把菜单栏文字“令”或未来 template icon 当作通知图标。
 
 ## 复盘与历史
 
@@ -197,6 +204,6 @@ npm run tauri:dev
 ## 当前不验收
 
 - [ ] 不验收全局快捷键。
-- [ ] 不验收正式应用图标。
+- [ ] 不验收完整发布 iconset。
 - [ ] 不验收正式菜单栏图标。
 - [ ] 不验收真实 macOS 打包发布。

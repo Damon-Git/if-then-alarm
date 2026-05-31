@@ -43,6 +43,33 @@ function assertTextIncludes(text, needle, label) {
   assert(text.includes(needle), label);
 }
 
+function assertTextExcludes(text, needle, label) {
+  assert(!text.includes(needle), label);
+}
+
+async function readPngDimensions(relativePath) {
+  try {
+    const bytes = await readFile(resolveProjectPath(relativePath));
+    const hasPngSignature =
+      bytes.length >= 24 &&
+      bytes.subarray(0, 8).toString("hex") === "89504e470d0a1a0a";
+
+    assert(hasPngSignature, `${relativePath} is a readable PNG file`);
+    if (!hasPngSignature) {
+      return null;
+    }
+
+    return {
+      colorType: bytes[25],
+      height: bytes.readUInt32BE(20),
+      width: bytes.readUInt32BE(16),
+    };
+  } catch {
+    assert(false, `${relativePath} is a readable PNG file`);
+    return null;
+  }
+}
+
 function assertPackageScript(packageJson, scriptName, expectedCommand) {
   assert(
     packageJson.scripts?.[scriptName] === expectedCommand,
@@ -122,6 +149,18 @@ const talismanVisual = await readText("src/components/TalismanVisual.tsx");
 const visualAssetPreviewPanel = await readText("src/components/VisualAssetPreviewPanel.tsx");
 const reviewPanel = await readText("src/components/ReviewPanel.tsx");
 const historyPanel = await readText("src/components/HistoryPanel.tsx");
+const appIconV1Dimensions = await readPngDimensions(
+  "src-tauri/icons/app-icon/app-icon-v1.png",
+);
+const appIconV1RetinaDimensions = await readPngDimensions(
+  "src-tauri/icons/app-icon/app-icon-v1@2x.png",
+);
+const appIconV1Source = await readFile(
+  resolveProjectPath("src-tauri/icons/app-icon/app-icon-v1.png"),
+);
+const appIconV1RetinaSource = await readFile(
+  resolveProjectPath("src-tauri/icons/app-icon/app-icon-v1@2x.png"),
+);
 
 assertPackageScript(packageJson, "dev:tauri-frontend", "node scripts/start-tauri-frontend.mjs");
 assertPackageScript(packageJson, "check:compact", "node scripts/check-compact-window.mjs");
@@ -159,8 +198,33 @@ assert(
   "Tauri bundle target is limited to macOS app",
 );
 assert(
-  tauriConfig.bundle?.icon?.includes("icons/app-icon/placeholder-icon.png"),
-  "Tauri bundle uses the placeholder app icon from app-icon",
+  Array.isArray(tauriConfig.bundle?.icon) &&
+    tauriConfig.bundle.icon.length === 1 &&
+    tauriConfig.bundle.icon[0] === "icons/app-icon/app-icon-v1@2x.png",
+  "Tauri bundle uses only the app icon v1 Retina build input",
+);
+assert(
+  !tauriConfig.bundle?.icon?.includes("icons/app-icon/placeholder-icon.png"),
+  "Tauri bundle no longer wires the placeholder app icon",
+);
+assert(
+  appIconV1Dimensions?.width === 1024 &&
+    appIconV1Dimensions.height === 1024,
+  "Desktop app icon v1 source is 1024 x 1024",
+);
+assert(
+  appIconV1Dimensions?.colorType === 6,
+  "Desktop app icon v1 source is RGBA",
+);
+assert(
+  appIconV1RetinaDimensions?.width === 1024 &&
+    appIconV1RetinaDimensions.height === 1024 &&
+    appIconV1RetinaDimensions.colorType === 6,
+  "Desktop app icon v1 Retina build input is 1024 x 1024 RGBA",
+);
+assert(
+  appIconV1Source.equals(appIconV1RetinaSource),
+  "Desktop app icon v1 Retina build input matches the source PNG",
 );
 assert(
   tauriConfig.app?.macOSPrivateApi === true,
@@ -284,13 +348,13 @@ assertTextIncludes(
   "Rust registers the main tray icon",
 );
 assertTextIncludes(mainRust, '.title("令")', "Rust tray icon uses the temporary 令 title");
-assertTextIncludes(mainRust, ".icon_as_template(true)", "Rust treats the temporary tray image as a macOS template");
-assertTextIncludes(mainRust, "app.default_window_icon().cloned()", "Rust temporarily falls back to the default app icon for the tray");
-assertTextIncludes(mainRust, "tray = tray.icon(icon);", "Rust applies the temporary default app icon tray fallback");
+assertTextExcludes(mainRust, ".icon_as_template(true)", "Rust does not treat a missing tray image as a macOS template");
+assertTextExcludes(mainRust, "default_window_icon", "Rust no longer falls back to the default app icon for the tray");
+assertTextExcludes(mainRust, "tray.icon(", "Rust does not attach the desktop app icon to the tray");
 assertTextIncludes(
   desktopIconsReadme,
-  "必须先移除 `default_window_icon()` 到 tray icon 的回退",
-  "Desktop icon docs require decoupling the tray fallback before the final app icon",
+  "菜单栏入口不再回退到默认应用图标",
+  "Desktop icon docs record that the tray fallback has been removed",
 );
 [
   "backup_corrupt_desktop_persistence_file",
@@ -658,6 +722,8 @@ await Promise.all(
     "src-tauri/src/main.rs",
     "src-tauri/icons/README.md",
     "src-tauri/icons/app-icon/README.md",
+    "src-tauri/icons/app-icon/app-icon-v1.png",
+    "src-tauri/icons/app-icon/app-icon-v1@2x.png",
     "src-tauri/icons/app-icon/placeholder-icon.png",
     "src-tauri/icons/menubar-icon/README.md",
     "src-tauri/icons/notification-icon/README.md",

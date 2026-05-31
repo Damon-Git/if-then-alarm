@@ -120,10 +120,9 @@ fn main() {
             write_user_text_file
         ])
         .setup(|app| {
-            let mut tray = TrayIconBuilder::with_id("main")
+            let tray = TrayIconBuilder::with_id("main")
                 .title("令")
                 .tooltip("急急如律令")
-                .icon_as_template(true)
                 .show_menu_on_left_click(false)
                 .on_tray_icon_event(|tray, event| {
                     if let TrayIconEvent::Click {
@@ -135,10 +134,6 @@ fn main() {
                         toggle_main_window(tray.app_handle());
                     }
                 });
-
-            if let Some(icon) = app.default_window_icon().cloned() {
-                tray = tray.icon(icon);
-            }
 
             tray.build(app)?;
 

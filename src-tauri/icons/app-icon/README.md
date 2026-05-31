@@ -11,18 +11,20 @@
 
 ## 当前文件
 
-- `placeholder-icon.png`：临时占位图标，只用于内部 `.app` 冒烟和开发构建。
+- `app-icon-v1.png`：当前应用图标 v1 源图，用于 Dock、`.app`、应用包和默认应用识别。
+- `app-icon-v1@2x.png`：与源图内容一致的 Retina 打包副本。
+- `placeholder-icon.png`：旧临时占位图标，保留用于历史追溯，不再接入 bundle。
 
-该文件是 `128px × 128px` RGBA PNG，不是正式图标，不代表最终品牌方向。`src-tauri/tauri.conf.json` 当前把它配置到 `bundle.icon`；`src-tauri/src/main.rs` 还会临时把默认应用图标回退给菜单栏 tray icon。
+`app-icon-v1.png` 是 `1024px × 1024px` RGBA PNG。Tauri bundler 通过文件名中的 `@2x` 判断 Retina 密度，因此 `src-tauri/tauri.conf.json` 把同内容的 `app-icon-v1@2x.png` 配置到 `bundle.icon`。菜单栏 tray 只保留文字“令”，不复用该应用图标。
 
-## 下一阶段输入
+## 当前接入
 
-- 准备一张 `1024px × 1024px` 的 `app-icon-v1.png` 源图，用于下一轮应用图标 v1 接入。
-- 接入前先移除 `default_window_icon()` 到 tray icon 的临时回退，避免把正式彩色应用图标当作菜单栏 template icon。
-- 内部 `.app` 阶段先把 `bundle.icon` 切到新的源 PNG，并确认构建产物中的 `.icns`、Dock、`.app` 和系统通知识别表现。
+- `bundle.icon` 已切换到 `icons/app-icon/app-icon-v1@2x.png`。
+- `default_window_icon()` 到 tray icon 的临时回退已移除，避免把彩色应用图标当作菜单栏 template icon。
+- 内部 `.app` 阶段需要确认构建产物中的 `.icns`、Dock、`.app` 和系统通知识别表现。
 - 完整 iconset 和其他平台输出留到正式发布准备阶段生成。
 
-## 未来验收标准
+## 验收标准
 
 - 至少覆盖 macOS 常用 iconset 尺寸，包含 16、32、64、128、256、512 和 1024 规格。
 - Dock 中小尺寸可读，不依赖细小文字。
@@ -32,6 +34,5 @@
 
 ## 当前不做
 
-- 不制作正式应用图标。
-- 不生成 `.icns` 或完整 iconset。
+- 不手工生成完整 iconset。
 - 不做签名、公证或正式发布验收。

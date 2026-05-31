@@ -34,6 +34,6 @@
   "bundle": {
     "active": true,
     "targets": ["app"],
-    "icon": ["icons/app-icon/placeholder-icon.png"]
+    "icon": ["icons/app-icon/app-icon-v1@2x.png"]
   }
 }

@@ -1,6 +1,6 @@
 # macOS 内部打包冒烟
 
-本文记录当前阶段如何生成内部测试用 macOS `.app`。这不是正式发布流程，不包含签名、公证、DMG、安装器或正式图标验收。
+本文记录当前阶段如何生成内部测试用 macOS `.app`。这不是正式发布流程，不包含签名、公证、DMG、安装器或完整发布图标验收。
 
 ## 目标
 
@@ -49,7 +49,7 @@ src-tauri/target/release/bundle/macos/急急如律令.app
 
 当前一次已验证的内部构建：
 
-- 构建日期：2026-05-25
+- 构建日期：2026-05-31
 - 构建命令：`npm run tauri:build`
 - 构建产物：`src-tauri/target/release/bundle/macos/急急如律令.app`
 - 包内可执行文件：`Contents/MacOS/jiji-rululing`
@@ -66,12 +66,14 @@ src-tauri/target/release/bundle/macos/急急如律令.app
   "bundle": {
     "active": true,
     "targets": ["app"],
-    "icon": ["icons/app-icon/placeholder-icon.png"]
+    "icon": ["icons/app-icon/app-icon-v1@2x.png"]
   }
 }
 ```
 
 这里刻意不生成 `dmg` 或其他安装包，避免把内部冒烟误认为发布准备。
+
+`app-icon-v1.png` 仍是 `1024px × 1024px` RGBA 源图。`app-icon-v1@2x.png` 是同内容的 Retina 打包副本，用于让 Tauri bundler 正确生成 ICNS。
 
 ## 手动冒烟检查
 
@@ -80,11 +82,14 @@ src-tauri/target/release/bundle/macos/急急如律令.app
 - `.app` 文件存在。
 - 双击或右键打开后能启动窗口；如果 macOS 拦截未签名应用，使用右键打开。
 - 初始窗口接近 `960px × 760px`。
+- Dock 和 `.app` 显示应用图标 v1。
 - 菜单栏右侧能看到临时“令”入口。
+- 菜单栏临时“令”入口没有复用彩色应用图标。
 - 点击“进入仪式台”后先展示完整主祭台，不直接进入小窗。
 - 进行中关闭确认里点击“保留并收起”后，切换到只显示香炉的小窗。
 - 小窗点击香炉后能展开完整窗口，标题栏和窗口阴影恢复。
 - 系统通知和声音提醒在倒计时结束时触发，不在倒计时开始时触发。
+- 系统通知中的应用识别表现单独验收。
 - 历史记录、设置、桌面 JSON、系统通知仍按桌面验收清单工作。
 - 保存复盘后重新打开 `.app`，历史记录仍在。
 
@@ -101,16 +106,17 @@ src-tauri/target/release/bundle/macos/急急如律令.app
 
 - `docs/MACOS_SELF_USE_INSTALL.md`
 
-## 当前仍是占位
+## 当前图标边界
 
-- `src-tauri/icons/app-icon/placeholder-icon.png` 仍是临时占位应用图标。
-- 菜单栏入口仍使用文字“令”，并临时回退到默认应用图标作为 tray icon；这不是正式 template icon。
-- `src-tauri/icons/menubar-icon/` 和 `src-tauri/icons/notification-icon/` 只保留接入边界，不放正式素材。
+- `src-tauri/icons/app-icon/app-icon-v1.png` 已接入 Dock、`.app` 和默认应用识别。
+- `src-tauri/icons/app-icon/app-icon-v1@2x.png` 是与源图内容一致的 Retina 打包副本。
+- `src-tauri/icons/app-icon/placeholder-icon.png` 仍保留，但不再接入 bundle。
+- 菜单栏入口仍只使用文字“令”，不复用应用图标；这不是正式 template icon。
+- `src-tauri/icons/menubar-icon/` 和 `src-tauri/icons/notification-icon/` 只保留接入边界，不放单独素材。
 
 ## 当前不做
 
-- 不做正式应用图标。
-- 不生成正式 macOS iconset。
+- 不手工生成完整 macOS iconset。
 - 不生成 DMG。
 - 不做代码签名。
 - 不做 notarization 公证。
