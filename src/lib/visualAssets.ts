@@ -152,13 +152,13 @@ export const TALISMAN_TEXT_SAFE_ZONES = {
   leftColumn: {
     bottomPercent: 84,
     innerEdgePercent: 35,
-    outerEdgePercent: 18,
+    outerEdgePercent: 12,
     topPercent: 18,
   },
   rightColumn: {
     bottomPercent: 84,
     innerEdgePercent: 65,
-    outerEdgePercent: 82,
+    outerEdgePercent: 88,
     topPercent: 18,
   },
 } as const satisfies Record<"leftColumn" | "rightColumn", TalismanTextSafeZone>;
@@ -231,9 +231,9 @@ export const VISUAL_ASSET_REPLACEMENT_REGISTRY = {
     directory: VISUAL_ASSET_DIRECTORIES.talismanPrevention,
     doNotBake: ["用户执行意图文本", "退场状态", "完成状态"],
     manifestSlots: ["talisman/prevention/template", "talisman/prevention/state", "talisman/prevention/text"],
-    notes: "正式预防符箓只替换模板图；2-3 张时仍由布局水平排列在桌面前沿。",
+    notes: "预防符箓 v1 使用正式黄纸朱砂模板；2-3 张时仍由布局水平排列在桌面前沿。",
     sourceCanvas: { height: 1280, width: 512 },
-    status: "temporary-test",
+    status: "final",
     transparentBackground: false,
   },
   censerStage: {

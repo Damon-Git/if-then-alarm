@@ -168,12 +168,15 @@ const TalismanVisual = ({
 
   return (
     <div
+      aria-label={`${label}：${text}`}
       className={className}
       data-talisman-click-action="none"
       data-talisman-interaction-role={interactionRole}
       data-talisman-preview-active={isPreviewActive ? "true" : "false"}
       data-talisman-state={visualState}
       data-talisman-variant={variant}
+      role="group"
+      tabIndex={disabled ? -1 : 0}
       onBlur={() => setPreviewActive(false)}
       onFocus={() => setPreviewActive(true)}
       onMouseEnter={() => setPreviewActive(true)}

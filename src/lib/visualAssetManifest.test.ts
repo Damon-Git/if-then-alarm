@@ -175,13 +175,13 @@ describe("visual asset manifest", () => {
       leftColumn: {
         bottomPercent: 84,
         innerEdgePercent: 35,
-        outerEdgePercent: 18,
+        outerEdgePercent: 12,
         topPercent: 18,
       },
       rightColumn: {
         bottomPercent: 84,
         innerEdgePercent: 65,
-        outerEdgePercent: 82,
+        outerEdgePercent: 88,
         topPercent: 18,
       },
     });
@@ -250,6 +250,13 @@ describe("visual asset manifest", () => {
       transparentBackground: false,
     });
     expect(VISUAL_ASSET_REPLACEMENT_REGISTRY.talismanSituation.doNotBake).toContain("用户执行意图文本");
+    expect(VISUAL_ASSET_REPLACEMENT_REGISTRY.talismanPrevention).toMatchObject({
+      dimensionPolicy: "exact-source-canvas",
+      sourceCanvas: { height: 1280, width: 512 },
+      status: "final",
+      transparentBackground: false,
+    });
+    expect(VISUAL_ASSET_REPLACEMENT_REGISTRY.talismanPrevention.doNotBake).toContain("用户执行意图文本");
     expect(VISUAL_ASSET_REPLACEMENT_REGISTRY.incenseCompact).toMatchObject({
       dimensionPolicy: "exact-source-canvas",
       manifestSlots: [

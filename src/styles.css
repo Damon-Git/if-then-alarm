@@ -1460,11 +1460,16 @@ select {
 }
 
 .altar-scene .talisman-visual--prevention {
-  --talisman-column-edge: 8%;
+  --talisman-column-edge: 12%;
   --talisman-text-center-y: 50%;
   width: clamp(28px, 2.8vw, 38px);
-  min-height: clamp(82px, 8.6vw, 112px);
+  min-height: 0;
+  aspect-ratio: 2 / 5;
   transform-origin: center top;
+}
+
+.altar-scene .talisman-visual--prevention .talisman-visual__template .visual-layer__asset {
+  object-fit: fill;
 }
 
 .altar-scene .talisman-visual__label {

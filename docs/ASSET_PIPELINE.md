@@ -1,6 +1,6 @@
 # 视觉素材接入管线
 
-本文件约定未来真实符箓、香炉、线香素材如何进入项目。当前版本已接入主祭台背景 v1、主祭台香炉 v1 和情境符箓 v1；情境符箓已有最小燃烧淡出动画，其他复杂动画暂不做。素材目录内的执行清单见 `src/assets/visuals/README.md`，正式素材职责边界见 `docs/VISUAL_ASSET_BOUNDARIES.md`，正式替换步骤见 `docs/VISUAL_ASSET_REPLACEMENT_CHECKLIST.md`。
+本文件约定未来真实符箓、香炉、线香素材如何进入项目。当前版本已接入主祭台背景 v1、主祭台香炉 v1、情境符箓 v1 和预防符箓 v1；情境符箓已有最小燃烧淡出动画，其他复杂动画暂不做。素材目录内的执行清单见 `src/assets/visuals/README.md`，正式素材职责边界见 `docs/VISUAL_ASSET_BOUNDARIES.md`，正式替换步骤见 `docs/VISUAL_ASSET_REPLACEMENT_CHECKLIST.md`。
 
 ## 目录结构
 
