@@ -1310,6 +1310,27 @@ select {
   opacity: 0;
 }
 
+.incense-visual--stage .incense-visual__stick.visual-layer--with-asset,
+.incense-visual--stage .incense-visual__ash.visual-layer--with-asset {
+  width: 6px;
+}
+
+.incense-visual--stage .incense-visual__ember.visual-layer--with-asset {
+  width: 10px;
+  height: 10px;
+}
+
+.incense-visual--stage .incense-visual__smoke.visual-layer--with-asset {
+  top: min(var(--incense-stick-progress), 94%);
+  width: 26px;
+  height: 30px;
+  transform: translate(-50%, -92%);
+}
+
+.incense-visual--stage .incense-visual__unit--burning .incense-visual__smoke {
+  opacity: 0.28;
+}
+
 .incense-visual__progress {
   position: absolute;
   width: 1px;

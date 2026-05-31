@@ -257,6 +257,17 @@ describe("visual asset manifest", () => {
       transparentBackground: false,
     });
     expect(VISUAL_ASSET_REPLACEMENT_REGISTRY.talismanPrevention.doNotBake).toContain("用户执行意图文本");
+    expect(VISUAL_ASSET_REPLACEMENT_REGISTRY.incenseStage).toMatchObject({
+      dimensionPolicy: "exact-source-canvas",
+      manifestSlots: [
+        "incense/stage/stick",
+        "incense/stage/ash",
+        "incense/stage/ember",
+        "incense/stage/smoke",
+      ],
+      status: "final",
+      transparentBackground: true,
+    });
     expect(VISUAL_ASSET_REPLACEMENT_REGISTRY.incenseCompact).toMatchObject({
       dimensionPolicy: "exact-source-canvas",
       manifestSlots: [

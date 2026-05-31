@@ -1,6 +1,6 @@
 # 视觉素材清单
 
-本目录用于接入符箓、香炉、线香和主祭台背景素材。情境性和预防性符箓模板当前均已接入正式 v1；其他素材现状以各叶子目录 README 和 registry 为准。正式素材职责边界见 `docs/VISUAL_ASSET_BOUNDARIES.md`。
+本目录用于接入符箓、香炉、线香和主祭台背景素材。情境性和预防性符箓模板、主祭台背景、主祭台香炉、小窗 Q 版香炉和主祭台线香当前均已接入正式 v1；其他素材现状以各叶子目录 README 和 registry 为准。正式素材职责边界见 `docs/VISUAL_ASSET_BOUNDARIES.md`。
 
 ## 目录与用途
 
@@ -121,7 +121,9 @@
 
 `censer/stage/` 中的 `body.png`、`lid.png`、`mouth.png`、`ash.png`、`feet.png` 是主祭台香炉 v1 素材，使用 AI 生成的绿幕青铜香炉源图经本地去底、归一化和分层后得到。`lid.png` 对应香炉上方完整盖子，包括顶部钮和镂空盖面；`mouth.png` 只保留炉口、灰床边缘和盖下过渡；未来开盖动画应移动 `lid` 这一层。
 
-`incense/stage/` 和 `incense/compact/` 中的 `stick.png`、`ash.png`、`ember.png`、`smoke.png` 是确定性脚本生成的临时线香测试素材，使用 `scripts/generate-stage-incense-assets.mjs` 生成。它们用于验证主祭台和小窗线香图片图层、香数重复渲染和当前炷香进度驱动，不代表最终线香设计。
+`incense/stage/` 中的 `stick.png`、`ash.png`、`ember.png`、`smoke.png` 是主祭台线香 v1 正式素材。它们使用 AI 生成的绿幕线香源图经本地去底、归一化和分层后得到；四层共享 `240px × 240px` 透明坐标系，继续由组件重复渲染香数并按当前进度裁切。
+
+`incense/compact/` 中的 `stick.png`、`ash.png`、`ember.png`、`smoke.png` 是确定性脚本生成的临时线香测试素材，使用 `scripts/generate-stage-incense-assets.mjs` 生成。它们用于验证小窗线香图片图层、香数重复渲染和当前炷香进度驱动，不代表最终线香设计。
 
 `talisman/situation/template.png` 是 AI 生成的情境符箓 v1 正式模板。它使用黄纸朱砂构图，为左右竖排 React 文本层保留安全区，并保持中央抽象符纹不侵入文字栏；它不宣称宗教、玄学或超自然功效。
 
