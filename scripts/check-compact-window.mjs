@@ -3,6 +3,8 @@ import { chromium } from "playwright";
 
 const targetUrl = process.env.COMPACT_CHECK_URL ?? "http://127.0.0.1:5173/";
 const screenshotPath = "artifacts/compact-window.png";
+const burningScreenshotPath = "artifacts/compact-window-burning.png";
+const restingScreenshotPath = "artifacts/compact-window-resting.png";
 
 const readCompactWindowSize = async () => {
   const constantsTs = await readFile("src/constants.ts", "utf8");
@@ -54,6 +56,7 @@ const assertTransparentBackground = async (locator, label) => {
 };
 
 const compactCenserAssetLayers = ["lid", "mouth", "ash", "body", "feet"];
+const compactIncenseAssetLayers = ["stick", "ash", "ember", "smoke"];
 
 const assertFullStageUsesStageVisuals = async (page) => {
   assert(
@@ -157,6 +160,158 @@ const assertCompactCenserUsesAssetLayers = async (page) => {
       `compact ${layer} asset image sources should reference ${layer}: ${JSON.stringify(imageSources)}`,
     );
   }
+};
+
+const assertCompactIncenseUsesAssetLayers = async (page) => {
+  assert(
+    (await page.locator('.compact-censer .incense-visual[data-incense-size="compact"]').count()) === 3,
+    "compact ritual scene should render one compact incense visual for each censer",
+  );
+  assert(
+    (await page.locator('.compact-censer [data-visual-slot^="incense/stage/"]').count()) === 0,
+    "compact ritual scene should not expose stage incense visual slots",
+  );
+
+  for (const layer of compactIncenseAssetLayers) {
+    const layerLocator = page.locator(`.compact-censer .incense-visual__${layer}.visual-layer--with-asset`);
+    const imageLocator = layerLocator.locator("img.visual-layer__asset");
+
+    assert(
+      (await layerLocator.count()) === 6,
+      `compact incense ${layer} layer should use image assets for the configured 3 / 2 / 1 sticks`,
+    );
+    assert(
+      (await imageLocator.count()) === 6,
+      `compact incense ${layer} layer should render six asset images`,
+    );
+
+    const imageSources = await imageLocator.evaluateAll((images) =>
+      images.map((image) => image.getAttribute("src") ?? ""),
+    );
+
+    assert(
+      imageSources.every((src) => src.includes(`${layer}`)),
+      `compact incense ${layer} asset image sources should reference ${layer}: ${JSON.stringify(imageSources)}`,
+    );
+  }
+};
+
+const assertCompactIdleIncenseLayout = async (page) => {
+  const incenseCounts = await page.locator(".compact-censer .incense-visual").evaluateAll((elements) =>
+    elements.map((element) => Number(element.getAttribute("data-incense-count"))),
+  );
+
+  assert(
+    JSON.stringify(incenseCounts) === JSON.stringify([3, 2, 1]),
+    `compact ritual scene should preserve configured 3 / 2 / 1 incense counts: ${JSON.stringify(incenseCounts)}`,
+  );
+  assert(
+    (await page.locator('.compact-censer .incense-visual__unit[data-incense-state="pending"]').count()) === 6,
+    "idle compact ritual scene should keep all configured incense sticks pending",
+  );
+  const incensePointerEvents = await page
+    .locator(".compact-censer .incense-visual")
+    .first()
+    .evaluate((element) => window.getComputedStyle(element).pointerEvents);
+  assert(incensePointerEvents === "none", `compact incense should not intercept censer clicks: ${incensePointerEvents}`);
+};
+
+const assertCompactBurningIncenseProgress = async (
+  page,
+  { currentIndex, expectedStates, requireProgress = false },
+) => {
+  const incenseLocator = page.locator(".compact-censer--burning .incense-visual");
+
+  assert((await incenseLocator.count()) === 1, "compact ritual scene should expose one burning incense visual");
+  assert(
+    Number(await incenseLocator.getAttribute("data-incense-current")) === currentIndex,
+    `compact burning incense should expose current index ${currentIndex}`,
+  );
+
+  const progress = Number(await incenseLocator.getAttribute("data-incense-progress"));
+  const states = await incenseLocator.locator(".incense-visual__unit").evaluateAll((elements) =>
+    elements.map((element) => element.getAttribute("data-incense-state")),
+  );
+
+  assert(
+    JSON.stringify(states) === JSON.stringify(expectedStates),
+    `compact incense should burn from left to right: ${JSON.stringify(states)}`,
+  );
+
+  if (!requireProgress) {
+    return;
+  }
+
+  assert(progress > 0 && progress < 100, `compact burning incense should expose in-flight progress: ${progress}`);
+
+  const currentUnit = incenseLocator.locator(`.incense-visual__unit[data-incense-index="${currentIndex}"]`);
+  const layerStyles = await currentUnit.evaluate((element) => {
+    const ash = element.querySelector(".incense-visual__ash");
+    const ember = element.querySelector(".incense-visual__ember");
+    const smoke = element.querySelector(".incense-visual__smoke");
+
+    return {
+      ashHeight: ash ? Number.parseFloat(window.getComputedStyle(ash).height) : 0,
+      emberOpacity: ember ? Number.parseFloat(window.getComputedStyle(ember).opacity) : 0,
+      emberTop: ember ? Number.parseFloat(window.getComputedStyle(ember).top) : 0,
+      smokeOpacity: smoke ? Number.parseFloat(window.getComputedStyle(smoke).opacity) : 0,
+      smokeTop: smoke ? Number.parseFloat(window.getComputedStyle(smoke).top) : 0,
+    };
+  });
+
+  assert(layerStyles.ashHeight > 0, `compact burning ash should grow with progress: ${JSON.stringify(layerStyles)}`);
+  assert(layerStyles.emberOpacity > 0, `compact burning ember should be visible: ${JSON.stringify(layerStyles)}`);
+  assert(layerStyles.emberTop > 0, `compact burning ember should move with progress: ${JSON.stringify(layerStyles)}`);
+  assert(layerStyles.smokeOpacity > 0, `compact burning smoke should stay extremely weak but visible: ${JSON.stringify(layerStyles)}`);
+  assert(layerStyles.smokeTop > 0, `compact burning smoke should follow the ember position: ${JSON.stringify(layerStyles)}`);
+  assert(
+    Math.abs(layerStyles.ashHeight - layerStyles.emberTop) < 1 && Math.abs(layerStyles.emberTop - layerStyles.smokeTop) < 1,
+    `compact ash, ember, and smoke should advance together: ${JSON.stringify(layerStyles)}`,
+  );
+};
+
+const assertCompactRestingIncense = async (page) => {
+  const incenseLocator = page.locator(".compact-censer--resting .incense-visual");
+
+  assert((await incenseLocator.count()) === 1, "compact ritual scene should expose one resting incense visual");
+  assert(
+    (await page.locator('.compact-censer--resting .censer-visual[data-censer-lid-state="open"]').count()) === 1,
+    "resting compact censer should keep its lid open",
+  );
+
+  const states = await incenseLocator.locator(".incense-visual__unit").evaluateAll((elements) =>
+    elements.map((element) => element.getAttribute("data-incense-state")),
+  );
+  const visualStyles = await incenseLocator.evaluate((element) => {
+    const restingUnit = element.querySelector('.incense-visual__unit[data-incense-state="resting"]');
+    const ash = restingUnit?.querySelector(".incense-visual__ash");
+    const ember = restingUnit?.querySelector(".incense-visual__ember");
+    const smoke = restingUnit?.querySelector(".incense-visual__smoke");
+
+    return {
+      ashHeight: ash ? Number.parseFloat(window.getComputedStyle(ash).height) : 0,
+      emberOpacity: ember ? Number.parseFloat(window.getComputedStyle(ember).opacity) : -1,
+      incenseOpacity: Number.parseFloat(window.getComputedStyle(element).opacity),
+      smokeOpacity: smoke ? Number.parseFloat(window.getComputedStyle(smoke).opacity) : -1,
+    };
+  });
+
+  assert(
+    JSON.stringify(states) === JSON.stringify(["resting", "pending", "pending"]),
+    `resting compact incense should preserve the finished first stick: ${JSON.stringify(states)}`,
+  );
+  assert(
+    (await incenseLocator.locator('.incense-visual__unit[data-incense-state="resting"]').getAttribute("data-incense-stick-progress")) ===
+      "100",
+    "resting compact incense should preserve the finished stick at 100% progress",
+  );
+  assert(visualStyles.ashHeight > 0, `resting compact incense should preserve full ash: ${JSON.stringify(visualStyles)}`);
+  assert(visualStyles.emberOpacity === 0, `resting compact incense should hide ember: ${JSON.stringify(visualStyles)}`);
+  assert(visualStyles.smokeOpacity === 0, `resting compact incense should hide smoke: ${JSON.stringify(visualStyles)}`);
+  assert(
+    visualStyles.incenseOpacity < 1,
+    `resting compact incense should stay visually subdued: ${JSON.stringify(visualStyles)}`,
+  );
 };
 
 const assertCompactCenserStateDifferentiation = async (page) => {
@@ -368,6 +523,8 @@ const run = async () => {
     );
     assert((await page.locator(".compact-censer").count()) === 3, "compact stage should show three censer slots");
     await assertCompactCenserUsesAssetLayers(page);
+    await assertCompactIncenseUsesAssetLayers(page);
+    await assertCompactIdleIncenseLayout(page);
     assert((await page.locator(".compact-censer p:visible").count()) === 0, "compact ritual scene should hide intent summaries");
     assert((await page.locator(".compact-censer__status:visible").count()) === 0, "compact ritual scene should hide status labels");
     assert((await page.locator(".compact-censer__hint:visible").count()) === 0, "compact ritual scene should hide interaction hints");
@@ -472,6 +629,29 @@ const run = async () => {
       document.documentElement.dataset.windowMode = "compact";
     });
     await assertCompactCenserStateDifferentiation(page);
+    await page.waitForTimeout(3200);
+    await assertCompactBurningIncenseProgress(page, {
+      currentIndex: 1,
+      expectedStates: ["burning", "pending", "pending"],
+      requireProgress: true,
+    });
+    await page.screenshot({ fullPage: true, path: burningScreenshotPath });
+    await page.getByRole("heading", { name: "这一炷香已经烧完。" }).waitFor({ state: "visible", timeout: 10000 });
+    await page.getByRole("button", { name: "休息 5 分钟" }).click();
+    await page.locator(".compact-censer--resting").waitFor({ state: "visible", timeout: 1000 });
+    await page.waitForTimeout(180);
+    await assertCompactRestingIncense(page);
+    await page.screenshot({ fullPage: true, path: restingScreenshotPath });
+    await page.getByRole("heading", { name: "休息结束，是否继续下一炷香？" }).waitFor({
+      state: "visible",
+      timeout: 7000,
+    });
+    await page.getByRole("button", { name: "开始下一炷香" }).click();
+    await page.locator(".compact-censer--burning").waitFor({ state: "visible", timeout: 1000 });
+    await assertCompactBurningIncenseProgress(page, {
+      currentIndex: 2,
+      expectedStates: ["burned", "burning", "pending"],
+    });
     assert(
       (await page.locator(".compact-censer__status:visible").count()) === 0,
       "compact active state should still hide status labels",

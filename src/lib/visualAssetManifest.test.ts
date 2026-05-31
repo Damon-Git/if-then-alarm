@@ -276,7 +276,7 @@ describe("visual asset manifest", () => {
         "incense/compact/ember",
         "incense/compact/smoke",
       ],
-      status: "temporary-test",
+      status: "final",
       transparentBackground: true,
     });
   });

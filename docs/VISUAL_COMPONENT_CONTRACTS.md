@@ -162,7 +162,7 @@ type IncenseVisualProps = {
 - 不在 `IncenseVisual` 内启动、暂停或清理 timer。
 - 小窗线香素材以 `src/lib/visualAssets.ts` 中的 `VISUAL_ASSET_FAMILY_SPECS.incense.compact` 为尺寸锚点。
 - 主祭台线香素材以 `src/lib/visualAssets.ts` 中的 `VISUAL_ASSET_FAMILY_SPECS.incense.stage` 为尺寸锚点。
-- 当前主祭台线香已配置 `incense/stage/*` 临时 PNG；小窗线香已配置 `incense/compact/*` 临时 PNG。
+- 当前主祭台线香和小窗线香已分别配置 `incense/stage/*`、`incense/compact/*` 正式 PNG。
 - 小窗不同香数不能烘焙成 1 / 2 / 3 张整图，必须由组件重复渲染同一套线香图层。
 
 ## TalismanVisual

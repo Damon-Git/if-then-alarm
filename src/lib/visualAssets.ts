@@ -300,10 +300,10 @@ export const VISUAL_ASSET_REPLACEMENT_REGISTRY = {
       "incense/compact/ember",
       "incense/compact/smoke",
     ],
-    notes: "小窗线香已接入临时 PNG，用于验证 compact 线香素材链路；正式线香仍可按同一插槽替换。",
+    notes: "小窗线香 v1 使用正式香体、香灰、火星和极弱静态烟雾图层；数量和进度继续由组件驱动。",
     renderBox: VISUAL_ASSET_FAMILY_SPECS.incense.compact.renderBox,
     sourceCanvas: VISUAL_ASSET_FAMILY_SPECS.incense.compact.sourceCanvas,
-    status: "temporary-test",
+    status: "final",
     transparentBackground: true,
   },
 } as const satisfies Record<string, VisualAssetReplacementTarget>;
