@@ -279,6 +279,9 @@ describe("visual asset manifest", () => {
       status: "final",
       transparentBackground: true,
     });
+    expect(Object.values(VISUAL_ASSET_REPLACEMENT_REGISTRY).map((target) => target.status)).toEqual(
+      Array.from({ length: VISUAL_ASSET_REPLACEMENT_ORDER.length }, () => "final"),
+    );
   });
 
   it("exposes render boxes as CSS custom properties for visual components", () => {

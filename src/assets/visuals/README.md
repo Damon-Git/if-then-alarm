@@ -115,9 +115,9 @@
 
 代码层规格见 `src/lib/visualAssets.ts` 的 `VISUAL_ASSET_REPLACEMENT_REGISTRY`、`STAGE_CENSER_ASSET_REQUIREMENTS` 和 `TALISMAN_ASSET_REQUIREMENTS`。正式替换步骤见 `docs/VISUAL_ASSET_REPLACEMENT_CHECKLIST.md`。
 
-## 当前测试素材
+## 当前 v1 素材
 
-`censer/compact/` 中的 `body.png`、`lid.png`、`mouth.png`、`ash.png`、`feet.png` 是 AI 生成的临时测试素材，使用绿色背景生成后本地移除背景并裁切为透明 PNG。它们只用于验证真实图片接入、manifest 引用和小窗渲染链路，不代表最终 Q 版香炉设计。
+`censer/compact/` 中的 `body.png`、`lid.png`、`mouth.png`、`ash.png`、`feet.png` 是小窗 Q 版香炉 v1 正式素材。五层共享 `256px × 256px` 透明坐标系，继续由组件原位叠放。
 
 `censer/stage/` 中的 `body.png`、`lid.png`、`mouth.png`、`ash.png`、`feet.png` 是主祭台香炉 v1 素材，使用 AI 生成的绿幕青铜香炉源图经本地去底、归一化和分层后得到。`lid.png` 对应香炉上方完整盖子，包括顶部钮和镂空盖面；`mouth.png` 只保留炉口、灰床边缘和盖下过渡；未来开盖动画应移动 `lid` 这一层。
 

@@ -2,7 +2,7 @@
 
 本文用于对齐最终正式素材的职责边界。它回答一个问题：哪些东西应该画进图片，哪些东西必须继续留在 React 组件、CSS 和业务状态里。
 
-当前项目已有临时测试素材，正式素材进入项目前，应先按本文确认边界，再按 `docs/VISUAL_ASSET_REPLACEMENT_CHECKLIST.md` 执行替换。
+当前项目的七组仪式台素材已完成正式 v1 接入。后续迭代素材前，应先按本文确认边界，再按 `docs/VISUAL_ASSET_REPLACEMENT_CHECKLIST.md` 执行替换。
 
 ## 总原则
 

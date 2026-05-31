@@ -1,6 +1,6 @@
 # 视觉素材接入管线
 
-本文件约定未来真实符箓、香炉、线香素材如何进入项目。当前版本已接入主祭台背景 v1、主祭台香炉 v1、情境符箓 v1、预防符箓 v1、主祭台线香 v1 和小窗线香 v1；情境符箓已有最小燃烧淡出动画，其他复杂动画暂不做。素材目录内的执行清单见 `src/assets/visuals/README.md`，正式素材职责边界见 `docs/VISUAL_ASSET_BOUNDARIES.md`，正式替换步骤见 `docs/VISUAL_ASSET_REPLACEMENT_CHECKLIST.md`。
+本文件约定后续符箓、香炉、线香素材如何进入项目。当前版本已接入主祭台背景 v1、主祭台香炉 v1、小窗 Q 版香炉 v1、情境符箓 v1、预防符箓 v1、主祭台线香 v1 和小窗线香 v1；情境符箓已有最小燃烧淡出动画，其他复杂动画暂不做。素材目录内的执行清单见 `src/assets/visuals/README.md`，正式素材职责边界见 `docs/VISUAL_ASSET_BOUNDARIES.md`，正式替换步骤见 `docs/VISUAL_ASSET_REPLACEMENT_CHECKLIST.md`。
 
 ## 目录结构
 
@@ -104,7 +104,7 @@ src/assets/visuals/talisman/situation/template.png
 
 ## 小窗 Q 版香炉规格
 
-小窗香炉当前已接入临时 PNG 测试素材，素材规格固定如下：
+小窗香炉当前已接入小窗 Q 版香炉 v1 PNG 素材，素材规格固定如下：
 
 - 小窗香炉素材必须是透明背景，不允许自带白底、灰底、米色底或面板背景。
 - 小窗最多显示 3 个香炉槽位，用户创建几套就显示几套，不补空位。
@@ -178,7 +178,7 @@ src/assets/visuals/talisman/situation/template.png
 
 ## Manifest 接入
 
-当前 `src/lib/visualAssetManifest.ts` 已登记临时测试素材。视觉组件会先查询对应 `data-visual-slot`：
+当前 `src/lib/visualAssetManifest.ts` 已登记七组正式 v1 素材。视觉组件会先查询对应 `data-visual-slot`：
 
 - 如果 manifest 中存在 URL，则在该图层渲染 `<img>`。
 - 如果 manifest 中没有 URL，则保留现有 CSS 占位图层。

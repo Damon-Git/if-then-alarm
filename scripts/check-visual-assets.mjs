@@ -195,6 +195,7 @@ const parseRegistryTargets = (visualAssetsSource) => {
       directory: directoryReference ? directories[directoryReference] : undefined,
       manifestSlots: [...manifestSlotsBlock.matchAll(/"([^"]+)"/g)].map((match) => match[1]),
       sourceCanvas: parseSourceCanvas(block, familySpecs),
+      status: block.match(/status:\s*"([^"]+)"/)?.[1],
       transparentBackground: block.match(/transparentBackground:\s*(true|false)/)?.[1] === "true",
     };
   }
@@ -367,6 +368,7 @@ for (const [targetName, target] of Object.entries(registryTargets)) {
   assert(target.directory, `${targetName} is missing a registry directory`);
   assert(target.dimensionPolicy, `${targetName} is missing dimensionPolicy`);
   assert(Array.isArray(target.manifestSlots) && target.manifestSlots.length > 0, `${targetName} has no manifest slots`);
+  assert(target.status === "final", `${targetName} must stay final; got ${target.status ?? "missing status"}`);
 
   if (target.directory) {
     assert(existsSync(path.join(projectRoot, target.directory)), `${targetName} directory is missing: ${target.directory}`);

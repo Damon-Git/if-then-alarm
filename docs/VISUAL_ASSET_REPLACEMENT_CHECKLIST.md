@@ -1,6 +1,6 @@
 # 正式视觉素材替换清单
 
-本文用于把临时测试素材替换为正式素材。替换素材时按本清单逐项检查，避免把业务交互、计时状态或布局规则混进图片文件。
+本文记录七组正式 v1 素材基线和后续替换步骤。迭代素材时按本清单逐项检查，避免把业务交互、计时状态或布局规则混进图片文件。
 
 替换前先阅读 `docs/VISUAL_ASSET_BOUNDARIES.md`，确认这组图片应该负责什么、不应该负责什么。本文只记录执行步骤和验收项。
 
@@ -54,7 +54,7 @@ npm run check:visual-assets
 | --- | --- | --- | --- |
 | `altarBackground` | 主祭台背景 v1 | `src/assets/visuals/altar` | 桌面前沿和三香炉水平摆放基准 |
 | `censerStage` | 主祭台香炉 v1 | `src/assets/visuals/censer/stage` | 香炉底部中心点和盖子闭合位置 |
-| `censerCompact` | 临时测试素材 | `src/assets/visuals/censer/compact` | 小窗香炉底部中心点和并排槽位中心 |
+| `censerCompact` | 小窗 Q 版香炉 v1 | `src/assets/visuals/censer/compact` | 小窗香炉底部中心点和并排槽位中心 |
 | `talismanSituation` | 情境符箓 v1 | `src/assets/visuals/talisman/situation` | 左右竖排文字栏和中央符文分区 |
 | `talismanPrevention` | 预防符箓 v1 | `src/assets/visuals/talisman/prevention` | 左右竖排文字栏和中央符文分区 |
 | `incenseStage` | 主祭台线香 v1 | `src/assets/visuals/incense/stage` | 香炉炉口中心线和左到右燃烧顺序 |
