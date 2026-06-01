@@ -61,8 +61,12 @@
 
 ## 迁移优先级
 
-1. 按 `docs/DESKTOP_PERSISTENCE_JSON_SPEC.md` 实现 app data JSON 持久化 adapter 和旧 `localStorage` 首次迁移。
-2. 继续保留 Web 版 `beforeunload`，桌面端关闭拦截已先接入。
-3. 后续继续接全局快捷键和更完整的小窗隐藏策略。
+app data JSON 持久化 adapter、旧 `localStorage` 首次迁移、桌面关闭拦截、菜单栏入口和基础小窗策略均已完成。平台能力的后续顺序为：
+
+1. 先配合 `docs/MVP_SCOPE.md` 的核心体验路线，保持现有平台 adapter 稳定，不提前扩展桌面能力。
+2. 主祭台视觉、仪式动画和正式钟声完成后，再优化小窗视觉与拖拽区域。
+3. 核心仪式体验稳定后，再评估登录后自动启动和更完整后台策略。
+4. 全局快捷键延后评估，不作为近期目标。
+5. DMG、签名、公证和正式发布能力最后处理。
 
 当前不建议继续抽象 `Date`、`crypto.randomUUID` 或 UI 刷新 interval；这些不是迁移阻塞点。
