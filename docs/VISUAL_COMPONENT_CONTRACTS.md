@@ -146,7 +146,7 @@ type IncenseVisualProps = {
 - `status`：用于把每根线香映射为 `pending`、`burning`、`burned` 或 `resting`。
 - `data-incense-click-action="none"`：线香是进度视觉，不承担点击交互。
 - 每根线香会输出 `data-incense-state` 和 `data-incense-stick-progress`。`pending` 进度为 0，`burning` 使用当前倒计时进度，`burned/resting` 进度为 100。
-- 当前最小视觉进度只表达静态状态：当前线香的深色香体随进度缩短并露出灰色香灰，已烧完线香保持灰色，未烧线香保持完整深色。
+- 当前最小视觉进度继续由状态和 `progress` 决定：当前线香的深色香体随进度缩短并露出灰色香灰，已烧完线香保持灰色，未烧线香保持完整深色。主祭台 CSS 额外为 `burning` 增加低频火星呼吸和淡烟漂移，为 `resting` 增加短暂余烟；这些动画不另起 timer。
 
 ### 预留图层
 
@@ -165,6 +165,7 @@ type IncenseVisualProps = {
 - 小窗线香素材以 `src/lib/visualAssets.ts` 中的 `VISUAL_ASSET_FAMILY_SPECS.incense.compact` 为尺寸锚点。
 - 主祭台线香素材以 `src/lib/visualAssets.ts` 中的 `VISUAL_ASSET_FAMILY_SPECS.incense.stage` 为尺寸锚点。
 - 当前主祭台线香和小窗线香已分别配置 `incense/stage/*`、`incense/compact/*` 正式 PNG。
+- 当前第一轮动态只作用于主祭台 `stage`：火星、淡烟、香炉暖色呼吸、休息冷却和完成落幕均由既有语义状态驱动，并通过 `prefers-reduced-motion` 降级。小窗 `compact` 保持低干扰静态基线。
 - 小窗不同香数不能烘焙成 1 / 2 / 3 张整图，必须由组件重复渲染同一套线香图层。
 
 ## TalismanVisual
