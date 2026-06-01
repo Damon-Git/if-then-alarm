@@ -825,6 +825,10 @@ assertTextIncludes(talismanVisual, 'data-talisman-click-action={clickAction}', "
 assertTextIncludes(talismanVisual, 'data-talisman-interaction-role={interactionRole}', "TalismanVisual distinguishes start entry and view-only talismans");
 assertTextIncludes(talismanVisual, "data-talisman-preview-active", "TalismanVisual exposes explicit preview hover state for WebView");
 assertTextIncludes(talismanVisual, "onPreviewActiveChange", "TalismanVisual reports preview state for parent stacking");
+assertTextIncludes(talismanVisual, 'data-talisman-burn-layer="ignition"', "TalismanVisual exposes a local ignition burn layer");
+assertTextIncludes(talismanVisual, 'data-talisman-burn-layer="char"', "TalismanVisual exposes a progressive char burn layer");
+assertTextIncludes(talismanVisual, 'data-talisman-burn-layer="edge"', "TalismanVisual exposes an advancing ember edge burn layer");
+assertTextIncludes(talismanVisual, 'data-talisman-burn-layer="sparks"', "TalismanVisual exposes restrained burn sparks");
 assertTextIncludes(ritualStage, "getAltarAssetUrl", "RitualStage uses the altar background asset manifest");
 assertTextIncludes(ritualStage, "altar-scene__slots", "RitualStage renders shared altar scene slots");
 assertTextIncludes(ritualStage, "onRequestReview", "RitualStage exposes an explicit review entry after completion");
@@ -895,6 +899,16 @@ assertTextIncludes(stylesCss, 'data-stage-prevention-visibility="dismissed"', "C
 assertTextIncludes(stylesCss, 'data-stage-censer-emphasis="muted"', "CSS weakens completed full-stage censers");
 assertTextIncludes(stylesCss, 'data-stage-start-visual-state="burning"', "CSS scopes the situation talisman burn animation to the transient start state");
 assertTextIncludes(stylesCss, "situation-talisman-burn-away", "CSS defines the situation talisman burn-away animation");
+assertTextIncludes(stylesCss, "situation-talisman-paper-recede", "CSS recedes the talisman template and text together");
+assertTextIncludes(stylesCss, "situation-talisman-local-ignition", "CSS defines a local talisman ignition");
+assertTextIncludes(stylesCss, "situation-talisman-char-front", "CSS defines the talisman char front");
+assertTextIncludes(stylesCss, "situation-talisman-edge-advance", "CSS defines the advancing talisman ember edge");
+assertTextIncludes(stylesCss, "situation-talisman-reduced-fade", "CSS defines a reduced-motion talisman burn fallback");
+assertTextIncludes(
+  assetPipelineDoc,
+  "真实燃烧观感仍需通过 Web 截图和 Tauri 开发版人工验收。",
+  "Asset pipeline keeps visual burn quality under screenshot and Tauri manual review",
+);
 assertTextIncludes(stylesCss, 'data-talisman-preview-active="true"', "CSS enlarges talismans from explicit preview state");
 assertTextIncludes(stylesCss, "background: transparent;\n  pointer-events: none;", "Full-stage censer transparent areas do not capture talisman or incense hover");
 assertTextIncludes(stylesCss, ".altar-scene .censer-visual--stage .censer-visual__hover-target", "Full-stage censer hover target is scoped to stage censers");

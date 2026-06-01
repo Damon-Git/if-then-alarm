@@ -63,6 +63,19 @@ const splitIntentText = (text: string, variant: TalismanAssetVariant) => {
   };
 };
 
+const SituationTalismanBurnEffect = () => (
+  <>
+    <span className="talisman-visual__burn talisman-visual__burn--ignition" data-talisman-burn-layer="ignition" />
+    <span className="talisman-visual__burn talisman-visual__burn--char" data-talisman-burn-layer="char" />
+    <span className="talisman-visual__burn talisman-visual__burn--edge" data-talisman-burn-layer="edge" />
+    <span className="talisman-visual__burn talisman-visual__burn--sparks" data-talisman-burn-layer="sparks">
+      <span />
+      <span />
+      <span />
+    </span>
+  </>
+);
+
 const TalismanLayer = ({
   layer,
   variant,
@@ -81,6 +94,7 @@ const TalismanLayer = ({
       aria-hidden="true"
     >
       {assetUrl ? <img alt="" className="visual-layer__asset" draggable="false" src={assetUrl} /> : null}
+      {layer === "state" && variant === "situation" ? <SituationTalismanBurnEffect /> : null}
     </span>
   );
 };
