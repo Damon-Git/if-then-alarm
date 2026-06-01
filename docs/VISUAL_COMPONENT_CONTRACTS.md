@@ -43,7 +43,7 @@
 
 `IntentSlot` 会输出 `data-stage-intent-status`、`data-stage-can-start`、`data-stage-timer-visible`、`data-stage-metadata-visibility`、`data-stage-metadata-active`、`data-stage-situation-visibility`、`data-stage-prevention-visibility`、`data-stage-prevention-preview-active`、`data-stage-censer-emphasis` 和 `data-stage-start-visual-state`。当前 `data-stage-metadata-visibility` 的值为 `censer-hover`，表示辅助信息只由香炉命中区触发；`data-stage-metadata-active` 和 `data-stage-prevention-preview-active` 由 React 指针事件写入，用于规避打包 WebView 中 CSS hover 选择器不稳定的问题。这些属性只表达视觉语义和回归检查锚点，不反推业务流程。
 
-情境符箓燃烧动画契约：只在该套从 `idle` 确认进入第一次 `burning` 前触发一次，动画目标时长约 2 秒；动画期间不启动专注倒计时，不显示计时面板；动画结束后情境符箓退场并正式进入 `burning`。后续同一个香炉续香时不再播放该动画，也不重新显示情境符箓。
+情境符箓燃烧动画契约：只在该套从 `idle` 确认进入第一次 `burning` 前触发一次，动画目标时长约 2 秒；动画期间不启动专注倒计时，不显示计时面板；动画结束后情境符箓退场并正式进入 `burning`。后续同一个香炉续香时不再播放该动画，也不重新显示情境符箓。Demo 前可以把统一淡出升级为局部起燃、焦边推进、灰化和收束退场，但必须继续复用视觉图层和短暂启动状态，不新增业务状态。
 
 主祭台辅助信息不能由符箓 hover、符箓 focus 或线香区域 hover 触发。符箓 hover 只负责符箓自身放大，线香区域保持低干扰。
 
@@ -146,7 +146,7 @@ type IncenseVisualProps = {
 - `status`：用于把每根线香映射为 `pending`、`burning`、`burned` 或 `resting`。
 - `data-incense-click-action="none"`：线香是进度视觉，不承担点击交互。
 - 每根线香会输出 `data-incense-state` 和 `data-incense-stick-progress`。`pending` 进度为 0，`burning` 使用当前倒计时进度，`burned/resting` 进度为 100。
-- 当前最小视觉进度继续由状态和 `progress` 决定：当前线香的深色香体随进度缩短并露出灰色香灰，已烧完线香保持灰色，未烧线香保持完整深色。主祭台 CSS 额外为 `burning` 增加低频火星呼吸和淡烟漂移，为 `resting` 增加短暂余烟；这些动画不另起 timer。
+- 当前最小视觉进度继续由状态和 `progress` 决定：当前线香的深色香体随进度缩短并露出灰色香灰，已烧完线香保持灰色，未烧线香保持完整深色。主祭台 CSS 额外为 `burning` 增加低频火星呼吸和可辨认但克制的烟雾漂移，为 `resting` 增加短暂余烟；这些动画不另起 timer。
 
 ### 预留图层
 
@@ -165,7 +165,7 @@ type IncenseVisualProps = {
 - 小窗线香素材以 `src/lib/visualAssets.ts` 中的 `VISUAL_ASSET_FAMILY_SPECS.incense.compact` 为尺寸锚点。
 - 主祭台线香素材以 `src/lib/visualAssets.ts` 中的 `VISUAL_ASSET_FAMILY_SPECS.incense.stage` 为尺寸锚点。
 - 当前主祭台线香和小窗线香已分别配置 `incense/stage/*`、`incense/compact/*` 正式 PNG。
-- 当前第一轮动态只作用于主祭台 `stage`：火星、淡烟、香炉暖色呼吸、休息冷却和完成落幕均由既有语义状态驱动，并通过 `prefers-reduced-motion` 降级。小窗 `compact` 保持低干扰静态基线。
+- 动态增强优先作用于主祭台 `stage`：火星、烟雾、香炉暖色呼吸、休息冷却和完成落幕均由既有语义状态驱动，并通过 `prefers-reduced-motion` 降级。Demo 前烟雾可以增强尺寸、层次、对比度和错峰缓慢漂移；小窗 `compact` 保持低干扰静态基线。
 - 小窗不同香数不能烘焙成 1 / 2 / 3 张整图，必须由组件重复渲染同一套线香图层。
 
 ## TalismanVisual
