@@ -80,6 +80,8 @@ npm run tauri:dev
 
 2026-05-31 正式 menubar icon v1 已接入：Rust 嵌入 `menubar-icon-v1@2x.png`，设置 `.icon(...)` 和 `.icon_as_template(true)`，并移除临时 `.title("令")`。需要在 release bundle 中逐项复验本节交互行为。
 
+2026-06-01 已完成 release bundle 人工验收：菜单栏不再显示文字“令”；深色和浅色菜单栏下图标均清晰可读；点击图标可以隐藏窗口，再次点击可以恢复窗口并聚焦；菜单栏点击不会改变小窗或完整窗口尺寸模式。
+
 ## 图标资产
 
 - [ ] `src-tauri/icons/app-icon/app-icon-v1.png` 是 `1024px × 1024px` RGBA 应用图标 v1 源图。

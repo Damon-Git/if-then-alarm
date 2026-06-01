@@ -124,7 +124,14 @@ src-tauri/target/release/bundle/macos/急急如律令.app
 - Rust 使用 `tauri::include_image!` 嵌入 `menubar-icon-v1@2x.png`，调用 `.icon(...)` 和 `.icon_as_template(true)`，并移除 `.title("令")`。
 - 原有 tooltip、点击行为和窗口恢复逻辑保持不变。
 
-素材规格和命名见 `src-tauri/icons/menubar-icon/README.md`。release bundle 手动验收需要覆盖深色和浅色菜单栏可读性、点击隐藏和再次点击恢复聚焦。
+素材规格和命名见 `src-tauri/icons/menubar-icon/README.md`。
+
+2026-06-01 已完成 release bundle 手动验收：
+
+- 菜单栏不再显示文字“令”。
+- 深色和浅色菜单栏下，简化香炉 template icon 均清晰可读。
+- 点击图标可以隐藏窗口，再次点击可以恢复窗口并聚焦。
+- 菜单栏点击不会改变小窗或完整窗口尺寸模式。
 
 ## 通知应用识别图标验收阻塞
 
