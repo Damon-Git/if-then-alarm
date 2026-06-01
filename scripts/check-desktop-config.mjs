@@ -277,6 +277,7 @@ const fileTransferAdapter = await readText("src/lib/fileTransferAdapter.ts");
 const notificationAdapter = await readText("src/lib/notificationAdapter.ts");
 const soundReminder = await readText("src/lib/soundReminder.ts");
 const compactWindowCheck = await readText("scripts/check-compact-window.mjs");
+const soundAssetsCheck = await readText("scripts/check-sound-assets.mjs");
 const visualAssetsCheck = await readText("scripts/check-visual-assets.mjs");
 const stylesCss = await readText("src/styles.css");
 const assetPipelineDoc = await readText("docs/ASSET_PIPELINE.md");
@@ -325,6 +326,7 @@ assertPackageScript(packageJson, "dev:tauri-frontend", "node scripts/start-tauri
 assertPackageScript(packageJson, "check:compact", "node scripts/check-compact-window.mjs");
 assertPackageScript(packageJson, "check:desktop-config", "node scripts/check-desktop-config.mjs");
 assertPackageScript(packageJson, "check:self-use", "node scripts/check-self-use-readiness.mjs");
+assertPackageScript(packageJson, "check:sound-assets", "node scripts/check-sound-assets.mjs");
 assertPackageScript(packageJson, "check:visual-assets", "node scripts/check-visual-assets.mjs");
 assertPackageScript(packageJson, "tauri:dev", "tauri dev");
 assertPackageScript(packageJson, "tauri:build", "tauri build");
@@ -598,8 +600,18 @@ assertTextIncludes(
 );
 assertTextIncludes(
   soundReminder,
-  "createOscillator",
-  "Sound reminder uses generated Web Audio bell",
+  "../assets/sounds/incense-finished.wav?url",
+  "Sound reminder imports bundled WAV assets",
+);
+assertTextIncludes(
+  soundReminder,
+  "decodeAudioData",
+  "Sound reminder decodes bundled WAV assets through Web Audio",
+);
+assertTextIncludes(
+  soundReminder,
+  "stopActiveBellPlayback",
+  "Sound reminder stops stale playback before another sound starts",
 );
 assertTextIncludes(
   appTsx,
@@ -610,6 +622,11 @@ assertTextIncludes(
   appTsx,
   "cancelTimerSoundReminder",
   "App cancels stale timer sound reminders",
+);
+assertTextIncludes(
+  soundAssetsCheck,
+  "RIFF/WAVE",
+  "Sound asset check validates WAV files",
 );
 assertTextIncludes(
   appTsx,

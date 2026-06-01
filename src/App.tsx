@@ -32,7 +32,12 @@ import {
 import { cancelTimerNotification, scheduleTimerNotification } from "./lib/notificationAdapter";
 import type { TimerNotificationKind } from "./lib/notificationAdapter";
 import { clearPersistedSession, loadPersistedSession, savePersistedSession } from "./lib/sessionStorage";
-import { cancelTimerSoundReminder, prepareTimerSoundReminder, scheduleTimerSoundReminder } from "./lib/soundReminder";
+import {
+  cancelTimerSoundReminder,
+  prepareTimerSoundReminder,
+  scheduleTimerSoundReminder,
+  stopTimerSoundReminderPlayback,
+} from "./lib/soundReminder";
 import { createActiveTimerSegment, formatDurationLabel, getTimerRemainingSeconds } from "./lib/timer";
 import {
   closeCurrentTauriWindow,
@@ -597,6 +602,8 @@ const App = () => {
     if (activeTimerSegment) {
       setTimerRemaining(getTimerRemainingSeconds(activeTimerSegment));
       setActiveTimerSegment(null);
+      void cancelTimerNotification();
+      cancelTimerSoundReminder();
     }
 
     setIsAbandonConfirmOpen(true);
@@ -605,6 +612,17 @@ const App = () => {
   const cancelAbandonSession = () => {
     if (activeIntentSet && timerRemaining > 0) {
       setActiveTimerSegment(createActiveTimerSegment(timerRemaining));
+      const reminderKind =
+        activeIntentSet.status === "resting"
+          ? "rest-finished"
+          : getFocusTimerNotificationKind({
+              intentSetId: activeIntentSet.id,
+              intentSets,
+              nextIncenseIndex: activeIntentSet.currentIncenseIndex,
+            });
+
+      void scheduleTimerNotification({ delaySeconds: timerRemaining, kind: reminderKind });
+      scheduleTimerSoundReminder({ delaySeconds: timerRemaining, kind: reminderKind });
     }
 
     setIsAbandonConfirmOpen(false);
@@ -977,7 +995,10 @@ const App = () => {
 
     if (isSoundReminderEnabled) {
       void prepareTimerSoundReminder();
+      return;
     }
+
+    stopTimerSoundReminderPlayback();
   };
 
   const updateSetupDraftState = useCallback((nextHasUnsavedDraft: boolean) => {

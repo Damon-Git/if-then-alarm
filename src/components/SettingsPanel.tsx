@@ -100,7 +100,7 @@ const SettingsPanel = ({
         <label className="settings-toggle">
           <span>
             <strong>声音提醒</strong>
-            <small>开启后，专注、休息或整轮结束时播放一次临时钟声。</small>
+            <small>开启后，专注、休息或整轮结束时播放一次克制钟声。</small>
           </span>
           <input
             checked={isSoundReminderEnabled}

@@ -19,7 +19,13 @@ npm run check:release-self-use
 npm run release:self-use-summary
 ```
 
-`npm run check:release-self-use` 会串行执行 `npm run test`、`npm run build`、`npm run check:desktop-config` 和 `npm run check:self-use`，并先确认前端版本与 Tauri 版本一致。`npm run release:self-use-summary` 会打印当前版本、Git 提交、Bundle ID、数据版本和构建产物路径，方便写入 `SELF_USE_RELEASE_LOG.md`。
+`npm run check:release-self-use` 会串行执行 `npm run test`、`npm run build`、`npm run check:sound-assets`、`npm run check:visual-assets`、`npm run check:desktop-config` 和 `npm run check:self-use`，并先确认前端版本与 Tauri 版本一致。`npm run release:self-use-summary` 会打印当前版本、Git 提交、Bundle ID、数据版本和构建产物路径，方便写入 `SELF_USE_RELEASE_LOG.md`。
+
+钟声素材改动后可以单独先跑：
+
+```bash
+npm run check:sound-assets
+```
 
 如果本地 Playwright 和开发服务可用，再跑小窗图形回归：
 

@@ -1,5 +1,8 @@
 import { loadAppSettings } from "./settingsStorage";
 import type { TimerNotificationKind } from "./notificationAdapter";
+import incenseFinishedBellUrl from "../assets/sounds/incense-finished.wav?url";
+import restFinishedBellUrl from "../assets/sounds/rest-finished.wav?url";
+import ritualCompletedBellUrl from "../assets/sounds/ritual-completed.wav?url";
 
 type ScheduleTimerSoundReminderInput = {
   delaySeconds: number;
@@ -10,10 +13,18 @@ type WebkitAudioWindow = Window & {
   webkitAudioContext?: typeof AudioContext;
 };
 
-const BELL_DURATION_SECONDS = 1.4;
+const BELL_PLAYBACK_GAIN = 0.68;
+const BELL_ASSET_URLS: Record<TimerNotificationKind, string> = {
+  "incense-finished": incenseFinishedBellUrl,
+  "rest-finished": restFinishedBellUrl,
+  "ritual-completed": ritualCompletedBellUrl,
+};
 
 let timerSoundTimeoutId: number | null = null;
 let sharedAudioContext: AudioContext | null = null;
+let activeBellSource: AudioBufferSourceNode | null = null;
+let latestPlaybackRequestId = 0;
+const bellBufferPromises = new Map<TimerNotificationKind, Promise<AudioBuffer>>();
 
 const resolveSoundDelay = (delaySeconds: number) => Math.max(delaySeconds, 1) * 1000;
 
@@ -42,46 +53,100 @@ const getAudioContext = async () => {
   return sharedAudioContext;
 };
 
+const loadBellBuffer = (audioContext: AudioContext, kind: TimerNotificationKind) => {
+  const existingPromise = bellBufferPromises.get(kind);
+
+  if (existingPromise) {
+    return existingPromise;
+  }
+
+  const bufferPromise = fetch(BELL_ASSET_URLS[kind])
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`Could not load sound reminder asset: ${kind}`);
+      }
+
+      return response.arrayBuffer();
+    })
+    .then((arrayBuffer) => audioContext.decodeAudioData(arrayBuffer))
+    .catch((error) => {
+      bellBufferPromises.delete(kind);
+      throw error;
+    });
+
+  bellBufferPromises.set(kind, bufferPromise);
+  return bufferPromise;
+};
+
+const stopActiveBellPlayback = () => {
+  if (!activeBellSource) {
+    return;
+  }
+
+  try {
+    activeBellSource.stop();
+  } catch {
+    // The source may already have ended.
+  }
+
+  activeBellSource = null;
+};
+
+export const stopTimerSoundReminderPlayback = () => {
+  latestPlaybackRequestId += 1;
+  stopActiveBellPlayback();
+};
+
 export const prepareTimerSoundReminder = async () => {
   if (!loadAppSettings().isSoundReminderEnabled) {
     return;
   }
 
   try {
-    await getAudioContext();
+    const audioContext = await getAudioContext();
+
+    if (!audioContext) {
+      return;
+    }
+
+    await Promise.all(
+      (Object.keys(BELL_ASSET_URLS) as TimerNotificationKind[]).map((kind) => loadBellBuffer(audioContext, kind)),
+    );
   } catch {
     // Audio preparation can fail because of platform policy; the timer should continue.
   }
 };
 
-const playGeneratedBell = async (kind: TimerNotificationKind) => {
+const playLocalBell = async (kind: TimerNotificationKind) => {
+  const playbackRequestId = ++latestPlaybackRequestId;
   const audioContext = await getAudioContext();
 
   if (!audioContext) {
     return;
   }
 
-  const now = audioContext.currentTime;
+  const bellBuffer = await loadBellBuffer(audioContext, kind);
+
+  if (playbackRequestId !== latestPlaybackRequestId || !loadAppSettings().isSoundReminderEnabled) {
+    return;
+  }
+
+  stopActiveBellPlayback();
+
+  const source = audioContext.createBufferSource();
   const output = audioContext.createGain();
-  const baseFrequency = kind === "rest-finished" ? 392 : 523.25;
 
-  output.gain.setValueAtTime(0.0001, now);
-  output.gain.exponentialRampToValueAtTime(0.28, now + 0.02);
-  output.gain.exponentialRampToValueAtTime(0.0001, now + BELL_DURATION_SECONDS);
+  source.buffer = bellBuffer;
+  output.gain.value = BELL_PLAYBACK_GAIN;
+  source.connect(output);
   output.connect(audioContext.destination);
-
-  [baseFrequency, baseFrequency * 2.01].forEach((frequency, index) => {
-    const oscillator = audioContext.createOscillator();
-    const gain = audioContext.createGain();
-
-    oscillator.type = "sine";
-    oscillator.frequency.setValueAtTime(frequency, now);
-    gain.gain.setValueAtTime(index === 0 ? 0.8 : 0.28, now);
-    oscillator.connect(gain);
-    gain.connect(output);
-    oscillator.start(now);
-    oscillator.stop(now + BELL_DURATION_SECONDS);
-  });
+  activeBellSource = source;
+  source.onended = () => {
+    if (activeBellSource === source) {
+      activeBellSource = null;
+    }
+  };
+  source.start();
 };
 
 const playTimerSoundReminder = async (kind: TimerNotificationKind) => {
@@ -90,7 +155,7 @@ const playTimerSoundReminder = async (kind: TimerNotificationKind) => {
   }
 
   try {
-    await playGeneratedBell(kind);
+    await playLocalBell(kind);
   } catch {
     // Sound is an enhancement; timer, modal, and system notification remain authoritative.
   }
@@ -98,10 +163,12 @@ const playTimerSoundReminder = async (kind: TimerNotificationKind) => {
 
 export const cancelTimerSoundReminder = () => {
   clearTimerSoundTimeout();
+  stopTimerSoundReminderPlayback();
 };
 
 export const scheduleTimerSoundReminder = ({ delaySeconds, kind }: ScheduleTimerSoundReminderInput) => {
   clearTimerSoundTimeout();
+  stopTimerSoundReminderPlayback();
   void prepareTimerSoundReminder();
 
   timerSoundTimeoutId = window.setTimeout(() => {

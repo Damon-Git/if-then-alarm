@@ -70,6 +70,7 @@ assertPackageScript(packageJson, "check:desktop-config", "node scripts/check-des
 assertPackageScript(packageJson, "check:compact", "node scripts/check-compact-window.mjs");
 assertPackageScript(packageJson, "check:release-self-use", "node scripts/check-release-self-use.mjs");
 assertPackageScript(packageJson, "check:self-use", "node scripts/check-self-use-readiness.mjs");
+assertPackageScript(packageJson, "check:sound-assets", "node scripts/check-sound-assets.mjs");
 assertPackageScript(packageJson, "check:visual-assets", "node scripts/check-visual-assets.mjs");
 assertPackageScript(packageJson, "release:self-use-summary", "node scripts/print-self-use-release-summary.mjs");
 assertPackageScript(packageJson, "tauri:build", "tauri build");
@@ -90,6 +91,7 @@ for (const relativePath of [
   "scripts/check-desktop-config.mjs",
   "scripts/check-release-self-use.mjs",
   "scripts/check-self-use-readiness.mjs",
+  "scripts/check-sound-assets.mjs",
   "scripts/check-visual-assets.mjs",
   "scripts/print-self-use-release-summary.mjs",
   "src/lib/desktopPersistenceAdapter.ts",
@@ -172,6 +174,7 @@ for (const relativePath of [
   "版本信息",
   "SELF_USE_RELEASE_LOG.md",
   "check:release-self-use",
+  "check:sound-assets",
   "check:visual-assets",
   "release:self-use-summary",
 ].forEach((token) =>
@@ -195,6 +198,7 @@ for (const relativePath of [
 [
   '["run", "test"]',
   '["run", "build"]',
+  '["run", "check:sound-assets"]',
   '["run", "check:visual-assets"]',
   '["run", "check:desktop-config"]',
   '["run", "check:self-use"]',

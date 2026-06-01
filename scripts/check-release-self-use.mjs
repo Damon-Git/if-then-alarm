@@ -55,6 +55,7 @@ if (!tauriConfig.bundle?.active || !tauriConfig.bundle?.targets?.includes("app")
 [
   { args: ["run", "test"], label: "Unit tests" },
   { args: ["run", "build"], label: "Frontend build" },
+  { args: ["run", "check:sound-assets"], label: "Sound asset check" },
   { args: ["run", "check:visual-assets"], label: "Visual asset check" },
   { args: ["run", "check:desktop-config"], label: "Desktop config check" },
   { args: ["run", "check:self-use"], label: "Self-use readiness check" },
