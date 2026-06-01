@@ -216,6 +216,120 @@ const assertCompactIdleIncenseLayout = async (page) => {
   assert(incensePointerEvents === "none", `compact incense should not intercept censer clicks: ${incensePointerEvents}`);
 };
 
+const assertCompactDragRegionSemantics = async (page) => {
+  const dragRegion = page.locator(
+    '.compact-stage__drag-region[data-compact-drag-action="move-window"][data-compact-drag-implementation="pointer-position-session"]',
+  );
+
+  assert((await dragRegion.count()) === 1, "compact ritual scene should expose one dedicated window drag region");
+  assert(
+    (await dragRegion.getAttribute("data-compact-drag-implementation")) === "pointer-position-session",
+    "compact ritual scene should use the Tauri window-position drag session",
+  );
+  await assertVisible(dragRegion, "compact window drag region");
+  await assertTransparentBackground(dragRegion, "compact window drag region");
+
+  const layout = await page.locator(".compact-stage").evaluate((element) => {
+    const dragRegion = element.querySelector(".compact-stage__drag-region");
+    const buttons = [...element.querySelectorAll(".compact-censer__button")];
+    const dragBox = dragRegion?.getBoundingClientRect();
+
+    return {
+      buttonTops: buttons.map((button) => Math.round(button.getBoundingClientRect().top)),
+      dragBottom: dragBox ? Math.round(dragBox.bottom) : null,
+      dragHeight: dragBox ? Math.round(dragBox.height) : 0,
+      dragWidth: dragBox ? Math.round(dragBox.width) : 0,
+    };
+  });
+
+  assert(layout.dragWidth >= 160, `compact drag region should be wide enough to grab reliably: ${JSON.stringify(layout)}`);
+  assert(layout.dragHeight >= 28, `compact drag region should be tall enough to grab reliably: ${JSON.stringify(layout)}`);
+  assert(
+    layout.dragBottom !== null && layout.buttonTops.every((buttonTop) => layout.dragBottom <= buttonTop),
+    `compact drag region should stay separate from censer click targets: ${JSON.stringify(layout)}`,
+  );
+
+  const stateBeforeDrag = await page.locator(".compact-censer").evaluateAll((elements) =>
+    elements.map((element) => element.className).join(" | "),
+  );
+  await dragRegion.dispatchEvent("mousedown", { button: 0 });
+  await page.waitForTimeout(50);
+  const stateAfterDrag = await page.locator(".compact-censer").evaluateAll((elements) =>
+    elements.map((element) => element.className).join(" | "),
+  );
+
+  assert(
+    stateAfterDrag === stateBeforeDrag,
+    `compact drag region should not change business state: before=${stateBeforeDrag} after=${stateAfterDrag}`,
+  );
+  assert(
+    !(await page.getByRole("heading", { name: "确认开始这一套？" }).isVisible()),
+    "compact drag region should not open the start confirmation",
+  );
+};
+
+const assertCompactCenserDragClickSuppression = async (page) => {
+  const censerButton = page.locator(".compact-censer__button").first();
+  const buttonBox = await censerButton.boundingBox();
+
+  assert(Boolean(buttonBox), "compact censer button should expose a measurable drag suppression target");
+  assert(
+    (await censerButton.getAttribute("data-compact-censer-drag-click-suppression")) === "6px-threshold",
+    "compact censer button should expose its drag click suppression threshold",
+  );
+
+  const pointerStart = {
+    x: Math.round(buttonBox.x + buttonBox.width / 2),
+    y: Math.round(buttonBox.y + buttonBox.height / 2),
+  };
+  const stateBeforeDrag = await page.locator(".compact-censer").evaluateAll((elements) =>
+    elements.map((element) => element.className).join(" | "),
+  );
+  const toastCountBeforeDrag = await page.locator(".toast").count();
+
+  await censerButton.evaluate((element, start) => {
+    const pointerInit = {
+      bubbles: true,
+      button: 0,
+      cancelable: true,
+      isPrimary: true,
+      pointerId: 1,
+      pointerType: "mouse",
+    };
+
+    element.dispatchEvent(new PointerEvent("pointerdown", { ...pointerInit, clientX: start.x, clientY: start.y }));
+    element.dispatchEvent(new PointerEvent("pointermove", { ...pointerInit, clientX: start.x + 24, clientY: start.y }));
+    element.dispatchEvent(new PointerEvent("pointerup", { ...pointerInit, clientX: start.x + 24, clientY: start.y }));
+    element.dispatchEvent(
+      new MouseEvent("click", {
+        bubbles: true,
+        button: 0,
+        cancelable: true,
+        clientX: start.x + 24,
+        clientY: start.y,
+      }),
+    );
+  }, pointerStart);
+  await page.waitForTimeout(50);
+
+  const stateAfterDrag = await page.locator(".compact-censer").evaluateAll((elements) =>
+    elements.map((element) => element.className).join(" | "),
+  );
+
+  assert(
+    stateAfterDrag === stateBeforeDrag,
+    `dragging from a compact censer should not change business state: before=${stateBeforeDrag} after=${stateAfterDrag}`,
+  );
+  assert(
+    (await page.locator(".toast").count()) === toastCountBeforeDrag,
+    "dragging from a compact censer should suppress the full-window click attempt",
+  );
+  assert(
+    !(await page.getByRole("heading", { name: "确认开始这一套？" }).isVisible()),
+    "dragging from a compact censer should not open the start confirmation",
+  );
+};
+
 const assertCompactBurningIncenseProgress = async (
   page,
   { currentIndex, expectedStates, requireProgress = false },
@@ -525,6 +639,8 @@ const run = async () => {
     await assertCompactCenserUsesAssetLayers(page);
     await assertCompactIncenseUsesAssetLayers(page);
     await assertCompactIdleIncenseLayout(page);
+    await assertCompactDragRegionSemantics(page);
+    await assertCompactCenserDragClickSuppression(page);
     assert((await page.locator(".compact-censer p:visible").count()) === 0, "compact ritual scene should hide intent summaries");
     assert((await page.locator(".compact-censer__status:visible").count()) === 0, "compact ritual scene should hide status labels");
     assert((await page.locator(".compact-censer__hint:visible").count()) === 0, "compact ritual scene should hide interaction hints");
@@ -547,14 +663,16 @@ const run = async () => {
     await assertTransparentBackground(page.locator(".compact-censer__button").first(), "compact ritual censer button");
     const ritualSceneStyle = await page.locator(".compact-stage").evaluate((element) => {
       const style = window.getComputedStyle(element);
+      const censers = element.querySelector(".compact-stage__censers");
+      const censersStyle = censers ? window.getComputedStyle(censers) : null;
       return {
         borderStyle: style.borderStyle,
         borderWidth: style.borderWidth,
         backgroundColor: style.backgroundColor,
-        flexWrap: style.flexWrap,
+        censerFlexWrap: censersStyle?.flexWrap ?? "",
       };
     });
-    assert(ritualSceneStyle.flexWrap === "nowrap", "compact ritual censers should stay in a single row");
+    assert(ritualSceneStyle.censerFlexWrap === "nowrap", "compact ritual censers should stay in a single row");
     assert(
       ritualSceneStyle.backgroundColor === "rgba(0, 0, 0, 0)",
       `compact ritual scene should not draw a background: ${ritualSceneStyle.backgroundColor}`,

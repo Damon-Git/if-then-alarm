@@ -2977,14 +2977,53 @@ html[data-window-mode="compact"] .app-shell--ritual .ritual-panel {
 }
 
 html[data-window-mode="compact"] .app-shell--ritual .compact-stage {
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  width: min(100vw, 350px);
+  overflow: visible;
+  background: transparent;
+}
+
+html[data-window-mode="compact"] .app-shell--ritual .compact-stage__drag-region {
+  position: relative;
+  width: min(220px, 62vw);
+  height: 40px;
+  cursor: grab;
+  touch-action: none;
+}
+
+html[data-window-mode="compact"] .app-shell--ritual .compact-stage__drag-region::after {
+  position: absolute;
+  top: 18px;
+  left: 50%;
+  width: 40px;
+  height: 3px;
+  border-radius: 999px;
+  background: rgb(92 70 55 / 24%);
+  content: "";
+  transform: translateX(-50%);
+  transition:
+    background-color 160ms ease,
+    width 160ms ease;
+}
+
+html[data-window-mode="compact"] .app-shell--ritual .compact-stage__drag-region:hover::after {
+  width: 52px;
+  background: rgb(92 70 55 / 38%);
+}
+
+html[data-window-mode="compact"] .app-shell--ritual .compact-stage__drag-region:active {
+  cursor: grabbing;
+}
+
+html[data-window-mode="compact"] .app-shell--ritual .compact-stage__censers {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 12px;
   width: 100%;
   flex-wrap: nowrap;
-  overflow: visible;
-  background: transparent;
 }
 
 html[data-window-mode="compact"] .app-shell--ritual .compact-censer {
@@ -2997,6 +3036,7 @@ html[data-window-mode="compact"] .app-shell--ritual .compact-censer__button {
   border: 0;
   padding: 0;
   background: transparent;
+  transition: transform 160ms ease;
 }
 
 html[data-window-mode="compact"] .app-shell--ritual .compact-censer--idle .compact-censer__button:not(:disabled):hover,
@@ -3017,27 +3057,31 @@ html[data-window-mode="compact"] .app-shell--ritual .compact-censer p {
 html[data-window-mode="compact"] .app-shell--ritual .censer-visual--compact .censer-visual__asset {
   width: 74px;
   height: 84px;
+  transition:
+    filter 220ms ease,
+    opacity 220ms ease,
+    transform 220ms ease;
 }
 
 html[data-window-mode="compact"] .app-shell--ritual .compact-censer--idle .censer-visual--compact .censer-visual__asset {
-  opacity: 0.82;
-  filter: saturate(0.9);
+  opacity: 0.76;
+  filter: saturate(0.78) brightness(0.98);
 }
 
 html[data-window-mode="compact"] .app-shell--ritual .compact-censer--burning .censer-visual--compact .censer-visual__asset {
   opacity: 1;
-  filter: saturate(1.08) contrast(1.04);
-  transform: scale(1.06);
+  filter: saturate(1.12) contrast(1.05) brightness(1.035) drop-shadow(0 5px 7px rgb(150 80 42 / 24%));
+  transform: scale(1.055);
 }
 
 html[data-window-mode="compact"] .app-shell--ritual .compact-censer--resting .censer-visual--compact .censer-visual__asset {
-  opacity: 0.64;
-  filter: saturate(0.68) brightness(1.04);
+  opacity: 0.6;
+  filter: saturate(0.52) contrast(0.94) brightness(1.02);
 }
 
 html[data-window-mode="compact"] .app-shell--ritual .compact-censer--completed .censer-visual--compact .censer-visual__asset {
-  opacity: 0.72;
-  filter: saturate(0.72) brightness(1.08);
+  opacity: 0.58;
+  filter: saturate(0.46) contrast(0.9) brightness(0.96);
 }
 
 html[data-window-mode="compact"] .app-shell--ritual .compact-censer--resting .incense-visual {

@@ -290,6 +290,7 @@ const visualAssets = await readText("src/lib/visualAssets.ts");
 const visualState = await readText("src/lib/visualState.ts");
 const censerVisual = await readText("src/components/CenserVisual.tsx");
 const compactCenserSlot = await readText("src/components/CompactCenserSlot.tsx");
+const compactWindowDragRegion = await readText("src/components/CompactWindowDragRegion.tsx");
 const incenseVisual = await readText("src/components/IncenseVisual.tsx");
 const intentSlot = await readText("src/components/IntentSlot.tsx");
 const ritualStage = await readText("src/components/RitualStage.tsx");
@@ -495,6 +496,7 @@ assert(
   "core:window:allow-set-background-color",
   "core:window:allow-set-decorations",
   "core:window:allow-set-focus",
+  "core:window:allow-set-position",
   "core:window:allow-set-shadow",
   "core:window:allow-set-size",
   "core:window:allow-set-title-bar-style",
@@ -848,8 +850,18 @@ assertTextIncludes(intentSlot, "data-stage-timer-visible", "IntentSlot exposes t
 assertTextIncludes(intentSlot, 'size="stage"', "Full ritual slot uses stage censer asset family");
 assertTextIncludes(compactCenserSlot, 'size="compact"', "Compact ritual slot uses compact censer asset family");
 assertTextIncludes(compactCenserSlot, 'data-compact-censer-click-action="open-full-window"', "Compact censer click action is limited to opening the full window");
+assertTextIncludes(compactCenserSlot, "CENSER_DRAG_CLICK_SUPPRESSION_PX", "Compact censer suppresses click after pointer drag movement");
+assertTextIncludes(compactCenserSlot, "suppressClickRef", "Compact censer tracks pointer drag click suppression");
+assertTextIncludes(ritualStage, "<CompactWindowDragRegion />", "Compact ritual stage exposes a dedicated window drag region");
+assertTextIncludes(compactWindowDragRegion, 'data-compact-drag-action="move-window"', "Compact window drag region exposes move-window semantics");
+assertTextIncludes(compactWindowDragRegion, 'data-compact-drag-implementation="pointer-position-session"', "Compact window drag region uses the Tauri window-position session");
+assertTextIncludes(compactWindowDragRegion, "createCurrentTauriWindowDragSession", "Compact window drag region starts a Tauri window-position session");
+assertTextIncludes(tauriWindow, "createCurrentTauriWindowDragSession", "Tauri window adapter owns compact window-position drag sessions");
+assertTextIncludes(tauriWindow, "currentWindow.setPosition", "Tauri window adapter moves the compact window through the native shell");
 assertTextIncludes(compactWindowCheck, "assertFullStageUsesStageVisuals", "Compact check verifies full-stage visual family");
 assertTextIncludes(compactWindowCheck, "assertCompactCenserStateDifferentiation", "Compact check verifies compact censer state differentiation");
+assertTextIncludes(compactWindowCheck, "assertCompactDragRegionSemantics", "Compact check verifies compact drag region semantics");
+assertTextIncludes(compactWindowCheck, "assertCompactCenserDragClickSuppression", "Compact check verifies censer drag click suppression");
 assertTextIncludes(
   compactWindowCheck,
   "assertCompactCompletionStaysOutOfReviewWhenFullOpenFails",

@@ -2,6 +2,7 @@ import type { CSSProperties } from "react";
 import { getAltarAssetUrl } from "../lib/visualAssetManifest";
 import type { IntentSet } from "../types";
 import CompactCenserSlot from "./CompactCenserSlot";
+import CompactWindowDragRegion from "./CompactWindowDragRegion";
 import IntentSlot from "./IntentSlot";
 
 type RitualStageProps = {
@@ -102,21 +103,24 @@ const RitualStage = ({
       </div>
 
       <div className="compact-stage" aria-label="小窗香炉舞台">
-        {intentSets.map((intentSet) => {
-          const isActive = intentSet.status === "burning" || intentSet.status === "resting";
-          const incenseProgress = getIncenseProgress(intentSet, focusSeconds, isActive ? timerRemaining : 0);
+        <CompactWindowDragRegion />
+        <div className="compact-stage__censers">
+          {intentSets.map((intentSet) => {
+            const isActive = intentSet.status === "burning" || intentSet.status === "resting";
+            const incenseProgress = getIncenseProgress(intentSet, focusSeconds, isActive ? timerRemaining : 0);
 
-          return (
-            <CompactCenserSlot
-              incenseProgress={incenseProgress}
-              intentSet={intentSet}
-              isSessionComplete={isSessionComplete}
-              key={intentSet.id}
-              onOpenFullView={onOpenFullView}
-              timerRemaining={isActive ? timerRemaining : 0}
-            />
-          );
-        })}
+            return (
+              <CompactCenserSlot
+                incenseProgress={incenseProgress}
+                intentSet={intentSet}
+                isSessionComplete={isSessionComplete}
+                key={intentSet.id}
+                onOpenFullView={onOpenFullView}
+                timerRemaining={isActive ? timerRemaining : 0}
+              />
+            );
+          })}
+        </div>
       </div>
     </section>
   );

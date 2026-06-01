@@ -9,6 +9,15 @@ type TauriWindowSize = {
   width: number;
 };
 
+export type CurrentTauriWindowDragPoint = {
+  x: number;
+  y: number;
+};
+
+export type CurrentTauriWindowDragSession = {
+  moveTo: (point: CurrentTauriWindowDragPoint) => void;
+};
+
 type TauriTitleBarStyle = "visible" | "transparent" | "overlay";
 
 type TauriWindowShell = {
@@ -36,6 +45,50 @@ const runCompatibleWindowAction = async (action: () => Promise<void>) => {
 
 export const isTauriRuntime = () =>
   typeof window !== "undefined" && Boolean((window as TauriInternalsWindow).__TAURI_INTERNALS__);
+
+export const createCurrentTauriWindowDragSession = async (startPoint: CurrentTauriWindowDragPoint) => {
+  if (!isTauriRuntime()) {
+    return null;
+  }
+
+  const { getCurrentWindow, LogicalPosition } = await import("@tauri-apps/api/window");
+  const currentWindow = getCurrentWindow();
+  const scaleFactor = await currentWindow.scaleFactor();
+  const startWindowPosition = (await currentWindow.outerPosition()).toLogical(scaleFactor);
+  let isMoving = false;
+  let queuedPoint: CurrentTauriWindowDragPoint | null = null;
+
+  const moveQueuedPoint = async () => {
+    if (isMoving || !queuedPoint) {
+      return;
+    }
+
+    const point = queuedPoint;
+    queuedPoint = null;
+    isMoving = true;
+
+    try {
+      await currentWindow.setPosition(
+        new LogicalPosition(
+          startWindowPosition.x + point.x - startPoint.x,
+          startWindowPosition.y + point.y - startPoint.y,
+        ),
+      );
+    } catch {
+      queuedPoint = null;
+    } finally {
+      isMoving = false;
+      void moveQueuedPoint();
+    }
+  };
+
+  return {
+    moveTo: (point: CurrentTauriWindowDragPoint) => {
+      queuedPoint = point;
+      void moveQueuedPoint();
+    },
+  } satisfies CurrentTauriWindowDragSession;
+};
 
 export const listenForTauriCloseRequest = async (onCloseRequested: () => boolean) => {
   if (!isTauriRuntime()) {
