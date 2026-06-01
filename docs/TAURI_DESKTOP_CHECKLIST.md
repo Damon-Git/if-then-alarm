@@ -151,6 +151,14 @@ npm run tauri:dev
 
 2026-05-31 阻塞记录：从 `/Users/damon/Applications/急急如律令.app` 明确启动新 bundle 并触发 10 秒开发模式通知后，通知仍显示旧红色圆形占位图。安装路径和工作区 bundle 的 ICNS 已一致为 `1024px × 1024px` 应用图标 v1；LaunchServices 仍索引包含旧 `128px × 128px` 占位 ICNS 的 `/Users/damon/Desktop/急急如律令.app`。当前按 LaunchServices 或通知中心缓存问题处理，通知应用识别图标 v1 不标记为通过。
 
+2026-06-01 只读复查：`/Users/damon/Applications/急急如律令.app` 和 `/Applications/急急如律令.app` 当前均不存在；LaunchServices 仍同时索引 Desktop 旧占位副本、工作区 release bundle 和废纸篓中的正式图标 v1 副本。当前最强证据仍是 Desktop 旧副本的 LaunchServices 索引，通知中心缓存仍不能排除。详细哈希与安全处理边界见 `docs/MACOS_INTERNAL_BUILD.md`。通知应用识别图标 v1 仍不标记为通过。
+
+2026-06-01 局部处理：用户删除 Desktop 旧副本后，已局部注销废纸篓中的旧占位副本，并强制注册工作区 release bundle。等待复查后，LaunchServices 中 `com.damon.jijirululing` 只剩工作区 release bundle；应用也已从该精确路径启动。仍需人工触发下一条通知，确认通知中心是否已经展示正式图标 v1。通知应用识别图标 v1 暂不标记为通过。
+
+2026-06-01 通知实测：从工作区 release bundle 精确路径启动应用并触发 10 秒开发模式通知后，通知横幅仍显示旧红色圆形占位图。触发前后 LaunchServices 均只剩工作区 release bundle，因此当前最可能根因已收敛为通知中心侧缓存。未重启通知中心进程，未重置通知权限，未修改系统设置，未重建或清理 LaunchServices 数据库。通知应用识别图标 v1 仍不标记为通过。
+
+2026-06-01 优先级调整：经用户授权，已通过正常 `SIGTERM` 重启当前用户的通知中心 UI agent，并从工作区 release bundle 再次触发 10 秒通知；通知横幅仍显示旧红色圆形占位图。通知正文和触发时机正常，当前版本仅用于个人自用。本问题降为最低优先级并暂缓处理，后续仅在正式发布准备或用户主动重新提升优先级时继续排查。
+
 ## 复盘与历史
 
 - [ ] 复盘页在小窗下可以滚动到保存按钮。

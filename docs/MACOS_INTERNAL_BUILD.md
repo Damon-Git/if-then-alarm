@@ -142,6 +142,52 @@ src-tauri/target/release/bundle/macos/急急如律令.app
 - LaunchServices 仍索引 `/Users/damon/Desktop/急急如律令.app`；该旧副本仍包含 `128px × 128px` 红色圆形占位 ICNS。
 - 当前阻塞记为 LaunchServices 或通知中心缓存问题。未重置通知权限，未修改系统设置，未清理系统数据库，未强杀系统进程。
 
+### 2026-06-01 只读复查
+
+本轮只做文件和 LaunchServices 索引检查，没有删除、移动、覆盖或重新注册任何 `.app`，也没有重置通知权限、修改系统设置、清理系统数据库或强杀系统进程。
+
+- `/Users/damon/Desktop/急急如律令.app` 仍存在。包内 `急急如律令.icns` 为 `128px × 128px`、`17,900` bytes，SHA-256 为 `f3005664f4da601c6e7e0bde915053ee8c877b899a17df4ff610c7048b9107c0`，可视化检查仍是旧红色圆形占位图。
+- 工作区 `src-tauri/target/release/bundle/macos/急急如律令.app` 仍存在。包内 `急急如律令.icns` 为 `1024px × 1024px`、`2,047,977` bytes，SHA-256 为 `1732212ad209c6ec761ab0a46ff965480e713e5be7a4102f232b8e81ef14ee9c`，是正式应用图标 v1。
+- `/Users/damon/Applications/急急如律令.app` 和 `/Applications/急急如律令.app` 当前均不存在。
+- LaunchServices 当前同时索引 Desktop 旧副本、工作区 release bundle 和 `/Users/damon/.Trash/急急如律令.app`。废纸篓副本仍实际存在，其 ICNS 与工作区 release bundle 的 SHA-256 一致，是正式应用图标 v1，不是旧占位图。
+- `src/lib/notificationAdapter.ts` 发送通知时仍只传入 `id`、`title` 和 `body`，没有单独通知图标配置。
+
+当前仍不能把通知应用识别图标标记为通过。日常安装路径仍是旧 bundle 已可排除；最强的本地证据是 Desktop 旧副本仍存在且仍被 LaunchServices 索引。通知中心缓存仍是次要可能，需在用户明确授权后按最小影响顺序处理并重新实测。
+
+### 2026-06-01 局部 LaunchServices 处理
+
+用户删除 Desktop 旧副本后，本轮按最小影响范围执行局部处理，没有重建或清理 LaunchServices 数据库，没有重置通知权限、修改系统设置或重启系统进程。
+
+- `/Users/damon/Desktop/急急如律令.app` 已不存在。对该已删除路径执行 `lsregister -u` 返回 `-10814`，没有产生额外处理。
+- LaunchServices 一度索引 `/Users/damon/.Trash/急急如律令 08.42.32.app`。精确检查确认该副本仍是旧红色圆形占位 ICNS：`128px × 128px`、`17,900` bytes，SHA-256 为 `f3005664f4da601c6e7e0bde915053ee8c877b899a17df4ff610c7048b9107c0`。
+- 已对上述废纸篓旧占位副本执行局部 `lsregister -u`，并对工作区 release bundle 执行 `lsregister -f`。
+- 等待复查后，LaunchServices 中 `com.damon.jijirululing` 只剩工作区 release bundle：`src-tauri/target/release/bundle/macos/急急如律令.app`。
+- 已从工作区 release bundle 的精确路径启动应用，运行进程路径确认来自该 bundle。
+
+这一步只完成 LaunchServices 旧占位候选移除。通知中心是否仍保留旧图标缓存尚未人工验证；触发下一条通知并确认系统展示正式图标 v1 后，才能把通知应用识别图标标记为通过。
+
+### 2026-06-01 通知中心缓存确认
+
+从工作区 release bundle 的精确路径启动应用后，已通过 10 秒开发模式触发一条新的完成通知。通知横幅仍显示旧红色圆形占位图。
+
+- 触发通知前后复查 LaunchServices，`com.damon.jijirululing` 均只剩工作区 release bundle。
+- 工作区 release bundle 的 ICNS 已确认是正式应用图标 v1。
+- 因此，旧红色圆形图标不再能由 LaunchServices 中的旧 bundle 路径解释；当前最可能根因已收敛为通知中心侧缓存。
+- 本轮没有重启通知中心进程，没有重置通知权限，没有修改系统设置，也没有重建或清理 LaunchServices 数据库。
+
+通知应用识别图标 v1 仍不标记为通过。下一步如需继续，应在用户明确授权后单独重启通知中心进程，再从工作区 release bundle 精确路径重新触发通知验收。
+
+### 2026-06-01 通知中心 UI 重启后仍复现
+
+用户明确授权后，已尝试只重启当前用户的通知中心 UI agent：
+
+- `launchctl kickstart -k "gui/$(id -u)/com.apple.notificationcenterui.agent"` 被 SIP 拒绝，没有重启进程。
+- `launchctl kill SIGTERM "gui/$(id -u)/com.apple.notificationcenterui.agent"` 被权限检查拒绝，没有重启进程。
+- 对当前用户的通知中心 UI 进程发送正常 `SIGTERM` 后，进程由 PID `716` 重新拉起为 PID `78034`。没有使用 `SIGKILL`，没有重置通知权限，没有修改系统设置，也没有重建或清理 LaunchServices 数据库。
+- 从工作区 release bundle 精确路径重新触发 10 秒开发模式通知后，通知横幅仍显示旧红色圆形占位图。
+
+LaunchServices 旧路径索引和通知中心 UI 进程内缓存均已不足以完整解释该问题。由于当前版本仅用于个人自用，通知正文和触发时机均正常，旧图标不影响核心流程，本问题自 2026-06-01 起降为最低优先级并暂缓处理。后续只有在正式发布准备或用户主动重新提升优先级时再继续排查。
+
 ## 当前不做
 
 - 不手工生成完整 macOS iconset。
