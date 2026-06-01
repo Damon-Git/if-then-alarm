@@ -7,6 +7,8 @@ use tauri::tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent}
 use tauri::Manager;
 
 const DESKTOP_PERSISTENCE_FILENAME: &str = "persistence.v1.json";
+const MENUBAR_ICON: tauri::image::Image<'_> =
+    tauri::include_image!("./icons/menubar-icon/menubar-icon-v1@2x.png");
 
 fn desktop_persistence_file_path(app_handle: &tauri::AppHandle) -> Result<PathBuf, String> {
     app_handle
@@ -121,7 +123,8 @@ fn main() {
         ])
         .setup(|app| {
             let tray = TrayIconBuilder::with_id("main")
-                .title("令")
+                .icon(MENUBAR_ICON)
+                .icon_as_template(true)
                 .tooltip("急急如律令")
                 .show_menu_on_left_click(false)
                 .on_tray_icon_event(|tray, event| {

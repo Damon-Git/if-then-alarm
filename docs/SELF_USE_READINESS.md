@@ -50,7 +50,7 @@ npm run tauri:build
 - 如果替换日常自用 `.app`，先退出正在运行的旧应用。
 - 双击或右键打开 `.app` 能启动完整窗口。
 - 初始窗口接近 `960 × 760`。
-- 菜单栏右侧有临时“令”入口。
+- 菜单栏右侧有简化香炉 template icon。
 - 完成一轮复盘后关闭再打开，历史记录仍在。
 - 数据文件位于 `~/Library/Application Support/com.damon.jijirululing/persistence.v1.json`，替换 `.app` 不应清空该文件。
 
@@ -98,8 +98,6 @@ npm run tauri:build
 
 ## 暂不纳入自用基线
 
-- 正式应用图标。
-- 正式菜单栏 template icon。
 - 正式通知图标。
 - DMG、签名、公证和发布。
 - 全局快捷键。

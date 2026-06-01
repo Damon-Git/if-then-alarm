@@ -19,7 +19,7 @@
 | Tauri 窗口置顶 | `src/lib/tauriWindow.ts` | `@tauri-apps/api/window` | 已封装 | 桌面端按用户设置调用 `setAlwaysOnTop` |
 | Tauri Dock 显示 | `src/lib/tauriWindow.ts` | `@tauri-apps/api/app` | 已封装 | 桌面端按用户设置调用 `setDockVisibility`，默认显示 Dock |
 | 桌面计时通知 | `src/lib/notificationAdapter.ts` | `@tauri-apps/plugin-notification`、`window.setTimeout` | 已封装 | 通过 adapter 延迟发送和取消当前计时段通知 |
-| 菜单栏入口 | `src-tauri/src/main.rs` | Tauri `TrayIconBuilder` | 已封装 | Rust 侧创建菜单栏入口并切换主窗口显示/隐藏；默认应用图标回退已移除，当前保留临时文字“令”；正式 menubar icon v1 等待透明单色 template icon 素材 |
+| 菜单栏入口 | `src-tauri/src/main.rs` | Tauri `TrayIconBuilder` | 已封装 | Rust 侧嵌入透明单色 menubar icon v1，作为 macOS template icon 创建菜单栏入口并切换主窗口显示/隐藏；默认应用图标回退已移除 |
 | 历史导出 | `src/lib/fileTransferAdapter.ts` | Web：`Blob`、临时下载链接；Tauri：系统保存面板和 `write_user_text_file` command | 已封装 | 浏览器保留 Web 下载；桌面端使用原生保存面板 |
 | 历史导入读取 | `src/lib/fileTransferAdapter.ts` | Web：`File.text()`；Tauri：系统打开面板和 `read_user_text_file` command | 已封装 | 浏览器保留文件 input；桌面端使用原生打开面板 |
 

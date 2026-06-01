@@ -83,8 +83,8 @@ src-tauri/target/release/bundle/macos/急急如律令.app
 - 双击或右键打开后能启动窗口；如果 macOS 拦截未签名应用，使用右键打开。
 - 初始窗口接近 `960px × 760px`。
 - Dock 和 `.app` 显示应用图标 v1。
-- 菜单栏右侧能看到临时“令”入口。
-- 菜单栏临时“令”入口没有复用彩色应用图标。
+- 菜单栏右侧能看到简化香炉 template icon。
+- 菜单栏 template icon 没有复用彩色应用图标。
 - 点击“进入仪式台”后先展示完整主祭台，不直接进入小窗。
 - 进行中关闭确认里点击“保留并收起”后，切换到只显示香炉的小窗。
 - 小窗点击香炉后能展开完整窗口，标题栏和窗口阴影恢复。
@@ -111,20 +111,20 @@ src-tauri/target/release/bundle/macos/急急如律令.app
 - `src-tauri/icons/app-icon/app-icon-v1.png` 已接入 Dock、`.app` 和默认应用识别。
 - `src-tauri/icons/app-icon/app-icon-v1@2x.png` 是与源图内容一致的 Retina 打包副本。
 - `src-tauri/icons/app-icon/placeholder-icon.png` 仍保留，但不再接入 bundle。
-- 菜单栏入口仍只使用文字“令”，不复用应用图标；这不是正式 template icon。
-- `src-tauri/icons/menubar-icon/` 和 `src-tauri/icons/notification-icon/` 只保留接入边界，不放单独素材。
+- `src-tauri/icons/menubar-icon/menubar-icon-v1.png` 和 `menubar-icon-v1@2x.png` 已接入菜单栏 template icon，不复用应用图标。
+- `src-tauri/icons/notification-icon/` 只保留接入边界，不放单独素材。
 
-## 正式 menubar icon v1 接入阻塞
+## 正式 menubar icon v1 接入
 
-2026-05-31 已完成接入审计，但没有修改 Rust 壳层：
+2026-05-31 已补齐专用透明单色素材并修改 Rust 壳层：
 
 - macOS 菜单栏需要专用 template icon，由系统适配深色和浅色菜单栏。
-- 仓库内没有可以直接复用的 `16px × 16px` 和 `32px × 32px` 透明单色素材。
-- 彩色应用图标和仪式台分层 PNG 不适合作为状态栏 template icon。
-- 当前继续保留文字“令”，没有生成或接入未经确认的视觉资产。
-- 素材补齐后，最小 Rust 改动是使用 `tauri::include_image!` 嵌入 `menubar-icon-v1@2x.png`，调用 `.icon(...)` 和 `.icon_as_template(true)`，并移除 `.title("令")`。原有 tooltip、点击行为和窗口恢复逻辑保持不变。
+- `menubar-icon-v1.png` 是 `16px × 16px` 透明单色简化香炉剪影。
+- `menubar-icon-v1@2x.png` 是同轮廓的 `32px × 32px` Retina 素材。
+- Rust 使用 `tauri::include_image!` 嵌入 `menubar-icon-v1@2x.png`，调用 `.icon(...)` 和 `.icon_as_template(true)`，并移除 `.title("令")`。
+- 原有 tooltip、点击行为和窗口恢复逻辑保持不变。
 
-建议素材规格和命名见 `src-tauri/icons/menubar-icon/README.md`。由于素材缺失，本轮无法执行“菜单栏不再显示文字令”的 release bundle 手动验收。
+素材规格和命名见 `src-tauri/icons/menubar-icon/README.md`。release bundle 手动验收需要覆盖深色和浅色菜单栏可读性、点击隐藏和再次点击恢复聚焦。
 
 ## 通知应用识别图标验收阻塞
 

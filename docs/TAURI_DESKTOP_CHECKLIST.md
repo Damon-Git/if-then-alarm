@@ -26,8 +26,8 @@
 - [ ] 双击或右键打开 `.app` 后能启动窗口。
 - [ ] 打包版初始窗口接近 `960px × 760px`。
 - [ ] Dock 和 `.app` 显示 `app-icon-v1.png` 对应的新应用图标。
-- [ ] 打包版菜单栏右侧能看到临时“令”入口。
-- [ ] 打包版菜单栏临时“令”入口没有复用彩色应用图标。
+- [ ] 打包版菜单栏右侧能看到简化香炉 template icon。
+- [ ] 打包版菜单栏 template icon 没有复用彩色应用图标。
 - [ ] 打包版保存复盘后重新打开，历史记录仍可查看。
 - [ ] 当前只验收内部 `.app`，不验收 DMG、签名、公证或正式发布。
 
@@ -65,20 +65,20 @@ npm run tauri:dev
 - [ ] 重启后，“窗口置顶”开关保留上次设置。
 - [ ] 默认情况下，“在 Dock 中显示”处于开启状态。
 - [ ] 关闭“在 Dock 中显示”后，Dock 中不再显示应用图标。
-- [ ] Dock 图标隐藏后，仍可通过菜单栏“令”入口重新打开窗口。
+- [ ] Dock 图标隐藏后，仍可通过菜单栏 template icon 入口重新打开窗口。
 - [ ] 重新开启“在 Dock 中显示”后，Dock 中恢复显示应用图标。
 - [ ] 重启后，“在 Dock 中显示”开关保留上次设置。
 
 ## 菜单栏入口
 
-- [ ] macOS 菜单栏右侧状态区能看到“令”字入口。
-- [ ] 当前“令”字入口被视为临时菜单栏入口，不验收为正式图标。
-- [ ] 点击右侧“令”字入口，当前窗口会隐藏。
-- [ ] 再次点击右侧“令”字入口，当前窗口会按隐藏前的尺寸模式重新显示并获得焦点。
-- [ ] 菜单栏“令”入口不负责切换小窗/完整窗口尺寸，只负责显示或隐藏。
+- [ ] macOS 菜单栏右侧状态区能看到简化香炉 template icon。
+- [ ] 深色和浅色菜单栏下，template icon 都清晰可读。
+- [ ] 点击右侧 template icon，当前窗口会隐藏。
+- [ ] 再次点击右侧 template icon，当前窗口会按隐藏前的尺寸模式重新显示并获得焦点。
+- [ ] 菜单栏 template icon 入口不负责切换小窗/完整窗口尺寸，只负责显示或隐藏。
 - [ ] 通过菜单栏入口隐藏窗口后，当前计时和系统通知不受影响。
 
-2026-05-31 正式 menubar icon v1 接入审计：macOS 菜单栏应使用透明单色 template icon。仓库内没有可以直接复用的 `16px × 16px` 和 `32px × 32px` 专用素材；彩色应用图标和仪式台分层 PNG 不适合作为状态栏小图。本轮没有修改 Rust 接入，没有生成视觉资产，release bundle 仍显示临时文字“令”。素材补齐后需要重新构建并逐项复验本节交互行为。
+2026-05-31 正式 menubar icon v1 已接入：Rust 嵌入 `menubar-icon-v1@2x.png`，设置 `.icon(...)` 和 `.icon_as_template(true)`，并移除临时 `.title("令")`。需要在 release bundle 中逐项复验本节交互行为。
 
 ## 图标资产
 
@@ -87,8 +87,9 @@ npm run tauri:dev
 - [ ] `bundle.icon` 只接入 `icons/app-icon/app-icon-v1@2x.png`。
 - [ ] `src-tauri/icons/app-icon/placeholder-icon.png` 仍保留，但不再接入 bundle。
 - [ ] 应用图标、菜单栏图标和通知图标的职责已在 `src-tauri/icons/README.md` 和各子目录 README 中分开记录。
-- [ ] 当前阶段不把“令”字入口当作正式菜单栏 template icon。
-- [ ] 当前 tray 只保留文字“令”，不回退到默认应用图标，也不复用应用图标 v1。
+- [ ] `src-tauri/icons/menubar-icon/menubar-icon-v1.png` 是 `16px × 16px` RGBA 透明单色素材。
+- [ ] `src-tauri/icons/menubar-icon/menubar-icon-v1@2x.png` 是同轮廓的 `32px × 32px` RGBA Retina 素材。
+- [ ] 当前 tray 使用独立的菜单栏 template icon，不回退到默认应用图标，也不复用应用图标 v1。
 
 ## 填写页
 
@@ -144,7 +145,7 @@ npm run tauri:dev
 - [ ] 开始下一段计时后，不会继续保留上一段的待触发通知。
 - [ ] 放弃本轮、保存复盘或丢弃恢复轮次后，不会继续触发旧通知。
 - [ ] 进行中轮次点击“保留并收起”后，如果当前段计时结束，系统仍能发出通知。
-- [ ] 系统通知中的应用识别表现单独验收；不要把菜单栏文字“令”或未来 template icon 当作通知图标。
+- [ ] 系统通知中的应用识别表现单独验收；不要把菜单栏 template icon 当作通知图标。
 
 2026-05-31 阻塞记录：从 `/Users/damon/Applications/急急如律令.app` 明确启动新 bundle 并触发 10 秒开发模式通知后，通知仍显示旧红色圆形占位图。安装路径和工作区 bundle 的 ICNS 已一致为 `1024px × 1024px` 应用图标 v1；LaunchServices 仍索引包含旧 `128px × 128px` 占位 ICNS 的 `/Users/damon/Desktop/急急如律令.app`。当前按 LaunchServices 或通知中心缓存问题处理，通知应用识别图标 v1 不标记为通过。
 
@@ -209,5 +210,4 @@ npm run tauri:dev
 
 - [ ] 不验收全局快捷键。
 - [ ] 不验收完整发布 iconset。
-- [ ] 不验收正式菜单栏图标。
 - [ ] 不验收真实 macOS 打包发布。

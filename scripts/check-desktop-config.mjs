@@ -1,6 +1,7 @@
 import { access, readFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { inflateSync } from "node:zlib";
 
 const scriptDirectory = path.dirname(fileURLToPath(import.meta.url));
 const projectRoot = path.resolve(scriptDirectory, "..");
@@ -68,6 +69,152 @@ async function readPngDimensions(relativePath) {
     assert(false, `${relativePath} is a readable PNG file`);
     return null;
   }
+}
+
+function paethPredictor(left, up, upLeft) {
+  const prediction = left + up - upLeft;
+  const leftDistance = Math.abs(prediction - left);
+  const upDistance = Math.abs(prediction - up);
+  const upLeftDistance = Math.abs(prediction - upLeft);
+
+  if (leftDistance <= upDistance && leftDistance <= upLeftDistance) {
+    return left;
+  }
+
+  if (upDistance <= upLeftDistance) {
+    return up;
+  }
+
+  return upLeft;
+}
+
+async function readRgbaPngPixels(relativePath) {
+  try {
+    const bytes = await readFile(resolveProjectPath(relativePath));
+    const idatChunks = [];
+    let offset = 8;
+    let width = null;
+    let height = null;
+
+    while (offset < bytes.length) {
+      const length = bytes.readUInt32BE(offset);
+      const type = bytes.subarray(offset + 4, offset + 8).toString("ascii");
+      const data = bytes.subarray(offset + 8, offset + 8 + length);
+
+      if (type === "IHDR") {
+        width = data.readUInt32BE(0);
+        height = data.readUInt32BE(4);
+        if (data[8] !== 8 || data[9] !== 6) {
+          throw new Error("expected 8-bit RGBA PNG");
+        }
+      } else if (type === "IDAT") {
+        idatChunks.push(data);
+      } else if (type === "IEND") {
+        break;
+      }
+
+      offset += length + 12;
+    }
+
+    if (!width || !height || idatChunks.length === 0) {
+      throw new Error("missing PNG image data");
+    }
+
+    const bytesPerPixel = 4;
+    const rowLength = width * bytesPerPixel;
+    const filtered = inflateSync(Buffer.concat(idatChunks));
+    const expectedLength = height * (rowLength + 1);
+    if (filtered.length !== expectedLength) {
+      throw new Error("unexpected PNG scanline length");
+    }
+
+    const pixels = Buffer.alloc(width * height * bytesPerPixel);
+    for (let y = 0; y < height; y += 1) {
+      const filteredRowOffset = y * (rowLength + 1);
+      const filterType = filtered[filteredRowOffset];
+      for (let x = 0; x < rowLength; x += 1) {
+        const pixelOffset = y * rowLength + x;
+        const value = filtered[filteredRowOffset + 1 + x];
+        const left = x >= bytesPerPixel ? pixels[pixelOffset - bytesPerPixel] : 0;
+        const up = y > 0 ? pixels[pixelOffset - rowLength] : 0;
+        const upLeft =
+          y > 0 && x >= bytesPerPixel
+            ? pixels[pixelOffset - rowLength - bytesPerPixel]
+            : 0;
+
+        if (filterType === 0) {
+          pixels[pixelOffset] = value;
+        } else if (filterType === 1) {
+          pixels[pixelOffset] = value + left;
+        } else if (filterType === 2) {
+          pixels[pixelOffset] = value + up;
+        } else if (filterType === 3) {
+          pixels[pixelOffset] = value + Math.floor((left + up) / 2);
+        } else if (filterType === 4) {
+          pixels[pixelOffset] = value + paethPredictor(left, up, upLeft);
+        } else {
+          throw new Error(`unsupported PNG filter type ${filterType}`);
+        }
+      }
+    }
+
+    return { height, pixels, width };
+  } catch {
+    assert(false, `${relativePath} exposes readable RGBA pixels`);
+    return null;
+  }
+}
+
+function hasOnlyTemplatePixels(image) {
+  if (!image) {
+    return false;
+  }
+
+  let hasBlack = false;
+  let hasTransparent = false;
+
+  for (let offset = 0; offset < image.pixels.length; offset += 4) {
+    const red = image.pixels[offset];
+    const green = image.pixels[offset + 1];
+    const blue = image.pixels[offset + 2];
+    const alpha = image.pixels[offset + 3];
+
+    if (red !== 0 || green !== 0 || blue !== 0 || (alpha !== 0 && alpha !== 255)) {
+      return false;
+    }
+
+    hasBlack ||= alpha === 255;
+    hasTransparent ||= alpha === 0;
+  }
+
+  return hasBlack && hasTransparent;
+}
+
+function isTwoTimesNearestNeighbor(source, retina) {
+  if (
+    !source ||
+    !retina ||
+    retina.width !== source.width * 2 ||
+    retina.height !== source.height * 2
+  ) {
+    return false;
+  }
+
+  for (let y = 0; y < retina.height; y += 1) {
+    for (let x = 0; x < retina.width; x += 1) {
+      const sourceOffset = (Math.floor(y / 2) * source.width + Math.floor(x / 2)) * 4;
+      const retinaOffset = (y * retina.width + x) * 4;
+      if (
+        !source.pixels
+          .subarray(sourceOffset, sourceOffset + 4)
+          .equals(retina.pixels.subarray(retinaOffset, retinaOffset + 4))
+      ) {
+        return false;
+      }
+    }
+  }
+
+  return true;
 }
 
 function assertPackageScript(packageJson, scriptName, expectedCommand) {
@@ -161,6 +308,18 @@ const appIconV1Source = await readFile(
 const appIconV1RetinaSource = await readFile(
   resolveProjectPath("src-tauri/icons/app-icon/app-icon-v1@2x.png"),
 );
+const menubarIconV1Dimensions = await readPngDimensions(
+  "src-tauri/icons/menubar-icon/menubar-icon-v1.png",
+);
+const menubarIconV1RetinaDimensions = await readPngDimensions(
+  "src-tauri/icons/menubar-icon/menubar-icon-v1@2x.png",
+);
+const menubarIconV1 = await readRgbaPngPixels(
+  "src-tauri/icons/menubar-icon/menubar-icon-v1.png",
+);
+const menubarIconV1Retina = await readRgbaPngPixels(
+  "src-tauri/icons/menubar-icon/menubar-icon-v1@2x.png",
+);
 
 assertPackageScript(packageJson, "dev:tauri-frontend", "node scripts/start-tauri-frontend.mjs");
 assertPackageScript(packageJson, "check:compact", "node scripts/check-compact-window.mjs");
@@ -225,6 +384,30 @@ assert(
 assert(
   appIconV1Source.equals(appIconV1RetinaSource),
   "Desktop app icon v1 Retina build input matches the source PNG",
+);
+assert(
+  menubarIconV1Dimensions?.width === 16 &&
+    menubarIconV1Dimensions.height === 16 &&
+    menubarIconV1Dimensions.colorType === 6,
+  "Desktop menubar icon v1 source is 16 x 16 RGBA",
+);
+assert(
+  menubarIconV1RetinaDimensions?.width === 32 &&
+    menubarIconV1RetinaDimensions.height === 32 &&
+    menubarIconV1RetinaDimensions.colorType === 6,
+  "Desktop menubar icon v1 Retina source is 32 x 32 RGBA",
+);
+assert(
+  hasOnlyTemplatePixels(menubarIconV1),
+  "Desktop menubar icon v1 source uses only black and transparent pixels",
+);
+assert(
+  hasOnlyTemplatePixels(menubarIconV1Retina),
+  "Desktop menubar icon v1 Retina source uses only black and transparent pixels",
+);
+assert(
+  isTwoTimesNearestNeighbor(menubarIconV1, menubarIconV1Retina),
+  "Desktop menubar icon v1 Retina source is the 2x outline of the 1x source",
 );
 assert(
   tauriConfig.app?.macOSPrivateApi === true,
@@ -347,10 +530,15 @@ assertTextIncludes(
   'TrayIconBuilder::with_id("main")',
   "Rust registers the main tray icon",
 );
-assertTextIncludes(mainRust, '.title("令")', "Rust tray icon uses the temporary 令 title");
-assertTextExcludes(mainRust, ".icon_as_template(true)", "Rust does not treat a missing tray image as a macOS template");
+assertTextIncludes(
+  mainRust,
+  'tauri::include_image!("./icons/menubar-icon/menubar-icon-v1@2x.png")',
+  "Rust embeds the menubar icon v1 Retina source",
+);
+assertTextIncludes(mainRust, ".icon(MENUBAR_ICON)", "Rust attaches the menubar icon v1 to the tray");
+assertTextIncludes(mainRust, ".icon_as_template(true)", "Rust treats the menubar icon v1 as a macOS template");
+assertTextExcludes(mainRust, '.title("令")', "Rust removes the temporary 令 tray title");
 assertTextExcludes(mainRust, "default_window_icon", "Rust no longer falls back to the default app icon for the tray");
-assertTextExcludes(mainRust, "tray.icon(", "Rust does not attach the desktop app icon to the tray");
 assertTextIncludes(
   desktopIconsReadme,
   "菜单栏入口不再回退到默认应用图标",
@@ -726,6 +914,8 @@ await Promise.all(
     "src-tauri/icons/app-icon/app-icon-v1@2x.png",
     "src-tauri/icons/app-icon/placeholder-icon.png",
     "src-tauri/icons/menubar-icon/README.md",
+    "src-tauri/icons/menubar-icon/menubar-icon-v1.png",
+    "src-tauri/icons/menubar-icon/menubar-icon-v1@2x.png",
     "src-tauri/icons/notification-icon/README.md",
     "src/assets/visuals/README.md",
     "src/assets/visuals/altar/README.md",

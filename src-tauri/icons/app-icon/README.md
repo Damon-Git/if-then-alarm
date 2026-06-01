@@ -15,7 +15,7 @@
 - `app-icon-v1@2x.png`：与源图内容一致的 Retina 打包副本。
 - `placeholder-icon.png`：旧临时占位图标，保留用于历史追溯，不再接入 bundle。
 
-`app-icon-v1.png` 是 `1024px × 1024px` RGBA PNG。Tauri bundler 通过文件名中的 `@2x` 判断 Retina 密度，因此 `src-tauri/tauri.conf.json` 把同内容的 `app-icon-v1@2x.png` 配置到 `bundle.icon`。菜单栏 tray 只保留文字“令”，不复用该应用图标。
+`app-icon-v1.png` 是 `1024px × 1024px` RGBA PNG。Tauri bundler 通过文件名中的 `@2x` 判断 Retina 密度，因此 `src-tauri/tauri.conf.json` 把同内容的 `app-icon-v1@2x.png` 配置到 `bundle.icon`。菜单栏 tray 使用独立的透明单色 template icon，不复用该应用图标。
 
 ## 当前接入
 

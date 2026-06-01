@@ -106,4 +106,4 @@
 
 仪式台正式 v1 素材继续遵守既有结构关系：上方情境性符箓、中间香炉与线香、下方预防性符箓。图片不承载动态业务状态，未配置的可选图层仍可使用克制的 CSS 回退。
 
-当前 `src-tauri/icons/app-icon/placeholder-icon.png` 也是占位资产，不代表正式应用图标。macOS 菜单栏右侧的“令”字入口只用于桌面交互验证，不代表正式菜单栏 template icon。
+当前 `src-tauri/icons/app-icon/placeholder-icon.png` 也是占位资产，不代表正式应用图标。macOS 菜单栏右侧已经接入独立的透明单色简化香炉 template icon，不复用应用图标或仪式台分层 PNG。
