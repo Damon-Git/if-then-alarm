@@ -75,6 +75,50 @@ src-tauri/target/release/bundle/macos/急急如律令.app
 - 不要在应用运行中替换 `.app`。
 - `.app` 包只是程序本体；历史、设置、当前轮次不在包内。
 
+当前目标不存在时，使用以下最小安装命令。命令会先确认工作区 bundle 存在，并在目标路径已经出现时停止，不会直接覆盖：
+
+```bash
+source_app="$PWD/src-tauri/target/release/bundle/macos/急急如律令.app"
+target_app="$HOME/Applications/急急如律令.app"
+
+test -d "$source_app" || { printf '工作区 bundle 不存在：%s\n' "$source_app" >&2; exit 1; }
+if [ -e "$target_app" ]; then
+  printf '目标已存在，停止安装：%s\n' "$target_app" >&2
+  exit 1
+fi
+
+mkdir -p "$HOME/Applications"
+ditto "$source_app" "$target_app"
+```
+
+如果执行安装前目标路径已经存在，先退出正在运行的应用，再使用带时间戳的备份方案：
+
+```bash
+source_app="$PWD/src-tauri/target/release/bundle/macos/急急如律令.app"
+target_app="$HOME/Applications/急急如律令.app"
+backup_app="$HOME/Applications/急急如律令.app.backup-$(date +%Y%m%d-%H%M%S)"
+
+test -d "$source_app" || { printf '工作区 bundle 不存在：%s\n' "$source_app" >&2; exit 1; }
+test -e "$target_app" || { printf '目标不存在，不需要覆盖：%s\n' "$target_app" >&2; exit 1; }
+
+mv "$target_app" "$backup_app"
+ditto "$source_app" "$target_app"
+printf '旧 bundle 已备份到：%s\n' "$backup_app"
+```
+
+如果需要回滚，把新安装的 bundle 先改名保留，再把时间戳备份移回日常路径：
+
+```bash
+target_app="$HOME/Applications/急急如律令.app"
+rollback_app="$HOME/Applications/急急如律令.app.rollback-$(date +%Y%m%d-%H%M%S)"
+backup_app="$HOME/Applications/急急如律令.app.backup-YYYYMMDD-HHMMSS"
+
+mv "$target_app" "$rollback_app"
+mv "$backup_app" "$target_app"
+```
+
+如果此前没有旧 bundle，只执行第一条 `mv` 即可撤下新安装版本。上述操作只影响 `.app` 程序包，不改动 `~/Library/Application Support/com.damon.jijirululing/` 下的数据。
+
 ## 什么时候需要重新构建
 
 以下情况需要重新执行 `npm run tauri:build` 并替换自用 `.app`：
@@ -195,3 +239,14 @@ persistence.v1.json
 - notarization 公证。
 - 自动更新。
 - 面向他人的安装引导。
+
+## 2026-06-01 自用安装恢复准备
+
+- `npm run check:release-self-use` 已通过。
+- `npm run release:self-use-summary` 已输出当前 `3a0df1c` 摘要。
+- 已重新执行 `npm run tauri:build`，工作区 bundle 为 `src-tauri/target/release/bundle/macos/急急如律令.app`。
+- 工作区 bundle 的 `CFBundleIdentifier` 为 `com.damon.jijirululing`，`CFBundleVersion` 和 `CFBundleShortVersionString` 均为 `0.2.0`，`CFBundleIconFile` 为 `急急如律令.icns`。
+- 包内 ICNS 为 `1024px × 1024px`，SHA-256 为 `1732212ad209c6ec761ab0a46ff965480e713e5be7a4102f232b8e81ef14ee9c`；包内 `Contents/MacOS/jiji-rululing` 存在且可执行。
+- `/Users/damon/Applications/急急如律令.app` 当前不存在。
+- 本轮尚未复制、覆盖、移动或删除任何日常自用 `.app`。安装仍需用户明确授权。
+- 通知横幅仍可能显示旧红色圆形占位图。本问题没有标记为解决，当前仅按最低优先级已知问题保留。

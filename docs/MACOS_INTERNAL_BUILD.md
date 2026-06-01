@@ -49,13 +49,17 @@ src-tauri/target/release/bundle/macos/急急如律令.app
 
 当前一次已验证的内部构建：
 
-- 构建日期：2026-05-31
+- 构建日期：2026-06-01
+- Git 提交：`3a0df1c`
+- 自动检查：`npm run check:release-self-use` 已通过
 - 构建命令：`npm run tauri:build`
 - 构建产物：`src-tauri/target/release/bundle/macos/急急如律令.app`
 - 包内可执行文件：`Contents/MacOS/jiji-rululing`
 - 包内图标文件：`Contents/Resources/急急如律令.icns`
 - Bundle identifier：`com.damon.jijirululing`
 - Bundle version：`0.2.0`
+- Bundle short version：`0.2.0`
+- Bundle icon：`1024px × 1024px`，SHA-256 为 `1732212ad209c6ec761ab0a46ff965480e713e5be7a4102f232b8e81ef14ee9c`
 
 ## 当前 bundle 配置
 
