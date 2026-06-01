@@ -97,6 +97,8 @@ type CenserVisualProps = {
 
 主祭台辅助信息必须集中在 `.censer-visual__metadata` 这一张清晰信息卡内，不拆成多个绝对定位标签。信息卡默认隐藏，只由 `.censer-visual__hover-target` 触发显示；符箓 hover、符箓 focus 和线香区域 hover 都不能触发它。实现上不要依赖 CSS `:has(...:hover)` 作为唯一触发条件。
 
+信息卡和运行态 `.timer-panel` 的锚点必须落在背景空白区。单槽、双槽和三槽布局可以使用不同水平偏移，但不能覆盖线香、香炉主体或预防符箓；调整位置时不得改变香炉自身水平基线。
+
 ### 预留图层
 
 - `data-censer-layer="body"`：香炉主体。
