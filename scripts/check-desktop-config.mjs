@@ -277,6 +277,7 @@ const fileTransferAdapter = await readText("src/lib/fileTransferAdapter.ts");
 const notificationAdapter = await readText("src/lib/notificationAdapter.ts");
 const soundReminder = await readText("src/lib/soundReminder.ts");
 const compactWindowCheck = await readText("scripts/check-compact-window.mjs");
+const tauriPersistenceRecoveryCheck = await readText("scripts/check-tauri-persistence-recovery.mjs");
 const tauriWindowRoundtripCheck = await readText("scripts/check-tauri-window-roundtrip.mjs");
 const soundAssetsCheck = await readText("scripts/check-sound-assets.mjs");
 const visualAssetsCheck = await readText("scripts/check-visual-assets.mjs");
@@ -330,6 +331,7 @@ assertPackageScript(packageJson, "check:compact", "node scripts/check-compact-wi
 assertPackageScript(packageJson, "check:desktop-config", "node scripts/check-desktop-config.mjs");
 assertPackageScript(packageJson, "check:self-use", "node scripts/check-self-use-readiness.mjs");
 assertPackageScript(packageJson, "check:sound-assets", "node scripts/check-sound-assets.mjs");
+assertPackageScript(packageJson, "check:tauri-persistence-recovery", "node scripts/check-tauri-persistence-recovery.mjs");
 assertPackageScript(packageJson, "check:tauri-window-roundtrip", "node scripts/check-tauri-window-roundtrip.mjs");
 assertPackageScript(packageJson, "check:visual-assets", "node scripts/check-visual-assets.mjs");
 assertPackageScript(packageJson, "tauri:dev", "tauri dev");
@@ -471,6 +473,7 @@ assertTextIncludes(
   "Tauri window adapter compensates for native title bar height when restoring the full shell",
 );
 await assertFileExists("scripts/check-tauri-window-roundtrip.mjs");
+await assertFileExists("scripts/check-tauri-persistence-recovery.mjs");
 await assertFileExists("scripts/tauri-window-roundtrip-helper.swift");
 [
   "persistence.v1.before.json",
@@ -485,6 +488,21 @@ await assertFileExists("scripts/tauri-window-roundtrip-helper.swift");
     tauriWindowRoundtripCheck,
     token,
     `Native Tauri window roundtrip smoke preserves ${token}`,
+  ),
+);
+[
+  "persistence.v1.before.json",
+  "src-tauri/target/debug/jiji-rululing",
+  "HOME: tempHome",
+  "persistence\\.v1\\.corrupt-",
+  "isolated corrupt JSON backup preserves the original fixture bytes",
+  "rewrote a safe isolated desktop JSON under temp HOME",
+  "actual desktop JSON after native recovery smoke",
+].forEach((token) =>
+  assertTextIncludes(
+    tauriPersistenceRecoveryCheck,
+    token,
+    `Native Tauri persistence recovery smoke preserves ${token}`,
   ),
 );
 assertTextIncludes(
@@ -1006,6 +1024,7 @@ await Promise.all(
     "docs/VISUAL_ASSET_BOUNDARIES.md",
     "scripts/extract-stage-censer-layers.mjs",
     "scripts/generate-stage-incense-assets.mjs",
+    "scripts/check-tauri-persistence-recovery.mjs",
     "scripts/check-visual-assets.mjs",
     "scripts/check-self-use-readiness.mjs",
     "src/lib/desktopPersistenceAdapter.ts",

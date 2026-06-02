@@ -58,6 +58,15 @@
 - [x] 隔离原生冒烟已覆盖独立热区拖动和香炉炉身拖动：两段拖动后外框均保持 `390px × 620px`，没有误触展开；随后连续两次恢复完整窗口，外框均为 `960px × 760px`。
 - [x] 原生冒烟使用临时 `HOME`，实际桌面 JSON 在审计前后逐字节不变；用户已人工验证本轮修改通过。
 
+## 2026-06-02 桌面 JSON 损坏恢复隔离冒烟记录
+
+- [x] 新增 `npm run check:tauri-persistence-recovery`，用于隔离验证真实 Tauri WebView 下的桌面 JSON 损坏恢复链路。
+- [x] 审计启动前复制并记录实际桌面 JSON；确认没有正在运行的 debug 或 release `jiji-rululing` 进程，再使用临时 `HOME` 启动精确 debug 二进制。
+- [x] 临时损坏 fixture 已改名保留为 `persistence.v1.corrupt-*.json`，备份内容与原始损坏 fixture 逐字节一致；随后重写 `version: 1` 的安全 JSON。
+- [x] 按产品契约，本次安全 JSON 从旧 WebView `localStorage` 只读恢复 7 条历史；审计记录只保留恢复摘要，不复制恢复后的完整内容。
+- [x] 应用窗口截图已人工确认恢复 toast 正确显示；截图只包含应用窗口。
+- [x] 临时 `HOME` 已删除，debug 和 Vite 进程已退出；实际桌面 JSON 在审计前后 SHA-256 均为 `3731a7e4cc1c60b6b37cb8909bbc9824e77d3d02602ab46aa3ba6c8efa14e1cd`。
+
 ## 启动与构建
 
 - [ ] 执行 `npm install` 后依赖安装正常。

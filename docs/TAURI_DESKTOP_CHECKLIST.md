@@ -14,6 +14,8 @@
 - [ ] 如果 `5173` 被其他应用占用，先释放端口；如果是本项目 Vite 服务，可直接复用。
 - [ ] 修改窗口外壳、尺寸切换或小窗拖拽后，确认没有正在运行的 debug 或 release 进程，再执行 `npm run check:tauri-window-roundtrip` 通过。
 - [ ] 原生往返冒烟结束后，确认 ignored `artifacts/tauri-window-roundtrip/` 中只包含应用窗口截图和审计记录，实际桌面 JSON 逐字节不变。
+- [ ] 修改桌面持久化或准备长期自用基线时，确认没有正在运行的 debug 或 release 进程，再执行 `npm run check:tauri-persistence-recovery` 通过。
+- [ ] 原生损坏恢复冒烟结束后，确认 ignored `artifacts/tauri-persistence-recovery/` 中只包含应用窗口截图和审计记录，实际桌面 JSON 逐字节不变。
 
 ## 内部打包冒烟
 

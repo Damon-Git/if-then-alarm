@@ -14,6 +14,7 @@
     "check:release-self-use": "node scripts/check-release-self-use.mjs",
     "check:self-use": "node scripts/check-self-use-readiness.mjs",
     "check:sound-assets": "node scripts/check-sound-assets.mjs",
+    "check:tauri-persistence-recovery": "node scripts/check-tauri-persistence-recovery.mjs",
     "check:tauri-window-roundtrip": "node scripts/check-tauri-window-roundtrip.mjs",
     "check:visual-assets": "node scripts/check-visual-assets.mjs",
     "generate:sound-assets": "node scripts/generate-sound-reminder-assets.mjs",

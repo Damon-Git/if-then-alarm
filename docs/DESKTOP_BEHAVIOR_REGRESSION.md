@@ -36,6 +36,14 @@ npm run check:tauri-window-roundtrip
 
 这个原生冒烟会先备份实际桌面 JSON，拒绝复用已有 debug 或 release 进程，再使用临时 `HOME` 启动精确 debug 二进制。它会自动验证初始完整窗口、两次 `390 × 620 → 960 × 760` 往返、独立拖拽热区和香炉炉身区域移动后尺寸不变且不误触展开，并在结束后确认实际桌面 JSON 逐字节不变。应用窗口截图和审计记录只写入 ignored `artifacts/tauri-window-roundtrip/`。原生标题栏、阴影、透明底板观感以及炉身和线香区域拖动手感仍保留人工验收。
 
+如果本轮修改桌面持久化，或准备长期自用基线，再显式执行：
+
+```bash
+npm run check:tauri-persistence-recovery
+```
+
+这个原生冒烟同样先备份实际桌面 JSON，拒绝复用已有 debug 或 release 进程，再使用临时 `HOME` 启动精确 debug 二进制。它会写入隔离损坏 fixture，确认 Rust 命令保留 `persistence.v1.corrupt-*.json`、前端初始化重写安全 JSON、实际桌面 JSON 逐字节不变，并把应用窗口截图和审计记录只写入 ignored `artifacts/tauri-persistence-recovery/`。按产品契约，恢复过程可能只读旧 WebView `localStorage` 作为迁移来源；审计记录只保留恢复摘要，不复制恢复后的完整内容。恢复 toast 仍保留截图人工抽验。
+
 `check:compact` 需要先启动 Web 开发服务。它用于防止小窗语义回退：
 
 - 点击“进入仪式台”后仍进入完整主祭台，不自动切到小窗。
@@ -83,6 +91,8 @@ npm run check:tauri-window-roundtrip
 2026-06-02 已人工验证 Tauri 开发版固定 Demo 路径：原生 WebView 内符箓燃烧、线香烟雾、计时卡、香炉信息卡、完成卡片和闭盖层级正确；烧香中“保留并收起”后小窗为 `390 × 620`，拖拽后尺寸不变且不误触展开；点击小窗香炉后恢复完整窗口。复检时发现运行时 `setSize` 会把 `960 × 760` 当作 client area，导致重新加回标题栏后外框增高到 `960 × 792`；窗口适配器现按 `outerSize - innerSize` 扣除原生装饰尺寸。修复后连续两次完成 `390 × 620 → 960 × 760` 原生窗口往返，外框尺寸稳定，本次修改结果已由用户验证通过。
 
 2026-06-02 已人工验证本轮小窗微调：正常单击香炉仍展开完整窗口；从炉身或线香区域按住拖动时，小窗会跟随鼠标移动，松手后不误触展开；两个和三个香炉时的横排间距收紧为 `6px` 后观感通过；小窗弱状态香炉提高不透明度后观感通过。隔离原生冒烟同时确认炉身拖动后外框仍为 `390 × 620`，两次展开均恢复为 `960 × 760`，实际桌面 JSON 逐字节不变。
+
+2026-06-02 已新增并执行隔离桌面 JSON 损坏恢复冒烟：启动前复制实际桌面 JSON；确认没有正在运行的 debug 或 release 进程；使用临时 `HOME` 下的损坏 fixture 启动精确 debug 二进制；确认损坏文件改名保留、原始损坏字节不变、安全 JSON 重写、恢复 toast 可见、临时 `HOME` 已删除。按产品契约，本次安全 JSON 从旧 WebView `localStorage` 只读恢复 7 条历史。实际桌面 JSON 在审计前后 SHA-256 均为 `3731a7e4cc1c60b6b37cb8909bbc9824e77d3d02602ab46aa3ba6c8efa14e1cd`。
 
 ### 3. 桌面数据
 

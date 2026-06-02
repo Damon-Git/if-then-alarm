@@ -211,6 +211,8 @@ persistence.v1.corrupt-YYYYMMDD-HHmmss.json
 
 当前阶段已接入 toast。首次从旧 `localStorage` 迁移成功、损坏文件恢复、初始化失败回退、写入失败都会给出轻量提示。
 
+macOS 内部开发环境可以执行 `npm run check:tauri-persistence-recovery`。该脚本使用临时 `HOME` 和隔离损坏 fixture 启动精确 debug 二进制，确认损坏文件保留、安全 JSON 重写、实际桌面 JSON 逐字节不变，并输出应用窗口截图用于人工抽验恢复 toast。按产品契约，安全 JSON 可能只读旧 WebView `localStorage` 作为迁移来源；审计记录只保留摘要，不复制恢复后的完整内容。
+
 ## 用户提示
 
 当前阶段只做轻量 toast，不做独立状态面板：

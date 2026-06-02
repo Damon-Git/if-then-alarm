@@ -34,6 +34,12 @@ npm run dev -- --host 127.0.0.1
 npm run check:compact
 ```
 
+如果改过桌面持久化，或准备把当前版本作为长期自用基线，再跑隔离的原生损坏恢复冒烟：
+
+```bash
+npm run check:tauri-persistence-recovery
+```
+
 `npm run check:self-use` 是静态基线检查，只确认长期自用所需的关键脚本、文档和代码入口没有被误删。它会被 `npm run check:release-self-use` 调用，但不替代 Tauri 真机运行或小窗截图检查。
 
 更完整的手动回归路径见 [SELF_USE_REGRESSION_RUNBOOK.md](SELF_USE_REGRESSION_RUNBOOK.md)。准备把某个版本作为日常自用版本前，按该清单完整走一遍。

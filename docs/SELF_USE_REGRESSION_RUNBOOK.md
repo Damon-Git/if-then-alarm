@@ -53,6 +53,14 @@ npm run check:tauri-window-roundtrip
 
 脚本会备份实际桌面 JSON，使用临时 `HOME` 启动精确 debug 二进制，并把应用窗口截图和审计记录写入 ignored `artifacts/tauri-window-roundtrip/`。脚本不安装或覆盖 `.app`，不生成 DMG，也不替代人工桌面验收。
 
+如果本轮改过桌面持久化，或准备把当前版本作为长期自用基线，可以执行隔离的原生损坏恢复冒烟：
+
+```bash
+npm run check:tauri-persistence-recovery
+```
+
+脚本会先复制并记录实际桌面 JSON，拒绝复用已有 debug 或 release 进程，再使用临时 `HOME` 下的损坏 fixture 启动精确 debug 二进制。它会确认损坏文件被改名保留、重新生成安全 JSON、实际桌面 JSON 逐字节不变，并把应用窗口截图和审计记录写入 ignored `artifacts/tauri-persistence-recovery/`。按产品契约，恢复过程可能只读旧 WebView `localStorage` 作为迁移来源；审计记录只保留恢复摘要，不复制恢复后的完整内容。截图用于人工抽验恢复 toast；脚本不安装或覆盖 `.app`，不生成 DMG。
+
 如果本轮准备生成新的 `.app`：
 
 ```bash

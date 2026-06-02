@@ -13,7 +13,7 @@
 
 | 能力 | 当前文件 | 当前 API | 状态 | Tauri 处理 |
 | --- | --- | --- | --- | --- |
-| 历史、session、设置持久化 | `src/lib/persistenceAdapter.ts` | `window.localStorage` | 已封装 | 迁移计划见 `docs/PERSISTENCE_MIGRATION_PLAN.md`；JSON 规格见 `docs/DESKTOP_PERSISTENCE_JSON_SPEC.md` |
+| 历史、session、设置持久化 | `src/lib/persistenceAdapter.ts` | `window.localStorage` | 已封装 | 迁移计划见 `docs/PERSISTENCE_MIGRATION_PLAN.md`；JSON 规格见 `docs/DESKTOP_PERSISTENCE_JSON_SPEC.md`；损坏恢复由 `npm run check:tauri-persistence-recovery` 做隔离原生冒烟 |
 | 历史删除/清空确认 | `src/components/ConfirmModal.tsx` | React 应用内弹窗 | 已封装 | 继续复用应用内弹窗 |
 | Tauri 窗口关闭拦截 | `src/lib/tauriWindow.ts` | `@tauri-apps/api/window` | 已封装 | 桌面端监听关闭事件，业务层只接收确认请求 |
 | Tauri 小窗/完整窗口尺寸切换 | `src/lib/tauriWindow.ts` | `@tauri-apps/api/window` | 已封装 | 桌面端切换透明小窗和标准完整窗口；展开完整窗口时按 `outerSize - innerSize` 扣除原生装饰尺寸，使外框稳定恢复为 `960 × 760` |
