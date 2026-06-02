@@ -17,6 +17,7 @@
 | 历史删除/清空确认 | `src/components/ConfirmModal.tsx` | React 应用内弹窗 | 已封装 | 继续复用应用内弹窗 |
 | Tauri 窗口关闭拦截 | `src/lib/tauriWindow.ts` | `@tauri-apps/api/window` | 已封装 | 桌面端监听关闭事件，业务层只接收确认请求 |
 | Tauri 小窗/完整窗口尺寸切换 | `src/lib/tauriWindow.ts` | `@tauri-apps/api/window` | 已封装 | 桌面端切换透明小窗和标准完整窗口；展开完整窗口时按 `outerSize - innerSize` 扣除原生装饰尺寸，使外框稳定恢复为 `960 × 760` |
+| Tauri 小窗拖拽 | `src/components/useCompactWindowDragSession.ts`、`src/lib/tauriWindow.ts` | React Pointer Events、`@tauri-apps/api/window` | 已封装 | 独立透明热区和香炉炉身/线香区域复用窗口位置会话；香炉按钮移动超过阈值后拖动窗口并抑制随后一次展开点击 |
 | Tauri 窗口置顶 | `src/lib/tauriWindow.ts` | `@tauri-apps/api/window` | 已封装 | 桌面端按用户设置调用 `setAlwaysOnTop` |
 | Tauri Dock 显示 | `src/lib/tauriWindow.ts` | `@tauri-apps/api/app` | 已封装 | 桌面端按用户设置调用 `setDockVisibility`，默认显示 Dock |
 | 桌面计时通知 | `src/lib/notificationAdapter.ts` | `@tauri-apps/plugin-notification`、`window.setTimeout` | 已封装 | 通过 adapter 延迟发送和取消当前计时段通知 |

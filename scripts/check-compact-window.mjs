@@ -277,6 +277,10 @@ const assertCompactCenserDragClickSuppression = async (page) => {
     (await censerButton.getAttribute("data-compact-censer-drag-click-suppression")) === "6px-threshold",
     "compact censer button should expose its drag click suppression threshold",
   );
+  assert(
+    (await censerButton.getAttribute("data-compact-censer-drag-action")) === "move-window-after-threshold",
+    "compact censer button should move the native window after the drag threshold",
+  );
 
   const pointerStart = {
     x: Math.round(buttonBox.x + buttonBox.width / 2),
@@ -297,9 +301,33 @@ const assertCompactCenserDragClickSuppression = async (page) => {
       pointerType: "mouse",
     };
 
-    element.dispatchEvent(new PointerEvent("pointerdown", { ...pointerInit, clientX: start.x, clientY: start.y }));
-    element.dispatchEvent(new PointerEvent("pointermove", { ...pointerInit, clientX: start.x + 24, clientY: start.y }));
-    element.dispatchEvent(new PointerEvent("pointerup", { ...pointerInit, clientX: start.x + 24, clientY: start.y }));
+    element.dispatchEvent(
+      new PointerEvent("pointerdown", {
+        ...pointerInit,
+        clientX: start.x,
+        clientY: start.y,
+        screenX: start.x,
+        screenY: start.y,
+      }),
+    );
+    element.dispatchEvent(
+      new PointerEvent("pointermove", {
+        ...pointerInit,
+        clientX: start.x + 24,
+        clientY: start.y,
+        screenX: start.x + 24,
+        screenY: start.y,
+      }),
+    );
+    element.dispatchEvent(
+      new PointerEvent("pointerup", {
+        ...pointerInit,
+        clientX: start.x + 24,
+        clientY: start.y,
+        screenX: start.x + 24,
+        screenY: start.y,
+      }),
+    );
     element.dispatchEvent(
       new MouseEvent("click", {
         bubbles: true,
@@ -669,10 +697,15 @@ const run = async () => {
         borderStyle: style.borderStyle,
         borderWidth: style.borderWidth,
         backgroundColor: style.backgroundColor,
+        censerGap: Number.parseFloat(censersStyle?.columnGap ?? ""),
         censerFlexWrap: censersStyle?.flexWrap ?? "",
       };
     });
     assert(ritualSceneStyle.censerFlexWrap === "nowrap", "compact ritual censers should stay in a single row");
+    assert(
+      ritualSceneStyle.censerGap <= 8,
+      `compact ritual censers should keep a restrained multi-censer gap: ${JSON.stringify(ritualSceneStyle)}`,
+    );
     assert(
       ritualSceneStyle.backgroundColor === "rgba(0, 0, 0, 0)",
       `compact ritual scene should not draw a background: ${ritualSceneStyle.backgroundColor}`,
@@ -689,6 +722,13 @@ const run = async () => {
     );
     const rowTops = new Set(censerBoxes.map((box) => box.top));
     assert(rowTops.size === 1, `compact ritual censers should be side by side: ${JSON.stringify(censerBoxes)}`);
+    const idleCenserOpacities = await page
+      .locator(".compact-censer--idle .censer-visual--compact .censer-visual__asset")
+      .evaluateAll((elements) => elements.map((element) => Number.parseFloat(window.getComputedStyle(element).opacity)));
+    assert(
+      idleCenserOpacities.every((opacity) => opacity >= 0.84),
+      `compact idle censers should avoid excessive transparency: ${JSON.stringify(idleCenserOpacities)}`,
+    );
     const stateBeforeCompactClick = await page.locator(".compact-censer").evaluateAll((elements) =>
       elements.map((element) => element.className).join(" | "),
     );

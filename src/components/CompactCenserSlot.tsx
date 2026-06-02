@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { formatSeconds } from "../lib/timer";
 import type { IntentSet } from "../types";
 import CenserVisual from "./CenserVisual";
+import { useCompactWindowDragSession } from "./useCompactWindowDragSession";
 
 type CompactCenserSlotProps = {
   incenseProgress: number;
@@ -47,12 +48,17 @@ const CompactCenserSlot = ({
   onOpenFullView,
   timerRemaining,
 }: CompactCenserSlotProps) => {
-  const pointerStartRef = useRef<{ x: number; y: number } | null>(null);
   const suppressionResetTimeoutRef = useRef<number | null>(null);
   const suppressClickRef = useRef(false);
   const isActive = intentSet.status === "burning" || intentSet.status === "resting";
   const formattedRemaining = formatSeconds(timerRemaining);
   const statusHint = getStatusHint(intentSet, formattedRemaining, isSessionComplete);
+  const windowDragSession = useCompactWindowDragSession<HTMLButtonElement>({
+    activationDistance: CENSER_DRAG_CLICK_SUPPRESSION_PX,
+    onDragActivated: () => {
+      suppressClickRef.current = true;
+    },
+  });
 
   const clearScheduledSuppressionReset = () => {
     if (suppressionResetTimeoutRef.current !== null) {
@@ -74,6 +80,7 @@ const CompactCenserSlot = ({
         aria-label={`第 ${intentSet.currentIncenseIndex} / ${intentSet.incenseCount} 炷，${statusLabels[intentSet.status]}，${statusHint}`}
         className="compact-censer__button"
         data-compact-censer-click-action="open-full-window"
+        data-compact-censer-drag-action="move-window-after-threshold"
         data-compact-censer-drag-click-suppression={`${CENSER_DRAG_CLICK_SUPPRESSION_PX}px-threshold`}
         type="button"
         onClick={(event) => {
@@ -87,48 +94,19 @@ const CompactCenserSlot = ({
 
           onOpenFullView();
         }}
-        onPointerCancel={() => {
+        onPointerCancel={(event) => {
           clearScheduledSuppressionReset();
-          pointerStartRef.current = null;
           suppressClickRef.current = false;
+          windowDragSession.onPointerCancel(event);
         }}
         onPointerDown={(event) => {
-          if (event.button !== 0) {
-            return;
-          }
-
           clearScheduledSuppressionReset();
-          pointerStartRef.current = { x: event.clientX, y: event.clientY };
           suppressClickRef.current = false;
-
-          try {
-            event.currentTarget.setPointerCapture(event.pointerId);
-          } catch {
-            // Synthetic browser checks do not register a native active pointer.
-          }
+          windowDragSession.onPointerDown(event);
         }}
-        onPointerLeave={() => {
-          if (pointerStartRef.current) {
-            suppressClickRef.current = true;
-          }
-        }}
-        onPointerMove={(event) => {
-          const pointerStart = pointerStartRef.current;
-
-          if (
-            pointerStart &&
-            Math.hypot(event.clientX - pointerStart.x, event.clientY - pointerStart.y) >=
-              CENSER_DRAG_CLICK_SUPPRESSION_PX
-          ) {
-            suppressClickRef.current = true;
-          }
-        }}
+        onPointerMove={windowDragSession.onPointerMove}
         onPointerUp={(event) => {
-          pointerStartRef.current = null;
-
-          if (event.currentTarget.hasPointerCapture(event.pointerId)) {
-            event.currentTarget.releasePointerCapture(event.pointerId);
-          }
+          windowDragSession.onPointerUp(event);
 
           if (suppressClickRef.current) {
             suppressionResetTimeoutRef.current = window.setTimeout(() => {

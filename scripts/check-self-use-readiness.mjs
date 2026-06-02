@@ -71,6 +71,7 @@ assertPackageScript(packageJson, "check:compact", "node scripts/check-compact-wi
 assertPackageScript(packageJson, "check:release-self-use", "node scripts/check-release-self-use.mjs");
 assertPackageScript(packageJson, "check:self-use", "node scripts/check-self-use-readiness.mjs");
 assertPackageScript(packageJson, "check:sound-assets", "node scripts/check-sound-assets.mjs");
+assertPackageScript(packageJson, "check:tauri-window-roundtrip", "node scripts/check-tauri-window-roundtrip.mjs");
 assertPackageScript(packageJson, "check:visual-assets", "node scripts/check-visual-assets.mjs");
 assertPackageScript(packageJson, "release:self-use-summary", "node scripts/print-self-use-release-summary.mjs");
 assertPackageScript(packageJson, "tauri:build", "tauri build");
@@ -92,8 +93,10 @@ for (const relativePath of [
   "scripts/check-release-self-use.mjs",
   "scripts/check-self-use-readiness.mjs",
   "scripts/check-sound-assets.mjs",
+  "scripts/check-tauri-window-roundtrip.mjs",
   "scripts/check-visual-assets.mjs",
   "scripts/print-self-use-release-summary.mjs",
+  "scripts/tauri-window-roundtrip-helper.swift",
   "src/lib/desktopPersistenceAdapter.ts",
   "src/lib/appMetadata.ts",
   "src/lib/fileTransferAdapter.ts",
@@ -175,6 +178,7 @@ for (const relativePath of [
   "SELF_USE_RELEASE_LOG.md",
   "check:release-self-use",
   "check:sound-assets",
+  "check:tauri-window-roundtrip",
   "check:visual-assets",
   "release:self-use-summary",
 ].forEach((token) =>

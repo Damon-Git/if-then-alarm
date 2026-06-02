@@ -277,6 +277,7 @@ const fileTransferAdapter = await readText("src/lib/fileTransferAdapter.ts");
 const notificationAdapter = await readText("src/lib/notificationAdapter.ts");
 const soundReminder = await readText("src/lib/soundReminder.ts");
 const compactWindowCheck = await readText("scripts/check-compact-window.mjs");
+const tauriWindowRoundtripCheck = await readText("scripts/check-tauri-window-roundtrip.mjs");
 const soundAssetsCheck = await readText("scripts/check-sound-assets.mjs");
 const visualAssetsCheck = await readText("scripts/check-visual-assets.mjs");
 const stylesCss = await readText("src/styles.css");
@@ -291,6 +292,7 @@ const visualState = await readText("src/lib/visualState.ts");
 const censerVisual = await readText("src/components/CenserVisual.tsx");
 const compactCenserSlot = await readText("src/components/CompactCenserSlot.tsx");
 const compactWindowDragRegion = await readText("src/components/CompactWindowDragRegion.tsx");
+const compactWindowDragSession = await readText("src/components/useCompactWindowDragSession.ts");
 const incenseVisual = await readText("src/components/IncenseVisual.tsx");
 const intentSlot = await readText("src/components/IntentSlot.tsx");
 const ritualStage = await readText("src/components/RitualStage.tsx");
@@ -328,6 +330,7 @@ assertPackageScript(packageJson, "check:compact", "node scripts/check-compact-wi
 assertPackageScript(packageJson, "check:desktop-config", "node scripts/check-desktop-config.mjs");
 assertPackageScript(packageJson, "check:self-use", "node scripts/check-self-use-readiness.mjs");
 assertPackageScript(packageJson, "check:sound-assets", "node scripts/check-sound-assets.mjs");
+assertPackageScript(packageJson, "check:tauri-window-roundtrip", "node scripts/check-tauri-window-roundtrip.mjs");
 assertPackageScript(packageJson, "check:visual-assets", "node scripts/check-visual-assets.mjs");
 assertPackageScript(packageJson, "tauri:dev", "tauri dev");
 assertPackageScript(packageJson, "tauri:build", "tauri build");
@@ -466,6 +469,23 @@ assertTextIncludes(
   tauriWindow,
   `size.height - decorationSize.height`,
   "Tauri window adapter compensates for native title bar height when restoring the full shell",
+);
+await assertFileExists("scripts/check-tauri-window-roundtrip.mjs");
+await assertFileExists("scripts/tauri-window-roundtrip-helper.swift");
+[
+  "persistence.v1.before.json",
+  "src-tauri/target/debug/jiji-rululing",
+  "HOME: tempHome",
+  "actual desktop JSON after native smoke",
+  "drag-window-local",
+  "compact censer-body drag moved the window without expansion",
+  "roundtrip 2",
+].forEach((token) =>
+  assertTextIncludes(
+    tauriWindowRoundtripCheck,
+    token,
+    `Native Tauri window roundtrip smoke preserves ${token}`,
+  ),
 );
 assertTextIncludes(
   tauriWindow,
@@ -871,12 +891,16 @@ assertTextIncludes(intentSlot, "data-stage-timer-visible", "IntentSlot exposes t
 assertTextIncludes(intentSlot, 'size="stage"', "Full ritual slot uses stage censer asset family");
 assertTextIncludes(compactCenserSlot, 'size="compact"', "Compact ritual slot uses compact censer asset family");
 assertTextIncludes(compactCenserSlot, 'data-compact-censer-click-action="open-full-window"', "Compact censer click action is limited to opening the full window");
+assertTextIncludes(compactCenserSlot, 'data-compact-censer-drag-action="move-window-after-threshold"', "Compact censer drag action moves the native window after its threshold");
 assertTextIncludes(compactCenserSlot, "CENSER_DRAG_CLICK_SUPPRESSION_PX", "Compact censer suppresses click after pointer drag movement");
 assertTextIncludes(compactCenserSlot, "suppressClickRef", "Compact censer tracks pointer drag click suppression");
+assertTextIncludes(compactCenserSlot, "useCompactWindowDragSession", "Compact censer starts a thresholded Tauri window-position session");
 assertTextIncludes(ritualStage, "<CompactWindowDragRegion />", "Compact ritual stage exposes a dedicated window drag region");
 assertTextIncludes(compactWindowDragRegion, 'data-compact-drag-action="move-window"', "Compact window drag region exposes move-window semantics");
 assertTextIncludes(compactWindowDragRegion, 'data-compact-drag-implementation="pointer-position-session"', "Compact window drag region uses the Tauri window-position session");
-assertTextIncludes(compactWindowDragRegion, "createCurrentTauriWindowDragSession", "Compact window drag region starts a Tauri window-position session");
+assertTextIncludes(compactWindowDragRegion, "useCompactWindowDragSession", "Compact window drag region starts a reusable Tauri window-position session");
+assertTextIncludes(compactWindowDragSession, "createCurrentTauriWindowDragSession", "Compact drag helper starts a Tauri window-position session");
+assertTextIncludes(compactWindowDragSession, "activationDistance", "Compact drag helper supports thresholded activation");
 assertTextIncludes(tauriWindow, "createCurrentTauriWindowDragSession", "Tauri window adapter owns compact window-position drag sessions");
 assertTextIncludes(tauriWindow, "currentWindow.setPosition", "Tauri window adapter moves the compact window through the native shell");
 assertTextIncludes(compactWindowCheck, "assertFullStageUsesStageVisuals", "Compact check verifies full-stage visual family");
@@ -899,6 +923,8 @@ assertTextIncludes(stylesCss, ".compact-censer--idle .censer-visual--compact", "
 assertTextIncludes(stylesCss, ".compact-censer--burning .censer-visual--compact", "CSS differentiates active compact censer visuals");
 assertTextIncludes(stylesCss, ".compact-censer--resting .censer-visual--compact", "CSS differentiates resting compact censer visuals");
 assertTextIncludes(stylesCss, ".compact-censer--completed .censer-visual--compact", "CSS differentiates completed compact censer visuals");
+assertTextIncludes(stylesCss, "gap: 6px;", "CSS keeps compact censers close together");
+assertTextIncludes(stylesCss, "opacity: 0.86;", "CSS avoids excessive transparency for idle compact censers");
 assertTextIncludes(stylesCss, ".talisman-visual__template .visual-layer__asset", "CSS renders talisman template image layer");
 assertTextIncludes(stylesCss, "writing-mode: vertical-rl", "CSS renders talisman intent text vertically");
 assertTextIncludes(stylesCss, "text-orientation: upright", "CSS keeps talisman text upright");

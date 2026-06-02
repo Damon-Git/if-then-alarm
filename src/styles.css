@@ -3405,7 +3405,7 @@ html[data-window-mode="compact"] .app-shell--ritual .compact-stage__censers {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
+  gap: 6px;
   width: 100%;
   flex-wrap: nowrap;
 }
@@ -3448,7 +3448,7 @@ html[data-window-mode="compact"] .app-shell--ritual .censer-visual--compact .cen
 }
 
 html[data-window-mode="compact"] .app-shell--ritual .compact-censer--idle .censer-visual--compact .censer-visual__asset {
-  opacity: 0.76;
+  opacity: 0.86;
   filter: saturate(0.78) brightness(0.98);
 }
 
@@ -3459,12 +3459,12 @@ html[data-window-mode="compact"] .app-shell--ritual .compact-censer--burning .ce
 }
 
 html[data-window-mode="compact"] .app-shell--ritual .compact-censer--resting .censer-visual--compact .censer-visual__asset {
-  opacity: 0.6;
+  opacity: 0.74;
   filter: saturate(0.52) contrast(0.94) brightness(1.02);
 }
 
 html[data-window-mode="compact"] .app-shell--ritual .compact-censer--completed .censer-visual--compact .censer-visual__asset {
-  opacity: 0.58;
+  opacity: 0.7;
   filter: saturate(0.46) contrast(0.9) brightness(0.96);
 }
 
