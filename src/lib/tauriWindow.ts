@@ -43,6 +43,20 @@ const runCompatibleWindowAction = async (action: () => Promise<void>) => {
   }
 };
 
+const readCurrentTauriWindowDecorationSize = async (
+  currentWindow: Awaited<ReturnType<(typeof import("@tauri-apps/api/window"))["getCurrentWindow"]>>,
+) => {
+  const scaleFactor = await currentWindow.scaleFactor();
+  const [innerSize, outerSize] = await Promise.all([currentWindow.innerSize(), currentWindow.outerSize()]);
+  const logicalInnerSize = innerSize.toLogical(scaleFactor);
+  const logicalOuterSize = outerSize.toLogical(scaleFactor);
+
+  return {
+    height: Math.max(0, logicalOuterSize.height - logicalInnerSize.height),
+    width: Math.max(0, logicalOuterSize.width - logicalInnerSize.width),
+  };
+};
+
 export const isTauriRuntime = () =>
   typeof window !== "undefined" && Boolean((window as TauriInternalsWindow).__TAURI_INTERNALS__);
 
@@ -138,7 +152,10 @@ const resizeAndFocusCurrentTauriWindow = async (size: TauriWindowSize, shell: Ta
   await runCompatibleWindowAction(() => currentWindow.setTitleBarStyle(shell.titleBarStyle));
   await runCompatibleWindowAction(() => currentWindow.setDecorations(shell.hasDecorations));
   await runCompatibleWindowAction(() => currentWindow.setShadow(shell.hasShadow));
-  await currentWindow.setSize(new LogicalSize(size.width, size.height));
+  const decorationSize = await readCurrentTauriWindowDecorationSize(currentWindow);
+  await currentWindow.setSize(
+    new LogicalSize(size.width - decorationSize.width, size.height - decorationSize.height),
+  );
   await currentWindow.center();
   await currentWindow.show();
   await currentWindow.setFocus();

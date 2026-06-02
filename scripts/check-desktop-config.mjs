@@ -454,6 +454,21 @@ assertTextIncludes(
 );
 assertTextIncludes(
   tauriWindow,
+  `currentWindow.innerSize()`,
+  "Tauri window adapter reads the inner window size before restoring the full shell",
+);
+assertTextIncludes(
+  tauriWindow,
+  `currentWindow.outerSize()`,
+  "Tauri window adapter reads the outer window size before restoring the full shell",
+);
+assertTextIncludes(
+  tauriWindow,
+  `size.height - decorationSize.height`,
+  "Tauri window adapter compensates for native title bar height when restoring the full shell",
+);
+assertTextIncludes(
+  tauriWindow,
   `setBackgroundColor(shell.backgroundColor)`,
   "Tauri window adapter toggles native window background color",
 );
