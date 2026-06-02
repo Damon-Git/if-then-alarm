@@ -59,6 +59,18 @@ const IncenseLayer = ({ layer, size }: { layer: IncenseAssetLayer; size: VisualA
       aria-hidden="true"
     >
       {assetUrl ? <img alt="" className="visual-layer__asset" draggable="false" src={assetUrl} /> : null}
+      {layer === "smoke" ? (
+        <>
+          <span
+            className="incense-visual__smoke-wisp incense-visual__smoke-wisp--near"
+            data-incense-smoke-layer="near"
+          />
+          <span
+            className="incense-visual__smoke-wisp incense-visual__smoke-wisp--far"
+            data-incense-smoke-layer="far"
+          />
+        </>
+      ) : null}
     </span>
   );
 };

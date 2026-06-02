@@ -155,6 +155,13 @@ type IncenseVisualProps = {
 - `data-incense-layer="ember"`：火星。
 - `data-incense-layer="smoke"`：烟雾。
 
+主祭台 `stage` 的 `smoke` 层内部额外暴露两个纯视觉锚点：
+
+- `data-incense-smoke-layer="near"`：较近的低频烟缕。
+- `data-incense-smoke-layer="far"`：较远、更加弱化的错峰烟缕。
+
+这两个锚点不新增素材插槽，不读取业务状态，也不另起 timer。`compact` 可以保留 DOM 锚点，但默认不启用新增烟缕动画。
+
 ### 未来素材接入规则
 
 - 用户选择 1 / 2 / 3 炷香时，必须分别渲染 1 / 2 / 3 根线香。
@@ -165,7 +172,7 @@ type IncenseVisualProps = {
 - 小窗线香素材以 `src/lib/visualAssets.ts` 中的 `VISUAL_ASSET_FAMILY_SPECS.incense.compact` 为尺寸锚点。
 - 主祭台线香素材以 `src/lib/visualAssets.ts` 中的 `VISUAL_ASSET_FAMILY_SPECS.incense.stage` 为尺寸锚点。
 - 当前主祭台线香和小窗线香已分别配置 `incense/stage/*`、`incense/compact/*` 正式 PNG。
-- 动态增强优先作用于主祭台 `stage`：火星、烟雾、香炉暖色呼吸、休息冷却和完成落幕均由既有语义状态驱动，并通过 `prefers-reduced-motion` 降级。Demo 前烟雾可以增强尺寸、层次、对比度和错峰缓慢漂移；小窗 `compact` 保持低干扰静态基线。
+- 动态增强优先作用于主祭台 `stage`：火星、烟雾、香炉暖色呼吸、休息冷却和完成落幕均由既有语义状态驱动，并通过 `prefers-reduced-motion` 降级。当前主祭台烟雾已经通过核心 PNG 和两层错峰烟缕增强尺寸、层次、对比度和缓慢漂移；小窗 `compact` 保持低干扰静态基线。
 - 小窗不同香数不能烘焙成 1 / 2 / 3 张整图，必须由组件重复渲染同一套线香图层。
 
 ## TalismanVisual

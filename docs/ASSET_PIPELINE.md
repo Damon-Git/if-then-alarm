@@ -151,8 +151,10 @@ src/assets/visuals/talisman/situation/template.png
 - 主祭台线香推荐源素材画布为 `240px × 240px`。
 - `stick.png`、`ash.png`、`ember.png`、`smoke.png` 继续保持独立图层。
 - 线香数量由 `IncenseVisual` 按用户选择重复渲染，不为 1 / 2 / 3 炷香分别烘焙整图。
-- 当前香灰高度和火星位置由倒计时进度驱动；主祭台 CSS 允许低频火星呼吸、可辨认但克制的缓慢烟雾漂移和休息余烟，不修改素材图层边界。
-- 主祭台线香 v1 由正式透明 PNG 图层组成。Demo 前优先增强既有 `smoke.png` 图层的可见性和层次，并继续与青铜香炉协调。
+- 当前香灰高度和火星位置由倒计时进度驱动；主祭台 CSS 已接入低频火星呼吸、可辨认但克制的缓慢烟雾漂移和休息余烟，不修改素材图层边界。
+- 主祭台线香 v1 由正式透明 PNG 图层组成。`smoke.png` 继续作为核心烟雾图层，CSS 只叠加 `near` / `far` 两个轻量错峰烟缕，不新增素材插槽或高负载粒子系统。
+- 真实烟雾观感仍需通过 Web 截图和 Tauri 开发版人工验收。
+- 2026-06-02 已完成一次动态验收：Web 开发版覆盖 1-3 套布局、`resting`、`completed` 和 `prefers-reduced-motion`；Tauri 开发版确认原生 WebView 内烟雾可辨认，完成闭盖后无持续烟雾残留。
 - `scripts/generate-stage-incense-assets.mjs` 仍可按目标目录和画布尺寸生成 `stage` 或 `compact` 临时测试素材，但不代表正式视觉风格。
 
 ## 小窗线香规格

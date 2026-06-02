@@ -283,7 +283,7 @@ export const VISUAL_ASSET_REPLACEMENT_REGISTRY = {
       "incense/stage/ember",
       "incense/stage/smoke",
     ],
-    notes: "主祭台线香 v1 使用正式香体、香灰、火星和克制静态烟雾图层；数量和进度继续由组件驱动。",
+    notes: "主祭台线香 v1 使用正式香体、香灰、火星和核心烟雾图层；stage CSS 叠加少量错峰烟缕，数量和进度继续由组件驱动。",
     renderBox: VISUAL_ASSET_FAMILY_SPECS.incense.stage.renderBox,
     sourceCanvas: VISUAL_ASSET_FAMILY_SPECS.incense.stage.sourceCanvas,
     status: "final",

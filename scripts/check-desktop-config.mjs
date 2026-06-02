@@ -777,6 +777,8 @@ assertTextIncludes(incenseVisual, "INCENSE_ASSET_LAYERS.map", "IncenseVisual use
 assertTextIncludes(incenseVisual, 'data-incense-click-action="none"', "IncenseVisual is explicitly non-clickable");
 assertTextIncludes(incenseVisual, "getIncenseVisualState", "IncenseVisual maps each stick through central visual state");
 assertTextIncludes(incenseVisual, "data-incense-stick-progress", "IncenseVisual exposes per-stick progress for visual burning");
+assertTextIncludes(incenseVisual, 'data-incense-smoke-layer="near"', "IncenseVisual exposes the near stage smoke wisp anchor");
+assertTextIncludes(incenseVisual, 'data-incense-smoke-layer="far"', "IncenseVisual exposes the far stage smoke wisp anchor");
 assertTextIncludes(visualAssetsCheck, "VISUAL_ASSET_REPLACEMENT_REGISTRY", "Visual asset check reads the replacement registry");
 assertTextIncludes(visualAssetsCheck, "visualAssetManifest", "Visual asset check reads the manifest");
 assertTextIncludes(visualAssetsCheck, "assertTransparentCorners", "Visual asset check validates transparent PNG corners");
@@ -922,6 +924,15 @@ assertTextIncludes(stylesCss, ".incense-visual .visual-layer--with-asset .visual
 assertTextIncludes(stylesCss, 'data-incense-state="burning"', "CSS styles the currently burning incense stick by explicit state");
 assertTextIncludes(stylesCss, "clip-path: inset(var(--incense-stick-progress) 0 0 0)", "CSS shortens the current incense stick as progress advances");
 assertTextIncludes(stylesCss, 'data-incense-state="burned"', "CSS styles already burned incense sticks by explicit state");
+assertTextIncludes(stylesCss, "stage-incense-smoke-drift", "CSS defines the slow stage smoke core drift");
+assertTextIncludes(stylesCss, "stage-incense-smoke-wisp-near", "CSS defines a staggered near stage smoke wisp");
+assertTextIncludes(stylesCss, "stage-incense-smoke-wisp-far", "CSS defines a staggered far stage smoke wisp");
+assertTextIncludes(stylesCss, "stage-incense-smoke-wisp-afterglow", "CSS defines a short resting smoke wisp retreat");
+assertTextIncludes(
+  assetPipelineDoc,
+  "真实烟雾观感仍需通过 Web 截图和 Tauri 开发版人工验收。",
+  "Asset pipeline keeps visual smoke quality under screenshot and Tauri manual review",
+);
 assertTextIncludes(
   stylesCss,
   '.incense-visual__unit[data-incense-state="burned"] .incense-visual__ash,\n.incense-visual__unit[data-incense-state="resting"] .incense-visual__ash',

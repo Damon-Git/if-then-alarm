@@ -1338,6 +1338,22 @@ select {
   border-radius: 999px;
   background: transparent;
   opacity: 0;
+  overflow: visible;
+}
+
+.incense-visual__smoke-wisp {
+  position: absolute;
+  bottom: 10%;
+  left: 50%;
+  display: none;
+  border-radius: 50%;
+  opacity: 0;
+  background:
+    radial-gradient(ellipse at 50% 82%, rgb(226 222 211 / 32%), transparent 70%),
+    linear-gradient(108deg, transparent 16%, rgb(226 222 211 / 24%) 46%, transparent 76%);
+  filter: blur(1.2px);
+  pointer-events: none;
+  transform-origin: center bottom;
 }
 
 .incense-visual__unit--burning .incense-visual__smoke {
@@ -1360,13 +1376,32 @@ select {
 
 .incense-visual--stage .incense-visual__smoke.visual-layer--with-asset {
   top: min(var(--incense-stick-progress), 94%);
-  width: 26px;
-  height: 30px;
+  width: 38px;
+  height: 48px;
+  filter: saturate(0.46) contrast(1.18) brightness(0.94) drop-shadow(0 0 2px rgb(76 69 61 / 24%));
   transform: translate(-50%, -92%);
 }
 
 .incense-visual--stage .incense-visual__unit--burning .incense-visual__smoke {
-  opacity: 0.28;
+  opacity: 0.54;
+}
+
+.incense-visual--stage .incense-visual__smoke-wisp {
+  display: block;
+}
+
+.incense-visual--stage .incense-visual__smoke-wisp--near {
+  bottom: 8%;
+  left: 44%;
+  width: 18px;
+  height: 34px;
+}
+
+.incense-visual--stage .incense-visual__smoke-wisp--far {
+  bottom: 22%;
+  left: 62%;
+  width: 14px;
+  height: 28px;
 }
 
 .incense-visual--compact .incense-visual__stick.visual-layer--with-asset,
@@ -1854,8 +1889,16 @@ select {
 }
 
 .altar-scene .incense-visual--stage .incense-visual__unit--burning .incense-visual__smoke {
-  opacity: 0.36;
-  animation: stage-incense-smoke-drift 5.4s ease-in-out var(--ritual-animation-offset) infinite;
+  opacity: 0.46;
+  animation: stage-incense-smoke-drift 7.2s ease-in-out var(--ritual-animation-offset) infinite;
+}
+
+.altar-scene .incense-visual--stage .incense-visual__unit--burning .incense-visual__smoke-wisp--near {
+  animation: stage-incense-smoke-wisp-near 8.8s ease-in-out calc(var(--ritual-animation-offset) - 1.1s) infinite;
+}
+
+.altar-scene .incense-visual--stage .incense-visual__unit--burning .incense-visual__smoke-wisp--far {
+  animation: stage-incense-smoke-wisp-far 10.6s ease-in-out calc(var(--ritual-animation-offset) - 3.2s) infinite;
 }
 
 .altar-scene .incense-visual--stage .incense-visual__unit--resting .incense-visual__ember {
@@ -1863,7 +1906,11 @@ select {
 }
 
 .altar-scene .incense-visual--stage .incense-visual__unit--resting .incense-visual__smoke {
-  animation: stage-incense-smoke-afterglow 1800ms ease-out both;
+  animation: stage-incense-smoke-afterglow 2200ms ease-out both;
+}
+
+.altar-scene .incense-visual--stage .incense-visual__unit--resting .incense-visual__smoke-wisp {
+  animation: stage-incense-smoke-wisp-afterglow 2000ms ease-out both;
 }
 
 .altar-scene .censer-visual__meta {
@@ -2168,18 +2215,54 @@ select {
 @keyframes stage-incense-smoke-drift {
   0%,
   100% {
-    opacity: 0.2;
-    transform: translate(-50%, -92%) translate3d(0, 0, 0) scale(0.96);
+    opacity: 0.42;
+    transform: translate(-50%, -92%) translate3d(-1px, 0, 0) scale(0.98);
   }
 
-  42% {
-    opacity: 0.38;
-    transform: translate(-50%, -92%) translate3d(3px, -4px, 0) scale(1.04);
+  38% {
+    opacity: 0.66;
+    transform: translate(-50%, -92%) translate3d(4px, -5px, 0) scale(1.06);
   }
 
   72% {
-    opacity: 0.26;
-    transform: translate(-50%, -92%) translate3d(-2px, -7px, 0) scale(1.08);
+    opacity: 0.5;
+    transform: translate(-50%, -92%) translate3d(-3px, -9px, 0) scale(1.12);
+  }
+}
+
+@keyframes stage-incense-smoke-wisp-near {
+  0%,
+  100% {
+    opacity: 0.1;
+    transform: translate3d(-3px, -1px, 0) rotate(-5deg) scale(0.9, 0.96);
+  }
+
+  44% {
+    opacity: 0.24;
+    transform: translate3d(3px, -8px, 0) rotate(4deg) scale(1.06, 1.12);
+  }
+
+  76% {
+    opacity: 0.14;
+    transform: translate3d(-1px, -13px, 0) rotate(-2deg) scale(1.12, 1.2);
+  }
+}
+
+@keyframes stage-incense-smoke-wisp-far {
+  0%,
+  100% {
+    opacity: 0.06;
+    transform: translate3d(2px, -3px, 0) rotate(4deg) scale(0.92, 1);
+  }
+
+  36% {
+    opacity: 0.15;
+    transform: translate3d(-4px, -10px, 0) rotate(-5deg) scale(1.04, 1.14);
+  }
+
+  68% {
+    opacity: 0.1;
+    transform: translate3d(3px, -16px, 0) rotate(2deg) scale(1.12, 1.24);
   }
 }
 
@@ -2199,13 +2282,25 @@ select {
 
 @keyframes stage-incense-smoke-afterglow {
   0% {
-    opacity: 0.24;
+    opacity: 0.4;
     transform: translate(-50%, -92%) translate3d(0, 0, 0) scale(0.98);
   }
 
   100% {
     opacity: 0;
-    transform: translate(-50%, -92%) translate3d(2px, -9px, 0) scale(1.1);
+    transform: translate(-50%, -92%) translate3d(3px, -13px, 0) scale(1.14);
+  }
+}
+
+@keyframes stage-incense-smoke-wisp-afterglow {
+  0% {
+    opacity: 0.18;
+    transform: translate3d(0, -2px, 0) scale(0.98, 1.04);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate3d(-2px, -15px, 0) scale(1.14, 1.26);
   }
 }
 
@@ -2237,6 +2332,31 @@ select {
 
   .altar-scene .intent-slot[data-stage-start-visual-state="burning"] .talisman-visual--situation {
     animation: situation-talisman-reduced-fade 240ms ease-out forwards !important;
+  }
+
+  .altar-scene .incense-visual--stage .incense-visual__unit--burning .incense-visual__smoke {
+    opacity: 0.34;
+    animation: none !important;
+    transform: translate(-50%, -92%) scale(1);
+  }
+
+  .altar-scene .incense-visual--stage .incense-visual__unit--burning .incense-visual__smoke-wisp {
+    animation: none !important;
+  }
+
+  .altar-scene .incense-visual--stage .incense-visual__unit--burning .incense-visual__smoke-wisp--near {
+    opacity: 0.1;
+    transform: translate3d(1px, -5px, 0) scale(1, 1.06);
+  }
+
+  .altar-scene .incense-visual--stage .incense-visual__unit--burning .incense-visual__smoke-wisp--far {
+    opacity: 0.06;
+    transform: translate3d(-2px, -9px, 0) scale(1.04, 1.12);
+  }
+
+  .altar-scene .incense-visual--stage .incense-visual__unit--resting .incense-visual__smoke,
+  .altar-scene .incense-visual--stage .incense-visual__unit--resting .incense-visual__smoke-wisp {
+    animation-duration: 240ms !important;
   }
 
   .altar-scene
