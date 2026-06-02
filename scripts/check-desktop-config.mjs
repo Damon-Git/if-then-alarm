@@ -893,6 +893,21 @@ assertTextIncludes(stylesCss, "--altar-censer-center-y", "CSS pins full-stage ce
 assertTextIncludes(stylesCss, 'data-stage-metadata-visibility="censer-hover"', "CSS reveals full-stage metadata only through explicit censer hover semantics");
 assertTextIncludes(stylesCss, 'data-stage-metadata-active="true"', "CSS uses explicit metadata hover state instead of WebView :has hover");
 assertTextIncludes(stylesCss, ".censer-visual__metadata", "CSS treats full-stage metadata as one card");
+assertTextIncludes(
+  stylesCss,
+  ".altar-scene .intent-slot:first-child .timer-panel {\n  left: calc(50% + 78px);\n}",
+  "CSS shifts first-slot timer panels away from censer metadata",
+);
+assertTextIncludes(
+  stylesCss,
+  ".altar-scene .intent-slot:last-child .timer-panel {\n  left: calc(50% - 78px);\n}",
+  "CSS shifts last-slot timer panels away from censer metadata",
+);
+assertTextIncludes(
+  stylesCss,
+  ".altar-scene--slots-3 .intent-slot:nth-child(2) .timer-panel {\n  left: calc(50% + 78px);\n}",
+  "CSS shifts the middle three-slot timer panel away from censer metadata",
+);
 assertTextIncludes(stylesCss, ".review-overview", "CSS supports lightweight review summary cards");
 assertTextIncludes(stylesCss, ".review-optional-fields", "CSS keeps supplemental review fields visually secondary");
 assertTextIncludes(stylesCss, ".history-summary__metrics", "CSS keeps history metrics scannable");

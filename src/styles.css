@@ -1874,6 +1874,18 @@ select {
   left: calc(50% - 88px);
 }
 
+.altar-scene .intent-slot:first-child .timer-panel {
+  left: calc(50% + 78px);
+}
+
+.altar-scene .intent-slot:last-child .timer-panel {
+  left: calc(50% - 78px);
+}
+
+.altar-scene--slots-3 .intent-slot:nth-child(2) .timer-panel {
+  left: calc(50% + 78px);
+}
+
 .altar-scene .incense-visual__unit--pending .incense-visual__stick {
   filter: saturate(0.74) brightness(0.8);
   opacity: 0.76;

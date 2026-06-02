@@ -36,6 +36,16 @@
 - [x] 小窗 `compact` 不启用新增烟缕动画，`npm run check:compact` 复检通过。
 - [x] `npm run check:desktop-config`、`npm run check:visual-assets`、`npm run test`、`npm run build` 和 `git diff --check` 已通过。
 
+## 2026-06-02 Demo 展示路径视觉回归记录
+
+- [x] Web 开发版已固定走通：填写页、完整主祭台、首次点击情境符箓、开始确认弹窗、约 2 秒符箓燃烧退场、烧香中、单炷结束、`resting` 余烟、续香、`completed` 闭盖和完成卡片、进入复盘、小窗收起和小窗香炉点击展开。
+- [x] Web 开发版已截图审计：1 套完整路径、2 套烧香中加空闲、3 套中间香炉烧香中、符箓燃烧中间态、`resting` 余烟、`completed`、`prefers-reduced-motion` 和小窗 `compact`。
+- [x] 回归中发现单香炉 hover 下计时卡与香炉信息卡重叠；已按首槽、末槽和三槽中间位分别错开计时卡锚点，复检保留约 `59px` 间距。
+- [x] Tauri 开发版已实际走通单炷主流程：填写页、完整主祭台、开始确认、符箓燃烧中间态、烧香中、完成闭盖、完成卡片和复盘页。
+- [x] Tauri 原生 WebView 内已截图确认：烧香烟雾可辨认但克制；计时卡与香炉信息卡同时浮出且不重叠；完成态闭盖后无线香穿盖和持续烟雾。
+- [x] Tauri 烧香中小窗已实测：收起为 `390px × 620px`，拖动后窗口从 `(540, 109)` 移到 `(640, 189)` 且尺寸保持不变，没有误触展开；点击小窗香炉后恢复完整窗口。
+- [x] Tauri 审计使用临时数据目录；用户实际 `persistence.v1.json` 的 SHA-256 在审计前后保持一致。
+
 ## 启动与构建
 
 - [ ] 执行 `npm install` 后依赖安装正常。
