@@ -242,7 +242,7 @@ const HistoryPanel = ({
                               <strong className={getResultClassName(record.result)}>{resultLabels[record.result]}</strong>
                             </span>
                             <span className="history-summary__metrics">
-                              <span>{summary.intentSetCount} 套</span>
+                              <span>{summary.intentSetCount} 项任务</span>
                               <span>{summary.totalIncenseCount} 炷香</span>
                               <span>约 {summary.totalFocusMinutes} 分钟</span>
                             </span>
@@ -251,7 +251,7 @@ const HistoryPanel = ({
 
                           <div className="history-metrics" aria-label="历史记录摘要">
                             {record.timerMode ? <span>{timerModeLabels[record.timerMode]}</span> : null}
-                            <span>情境性符箓 {summary.intentSetCount} 张</span>
+                            <span>目标性符箓 {summary.intentSetCount} 张</span>
                             <span>预防性符箓 {summary.preventionIntentCount} 张</span>
                           </div>
 
@@ -275,7 +275,7 @@ const HistoryPanel = ({
                           <div className="history-record__intents">
                             {record.intentSets.map((intentSet, index) => (
                               <div className="history-intent" key={`${record.id}-${index}`}>
-                                <span>第 {index + 1} 套 · {intentSet.incenseCount} 炷</span>
+                                <span>第 {index + 1} 项 · {intentSet.incenseCount} 炷</span>
                                 <strong>{intentSet.situationIntent}</strong>
                                 {intentSet.preventionIntents.length > 0 ? (
                                   <ul>

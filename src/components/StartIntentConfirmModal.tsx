@@ -32,7 +32,7 @@ const StartIntentConfirmModal = ({
 
         <div className="confirm-intent-body">
           <div>
-            <span className="detail-label">情境性执行意图</span>
+            <span className="detail-label">目标性执行意图</span>
             <p>{intentSet.situationIntent}</p>
           </div>
 

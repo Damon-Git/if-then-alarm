@@ -51,18 +51,18 @@ const RestoreSessionModal = ({ session, onDiscard, onRestore }: RestoreSessionMo
         <p className="eyebrow">Saved Session</p>
         <h2 id="restore-modal-title">发现未保存的本轮仪式</h2>
         <p className="modal-copy">
-          上次停在{phaseLabels[session.phase]}，共有 {session.intentSets.length} 套执行意图，保存于{" "}
+          上次停在{phaseLabels[session.phase]}，共有 {session.intentSets.length} 项任务，保存于{" "}
           {formatDateTime(session.updatedAt)}。
         </p>
 
         <div className="restore-summary" aria-label="未完成轮次摘要">
           <span>阶段：{phaseLabels[session.phase]}</span>
           <span>模式：{TIMER_MODE_CONFIG[session.timerMode].label}</span>
-          <span>进度：{completedIntentSetCount} / {session.intentSets.length} 套完成</span>
+          <span>进度：{completedIntentSetCount} / {session.intentSets.length} 项完成</span>
           <span>总香数：{totalIncenseCount} 炷</span>
           {activeIntentSet ? (
             <span>
-              当前：第 {activeIntentSetIndex + 1} 套 · {statusLabels[activeIntentSet.status]} · 第{" "}
+              当前：第 {activeIntentSetIndex + 1} 项 · {statusLabels[activeIntentSet.status]} · 第{" "}
               {activeIntentSet.currentIncenseIndex} / {activeIntentSet.incenseCount} 炷 · 剩余{" "}
               {formatSeconds(session.timerRemaining)}
             </span>

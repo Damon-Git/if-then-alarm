@@ -7,7 +7,7 @@ export const validateSituationIntent = (value: string) => {
   const normalizedValue = normalizeIntentText(value);
 
   if (!normalizedValue) {
-    return "请填写“当……就……”的情境性执行意图。";
+    return "请填写“当……就……”的目标性执行意图。";
   }
 
   if (!normalizedValue.includes("当") || !normalizedValue.includes("就")) {
@@ -71,7 +71,7 @@ export const validateIntentDrafts = (drafts: IntentSetDraft[]) => {
   const errors: SetupValidationErrors = {};
 
   if (drafts.length < 1 || drafts.length > MAX_INTENT_SETS) {
-    errors.form = [{ message: `请创建 1-${MAX_INTENT_SETS} 套执行意图。` }];
+    errors.form = [{ message: `请创建 1-${MAX_INTENT_SETS} 项任务。` }];
   }
 
   drafts.forEach((draft, draftIndex) => {
@@ -81,14 +81,14 @@ export const validateIntentDrafts = (drafts: IntentSetDraft[]) => {
     if (situationError) {
       draftErrors.push({
         field: "situationIntent",
-        message: `第 ${draftIndex + 1} 套情境性执行意图：${situationError}`,
+        message: `第 ${draftIndex + 1} 项任务目标性执行意图：${situationError}`,
       });
     }
 
     if (draft.preventionIntents.length > MAX_PREVENTION_INTENTS) {
       draftErrors.push({
         field: "preventionIntent",
-        message: `第 ${draftIndex + 1} 套预防性执行意图最多 ${MAX_PREVENTION_INTENTS} 条。`,
+        message: `第 ${draftIndex + 1} 项任务预防性执行意图最多 ${MAX_PREVENTION_INTENTS} 条。`,
       });
     }
 
@@ -98,7 +98,7 @@ export const validateIntentDrafts = (drafts: IntentSetDraft[]) => {
       if (preventionError) {
         draftErrors.push({
           field: "preventionIntent",
-          message: `第 ${draftIndex + 1} 套第 ${preventionIndex + 1} 条预防性执行意图：${preventionError}`,
+          message: `第 ${draftIndex + 1} 项任务第 ${preventionIndex + 1} 条预防性执行意图：${preventionError}`,
           preventionIndex,
         });
       }
@@ -107,7 +107,7 @@ export const validateIntentDrafts = (drafts: IntentSetDraft[]) => {
     if (draft.incenseCount < 1 || draft.incenseCount > 3) {
       draftErrors.push({
         field: "incenseCount",
-        message: `第 ${draftIndex + 1} 套香数只能选择 1-3 炷。`,
+        message: `第 ${draftIndex + 1} 项任务香数只能选择 1-3 炷。`,
       });
     }
 

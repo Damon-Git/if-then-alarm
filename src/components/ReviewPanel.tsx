@@ -55,8 +55,8 @@ const ReviewPanel = ({ intentSets, timerMode, onSave, onRequestAbandon }: Review
       <div className="review-session-detail">
         <div className="review-overview" aria-label="本轮摘要">
           <div>
-            <span>执行意图</span>
-            <strong>{intentSets.length} 套</strong>
+            <span>任务</span>
+            <strong>{intentSets.length} 项</strong>
           </div>
           <div>
             <span>线香</span>
@@ -78,13 +78,13 @@ const ReviewPanel = ({ intentSets, timerMode, onSave, onRequestAbandon }: Review
           {intentSets.map((intentSet, index) => (
             <details className="review-intent-detail" key={intentSet.id}>
               <summary className="summary-row">
-                <span>第 {index + 1} 套：{intentSet.situationIntent}</span>
+                <span>第 {index + 1} 项：{intentSet.situationIntent}</span>
                 <strong>{intentSet.incenseCount} 炷</strong>
               </summary>
 
               <div className="review-intent-body">
                 <div>
-                  <span className="detail-label">情境性执行意图</span>
+                  <span className="detail-label">目标性执行意图</span>
                   <p>{intentSet.situationIntent}</p>
                 </div>
                 <div>

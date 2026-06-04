@@ -104,11 +104,11 @@ const SetupForm = ({ onDraftStateChange, onSubmit }: SetupFormProps) => {
       <div className="section-heading">
         <div>
           <p className="eyebrow">Setup</p>
-          <h2 id="setup-title">填写执行意图</h2>
+          <h2 id="setup-title">积土成山，积水成渊</h2>
         </div>
         {drafts.length < MAX_INTENT_SETS ? (
           <button className="secondary-button" type="button" onClick={addDraft}>
-            添加套组
+            创建任务
           </button>
         ) : null}
       </div>
@@ -136,7 +136,7 @@ const SetupForm = ({ onDraftStateChange, onSubmit }: SetupFormProps) => {
 
         <div className="form-actions">
           <button className="primary-button" type="submit">
-            进入仪式台
+            开始创造
           </button>
         </div>
       </form>

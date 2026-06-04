@@ -1181,7 +1181,7 @@ const App = () => {
           confirmLabel={tauriCloseRequest.type === "setup-draft" ? "关闭窗口" : "保留并收起"}
           description={
             tauriCloseRequest.type === "setup-draft"
-              ? "当前填写内容还没有进入仪式台，关闭后不会保存这份草稿。"
+              ? "当前填写内容还没有开始创造，关闭后不会保存这份草稿。"
               : "放弃并退出会结束本轮且不写入历史；保留并收起会切回小窗继续计时，并在本段结束时发送系统通知。"
           }
           eyebrow="Desktop"

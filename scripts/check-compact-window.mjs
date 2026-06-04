@@ -507,8 +507,8 @@ const createSingleIncenseRitual = async (page) => {
 
   const situationInput = page.locator('textarea[placeholder="当我打开电脑坐到书桌前，就开始写今天的第一段文稿。"]');
   await situationInput.fill("当我打开电脑坐到书桌前，就开始写今天的第一段文稿。");
-  await page.getByLabel("第 1 套香数").getByRole("button", { name: "1 炷" }).click();
-  await page.getByRole("button", { name: "进入仪式台" }).click();
+  await page.getByLabel("第 1 项任务香数").getByRole("button", { name: "1 炷" }).click();
+  await page.getByRole("button", { name: "开始创造" }).click();
   await assertVisible(page.getByRole("heading", { name: "仪式台" }), "single incense full ritual title");
 };
 
@@ -595,18 +595,18 @@ const run = async () => {
     await assertVisible(page.getByRole("button", { name: "设置" }), "settings button");
     await assertNoHorizontalOverflow(page, "setup");
 
-    await page.getByRole("button", { name: "添加套组" }).click();
-    await page.getByRole("button", { name: "添加套组" }).click();
+    await page.getByRole("button", { name: "创建任务" }).click();
+    await page.getByRole("button", { name: "创建任务" }).click();
 
     const situationInputs = page.locator('textarea[placeholder="当我打开电脑坐到书桌前，就开始写今天的第一段文稿。"]');
     await situationInputs.nth(0).fill("当我打开电脑坐到书桌前，就开始写今天的第一段文稿。");
     await situationInputs.nth(1).fill("当我打开编辑器，就整理今天最重要的一件事。");
     await situationInputs.nth(2).fill("当我完成第一轮专注，就记录下一步行动。");
 
-    await page.getByLabel("第 1 套香数").getByRole("button", { name: "3 炷" }).click();
-    await page.getByLabel("第 2 套香数").getByRole("button", { name: "2 炷" }).click();
-    await page.getByLabel("第 3 套香数").getByRole("button", { name: "1 炷" }).click();
-    await page.getByRole("button", { name: "进入仪式台" }).click();
+    await page.getByLabel("第 1 项任务香数").getByRole("button", { name: "3 炷" }).click();
+    await page.getByLabel("第 2 项任务香数").getByRole("button", { name: "2 炷" }).click();
+    await page.getByLabel("第 3 项任务香数").getByRole("button", { name: "1 炷" }).click();
+    await page.getByRole("button", { name: "开始创造" }).click();
 
     await assertVisible(page.getByRole("heading", { name: "仪式台" }), "full ritual title before compact mode");
     await assertVisible(page.locator(".stage-grid--full"), "full ritual stage before compact mode");

@@ -47,7 +47,7 @@ const IntentSlot = ({
         disabled={!canStart}
         interactive
         intentStatus={intentSet.status}
-        label="情境性符箓"
+        label="目标性符箓"
         text={intentSet.situationIntent}
         variant="situation"
         onClick={() => onStart(intentSet.id)}

@@ -67,7 +67,7 @@ const IntentSetForm = ({
   return (
     <fieldset className="intent-form">
       <div className="intent-form__header">
-        <legend>第 {index + 1} 套执行意图</legend>
+        <legend>第 {index + 1} 项任务</legend>
         {canRemove ? (
           <button className="ghost-button" type="button" onClick={onRemove}>
             删除
@@ -76,7 +76,7 @@ const IntentSetForm = ({
       </div>
 
       <label className="field">
-        <span>情境性执行意图</span>
+        <span>目标性执行意图</span>
         <p className="field-help" id={situationHelpId}>
           写清楚一个具体触发情境和下一步动作，避免只写愿望。
         </p>
@@ -166,7 +166,7 @@ const IntentSetForm = ({
         <div
           aria-describedby={incenseErrors.length > 0 ? incenseErrorId : undefined}
           className="segmented-control"
-          aria-label={`第 ${index + 1} 套香数`}
+          aria-label={`第 ${index + 1} 项任务香数`}
         >
           {incenseOptions.map((option) => (
             <button
