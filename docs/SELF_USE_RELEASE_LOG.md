@@ -34,6 +34,26 @@ npm run release:self-use-summary
 - 已知问题：无阻断问题。
 - 回滚方式：退出应用，换回上一版 `.app`；如数据异常，恢复替换前备份的 `persistence.v1.json` 或完整备份 JSON。
 
+## 未升基线的内部验收记录
+
+### 2026-06-05 · v0.2.0 · 0971659 · 内部 `.app` 人工冒烟
+
+- 状态：未升为新的长期自用基线；本轮打包版人工冒烟未完全通过。
+- Git 提交：`0971659 copy(setup): update task creation wording`。
+- 构建产物：`src-tauri/target/release/bundle/macos/急急如律令.app`。
+- Bundle ID：`com.damon.jijirululing`。
+- Rust crate：`jiji-rululing v0.2.0`。
+- 数据版本：`persistence.v1.json` / `version: 1`。
+- 自动检查：本轮执行 `npm run check:release-self-use` 通过；最终 `git diff --check` 通过；启动前工作区干净。上一轮已完成自动检查并生成上述内部 `.app`。
+- 人工验收：`.app`、`Contents/MacOS/jiji-rululing`、`Contents/Info.plist` 均存在；Info.plist 中 Bundle ID 为 `com.damon.jijirululing`，版本为 `0.2.0`；首页文案确认包含“积土成山，积水成渊”“创建任务”“第 1/2/3 项任务”“目标性执行意图”“开始创造”；创建 3 项任务后进入完整仪式台，未自动进入小窗；点击目标性符箓先出现“确认开始这一套？”；点击“开始这一套”后进入开发模式计时；进行中关闭窗口出现“保留并收起”，确认后窗口切到约 `390x620` 小窗；点击小窗香炉后恢复约 `960x760` 完整窗口；三项任务可烧完并出现“本轮香尽 / 进入复盘”。
+- 未完成验收：进入复盘保存历史未完成；在完成态重启并恢复会话后，曾出现打包进程存在但主窗口短时间内不可见或窗口计数为 0 的情况，导致无法稳定继续保存复盘并验证“重开后历史仍在”。
+- 数据清理：本轮测试生成的未保存 `currentSession` 已确认只包含“打包验收任务”文本，并已清回 `null`；既有历史记录数量保持 24 条。
+- 是否安装/覆盖 app：否。
+- 是否生成 DMG：否。
+- 是否签名/公证：否。
+- 已知问题：完成态恢复后的窗口稳定性需要后续复查；本轮不建议把 `0971659` 打包产物替换为新的长期自用基线。
+- 回滚方式：继续使用 2026-05-25 当前基线；如误开本轮包后出现待恢复测试会话，退出应用并确认 `persistence.v1.json` 中 `currentSession` 状态。
+
 ### 2026-05-25 · v0.1.0 · 内部自用版
 
 - 状态：开发中自用基线。
