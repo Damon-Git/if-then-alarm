@@ -142,6 +142,30 @@ describe("sound reminder", () => {
     expect(audioSources).toHaveLength(0);
   });
 
+  it("stops an active sound when reminders are cancelled", async () => {
+    await setSoundReminderEnabled(true);
+    const soundReminder = await scheduleAndRun("ritual-completed");
+
+    soundReminder.cancelTimerSoundReminder();
+
+    expect(audioSources).toHaveLength(1);
+    expect(audioSources[0].stop).toHaveBeenCalledTimes(1);
+  });
+
+  it("stops an active sound before scheduling a new reminder", async () => {
+    await setSoundReminderEnabled(true);
+    const soundReminder = await scheduleAndRun("incense-finished");
+
+    soundReminder.scheduleTimerSoundReminder({ delaySeconds: 1, kind: "rest-finished" });
+    expect(audioSources[0].stop).toHaveBeenCalledTimes(1);
+
+    await vi.advanceTimersByTimeAsync(1000);
+
+    expect(audioSources).toHaveLength(2);
+    expect((audioSources[1].buffer as MockAudioBuffer).assetUrl).toContain("rest-finished.wav");
+    expect(audioSources[1].start).toHaveBeenCalledTimes(1);
+  });
+
   it("stops an active sound without removing a future timer when the setting is turned off", async () => {
     await setSoundReminderEnabled(true);
     const soundReminder = await scheduleAndRun("ritual-completed");

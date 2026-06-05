@@ -669,6 +669,16 @@ assertTextIncludes(
   "Sound reminder stops stale playback before another sound starts",
 );
 assertTextIncludes(
+  soundReminder,
+  "cancelTimerSoundReminder",
+  "Sound reminder exposes explicit cancellation for stale timer sounds",
+);
+assertTextIncludes(
+  soundReminder,
+  "stopTimerSoundReminderPlayback();",
+  "Sound reminder cancellation stops active playback",
+);
+assertTextIncludes(
   appTsx,
   "scheduleTimerSoundReminder",
   "App schedules timer sound reminders",
