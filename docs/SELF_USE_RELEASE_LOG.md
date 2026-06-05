@@ -36,6 +36,24 @@ npm run release:self-use-summary
 
 ## 未升基线的内部验收记录
 
+### 2026-06-05 · v0.2.0 · d22ea70 · 长期自用基线候选验收
+
+- 状态：长期自用基线候选验收通过但尚未安装/覆盖；未改“当前基线”，后续是否替换日常 `.app` 仍需单独决策。
+- Git 提交：`d22ea70 docs(scope): reorder post-baseline development plan`。
+- 构建产物：`src-tauri/target/release/bundle/macos/急急如律令.app`。
+- Bundle ID：`com.damon.jijirululing`。
+- Rust crate：`jiji-rululing v0.2.0`。
+- 数据版本：`persistence.v1.json` / `version: 1`。
+- 自动检查：`git diff --check` 通过；`npm run check:release-self-use` 通过（14 个测试文件、81 个测试用例，并通过前端构建、声音/视觉资源、桌面配置和自用就绪检查）；`npm run check:tauri-window-roundtrip -- --no-screenshots` 通过，且脚本确认真实桌面 JSON 在隔离 debug smoke 前后逐字节不变；`npm run tauri:build` 通过。
+- 打包产物检查：Info.plist 中 Bundle ID 为 `com.damon.jijirululing`，版本为 `0.2.0`；bundle 目录只生成 `急急如律令.app`，未生成 DMG/PKG；未做开发者签名或公证，`codesign` 仅显示 ad-hoc/linker-signed。
+- 打包版验收：使用生成的 `.app` 经 LaunchServices `open` 启动；临时备份真实 `persistence.v1.json` 后写入完成态 `currentSession` fixture；关闭恢复提示窗口后，再次打开同一 `.app` 可稳定重新看到恢复提示（本机表现为原 PID 退出并由新 PID 启动）；点击“恢复本轮”后进入完成态完整窗口；关闭完成态窗口并选择“保留并收起”后进入约 `390x620` 小窗；点击小窗香炉后恢复约 `960x760` 完整窗口；点击“进入复盘”后进入“本次复盘”；粘贴 `Packaged LaunchServices acceptance saved d22ea70` 并点击“保存复盘”后，临时历史从 24 条增至 25 条且 `currentSession` 清为 `null`；关闭并重新打开 `.app` 后，新历史仍存在。
+- 数据清理：验收结束已杀掉本轮启动的打包进程，恢复原始真实 `persistence.v1.json` 内容；恢复后真实数据 sha256 为 `dcf46a62fe93ba9f54a5c9bb8b1f7e91426e9d118692bea1eec2ec68261cabc0`，历史 24 条，`currentSession: null`；本轮测试未留下真实桌面数据污染。
+- 是否安装/覆盖 app：否。
+- 是否生成 DMG：否。
+- 是否签名/公证：否。
+- 已知问题：本轮未发现阻断问题；本机通过 LaunchServices 关闭恢复提示后重新打开表现为新 PID 启动而非同 PID 重建窗口，但用户路径上恢复提示可稳定重新出现。
+- 回滚方式：继续使用 2026-05-25 当前基线；如误开本轮包后出现待恢复测试会话，退出应用并确认 `persistence.v1.json` 中 `currentSession` 状态。
+
 ### 2026-06-05 · v0.2.0 · 1a08a27 · 内部 `.app` 完成态恢复复验
 
 - 状态：未升为新的长期自用基线；本轮针对完成态恢复窗口稳定性复验通过。
