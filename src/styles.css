@@ -1418,11 +1418,13 @@ select {
   top: min(var(--incense-stick-progress), 94%);
   width: 18px;
   height: 20px;
+  filter: saturate(0.52) contrast(1.1) brightness(0.95) drop-shadow(0 0 1px rgb(76 69 61 / 18%));
   transform: translate(-50%, -92%);
 }
 
 .incense-visual--compact .incense-visual__unit--burning .incense-visual__smoke {
-  opacity: 0.12;
+  opacity: 0.22;
+  animation: compact-incense-smoke-drift 6.8s ease-in-out var(--ritual-animation-offset, 0s) infinite;
 }
 
 .incense-visual__progress {
@@ -1440,6 +1442,7 @@ select {
 }
 
 .compact-censer__button {
+  position: relative;
   display: grid;
   place-items: center;
   gap: 8px;
@@ -1629,23 +1632,25 @@ select {
 
 .altar-scene .talisman-visual--situation[data-talisman-preview-active="true"],
 .altar-scene .talisman-visual--situation:focus-visible {
-  z-index: 12;
+  z-index: 24;
   box-shadow: 0 14px 28px rgb(36 24 14 / 30%);
   filter: saturate(0.96) brightness(1.03);
-  transform: translateX(-50%) scale(1.65);
+  transform: translateX(-50%) scale(2.28);
+  transform-origin: center top;
 }
 
 .altar-scene .talisman-visual--prevention[data-talisman-preview-active="true"],
 .altar-scene .talisman-visual--prevention:focus-visible {
-  z-index: 12;
+  z-index: 24;
   box-shadow: 0 12px 24px rgb(36 24 14 / 28%);
   filter: saturate(0.94) brightness(1.02);
-  transform: translateY(-72%) scale(1.72);
+  transform: translateY(-88%) scale(2.62);
+  transform-origin: center top;
 }
 
 .altar-scene .talisman-visual[data-talisman-preview-active="true"] .talisman-visual__column,
 .altar-scene .talisman-visual:focus-visible .talisman-visual__column {
-  max-height: 92%;
+  max-height: 96%;
 }
 
 .altar-scene .intent-slot[data-stage-start-visual-state="burning"] .talisman-visual--situation {
@@ -1874,18 +1879,6 @@ select {
   left: calc(50% - 88px);
 }
 
-.altar-scene .intent-slot:first-child .timer-panel {
-  left: calc(50% + 78px);
-}
-
-.altar-scene .intent-slot:last-child .timer-panel {
-  left: calc(50% - 78px);
-}
-
-.altar-scene--slots-3 .intent-slot:nth-child(2) .timer-panel {
-  left: calc(50% + 78px);
-}
-
 .altar-scene .incense-visual__unit--pending .incense-visual__stick {
   filter: saturate(0.74) brightness(0.8);
   opacity: 0.76;
@@ -1994,10 +1987,15 @@ select {
 }
 
 .altar-scene
-  .intent-slot[data-stage-metadata-visibility="censer-hover"][data-stage-metadata-active="true"]
+  .intent-slot[data-stage-metadata-visibility="censer-hover"][data-stage-metadata-active="true"]:not(.intent-slot--burning):not(
+    .intent-slot--resting
+  )
   .censer-visual__metadata,
 .altar-scene
-  .intent-slot[data-stage-metadata-visibility="censer-hover"][data-stage-metadata-active="true"]
+  .intent-slot--burning[data-stage-metadata-visibility="censer-hover"][data-stage-metadata-active="true"]
+  .timer-panel,
+.altar-scene
+  .intent-slot--resting[data-stage-metadata-visibility="censer-hover"][data-stage-metadata-active="true"]
   .timer-panel {
   opacity: 1;
 }
@@ -2278,6 +2276,24 @@ select {
   }
 }
 
+@keyframes compact-incense-smoke-drift {
+  0%,
+  100% {
+    opacity: 0.16;
+    transform: translate(-50%, -92%) translate3d(-1px, 0, 0) scale(0.94);
+  }
+
+  42% {
+    opacity: 0.28;
+    transform: translate(-50%, -92%) translate3d(2px, -4px, 0) scale(1.05);
+  }
+
+  72% {
+    opacity: 0.2;
+    transform: translate(-50%, -92%) translate3d(-2px, -7px, 0) scale(1.12);
+  }
+}
+
 @keyframes stage-incense-ember-cool-down {
   0% {
     filter: drop-shadow(0 0 5px rgb(192 89 45 / 70%));
@@ -2337,6 +2353,7 @@ select {
   .altar-scene .incense-visual--stage .incense-visual__unit--burning .incense-visual__smoke,
   .altar-scene .incense-visual--stage .incense-visual__unit--resting .incense-visual__ember,
   .altar-scene .incense-visual--stage .incense-visual__unit--resting .incense-visual__smoke,
+  .incense-visual--compact .incense-visual__unit--burning .incense-visual__smoke,
   .ritual-completion-card {
     animation-duration: 1ms !important;
     animation-iteration-count: 1 !important;
@@ -2369,6 +2386,12 @@ select {
   .altar-scene .incense-visual--stage .incense-visual__unit--resting .incense-visual__smoke,
   .altar-scene .incense-visual--stage .incense-visual__unit--resting .incense-visual__smoke-wisp {
     animation-duration: 240ms !important;
+  }
+
+  .incense-visual--compact .incense-visual__unit--burning .incense-visual__smoke {
+    opacity: 0.14;
+    animation: none !important;
+    transform: translate(-50%, -92%) scale(1);
   }
 
   .altar-scene
@@ -3433,9 +3456,43 @@ html[data-window-mode="compact"] .app-shell--ritual .compact-censer--completed .
 
 html[data-window-mode="compact"] .app-shell--ritual .compact-censer__status,
 html[data-window-mode="compact"] .app-shell--ritual .compact-censer__hint,
-html[data-window-mode="compact"] .app-shell--ritual .compact-censer strong,
 html[data-window-mode="compact"] .app-shell--ritual .compact-censer p {
   display: none;
+}
+
+html[data-window-mode="compact"] .app-shell--ritual .compact-censer__remaining {
+  position: absolute;
+  bottom: calc(100% - 6px);
+  left: 50%;
+  z-index: 22;
+  min-width: 66px;
+  opacity: 0;
+  visibility: hidden;
+  border: 1px solid rgb(124 92 69 / 26%);
+  border-radius: 8px;
+  padding: 5px 8px;
+  background: rgb(255 250 242 / 94%);
+  box-shadow: 0 6px 14px rgb(31 22 15 / 16%);
+  color: #2f2822;
+  font-size: 0.92rem;
+  line-height: 1;
+  text-align: center;
+  pointer-events: none;
+  transform: translate(-50%, 6px);
+  transition:
+    opacity 140ms ease,
+    transform 140ms ease,
+    visibility 140ms ease;
+}
+
+html[data-window-mode="compact"]
+  .app-shell--ritual
+  .compact-censer[data-compact-censer-has-remaining="true"]
+  .compact-censer__button:is(:hover, :focus, :focus-visible)
+  .compact-censer__remaining {
+  opacity: 1;
+  visibility: visible;
+  transform: translate(-50%, 0);
 }
 
 html[data-window-mode="compact"] .app-shell--ritual .censer-visual--compact .censer-visual__asset {

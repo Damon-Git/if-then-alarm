@@ -396,6 +396,7 @@ const assertCompactBurningIncenseProgress = async (
       ashHeight: ash ? Number.parseFloat(window.getComputedStyle(ash).height) : 0,
       emberOpacity: ember ? Number.parseFloat(window.getComputedStyle(ember).opacity) : 0,
       emberTop: ember ? Number.parseFloat(window.getComputedStyle(ember).top) : 0,
+      smokeAnimationName: smoke ? window.getComputedStyle(smoke).animationName : "",
       smokeOpacity: smoke ? Number.parseFloat(window.getComputedStyle(smoke).opacity) : 0,
       smokeTop: smoke ? Number.parseFloat(window.getComputedStyle(smoke).top) : 0,
     };
@@ -405,6 +406,10 @@ const assertCompactBurningIncenseProgress = async (
   assert(layerStyles.emberOpacity > 0, `compact burning ember should be visible: ${JSON.stringify(layerStyles)}`);
   assert(layerStyles.emberTop > 0, `compact burning ember should move with progress: ${JSON.stringify(layerStyles)}`);
   assert(layerStyles.smokeOpacity > 0, `compact burning smoke should stay extremely weak but visible: ${JSON.stringify(layerStyles)}`);
+  assert(
+    layerStyles.smokeAnimationName.includes("compact-incense-smoke-drift"),
+    `compact burning smoke should use the restrained compact drift animation: ${JSON.stringify(layerStyles)}`,
+  );
   assert(layerStyles.smokeTop > 0, `compact burning smoke should follow the ember position: ${JSON.stringify(layerStyles)}`);
   assert(
     Math.abs(layerStyles.ashHeight - layerStyles.emberTop) < 1 && Math.abs(layerStyles.emberTop - layerStyles.smokeTop) < 1,
@@ -496,6 +501,77 @@ const assertCompactCenserStateDifferentiation = async (page) => {
     burningStyle.filter !== idleStyle.filter,
     `active compact censer should use a distinct visual filter: ${JSON.stringify(visualStyles)}`,
   );
+};
+
+const assertCompactRemainingTooltip = async (page) => {
+  const activeCenser = page.locator(".compact-censer--burning").first();
+  const activeButton = activeCenser.locator(".compact-censer__button");
+  const remainingTooltip = activeCenser.locator(".compact-censer__remaining");
+
+  assert((await remainingTooltip.count()) === 1, "compact burning censer should expose one remaining-time tooltip");
+  assert(
+    (await page.locator(".compact-censer__remaining:visible").count()) === 0,
+    "compact remaining time should not be visible before hover or focus",
+  );
+
+  const remainingText = (await remainingTooltip.textContent())?.trim() ?? "";
+  assert(
+    /^\d{2}:\d{2}$/.test(remainingText),
+    `compact remaining tooltip should contain formatted remaining time: ${remainingText}`,
+  );
+
+  await activeButton.hover();
+  await page.waitForTimeout(180);
+  await assertVisible(remainingTooltip, "compact remaining time on censer hover");
+  await page.mouse.move(1, 1);
+  await page.waitForTimeout(180);
+  assert(
+    (await page.locator(".compact-censer__remaining:visible").count()) === 0,
+    "compact remaining time should hide after leaving the censer",
+  );
+
+  await activeButton.focus();
+  await page.waitForTimeout(180);
+  await assertVisible(remainingTooltip, "compact remaining time on censer focus");
+  await page.evaluate(() => {
+    if (document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
+  });
+  await page.waitForTimeout(180);
+  assert(
+    (await page.locator(".compact-censer__remaining:visible").count()) === 0,
+    "compact remaining time should hide after censer focus leaves",
+  );
+};
+
+const assertFullStageActiveCenserHoverUsesSingleCard = async (page) => {
+  const burningSlot = page.locator(".stage-grid--full .intent-slot--burning").first();
+  const hoverTarget = burningSlot.locator(".censer-visual__hover-target");
+
+  await hoverTarget.hover();
+  await page.waitForTimeout(220);
+
+  const cardStyles = await burningSlot.evaluate((element) => {
+    const metadata = element.querySelector(".censer-visual__metadata");
+    const timerPanel = element.querySelector(".timer-panel");
+
+    return {
+      metadataOpacity: metadata ? Number.parseFloat(window.getComputedStyle(metadata).opacity) : -1,
+      timerOpacity: timerPanel ? Number.parseFloat(window.getComputedStyle(timerPanel).opacity) : -1,
+    };
+  });
+
+  assert(
+    cardStyles.timerOpacity > 0.8,
+    `active full-stage censer hover should reveal the remaining-time timer card: ${JSON.stringify(cardStyles)}`,
+  );
+  assert(
+    cardStyles.metadataOpacity === 0,
+    `active full-stage censer hover should suppress duplicate metadata: ${JSON.stringify(cardStyles)}`,
+  );
+
+  await page.mouse.move(1, 1);
 };
 
 const createSingleIncenseRitual = async (page) => {
@@ -783,10 +859,12 @@ const run = async () => {
       (await page.locator('.stage-grid--full .intent-slot--burning[data-stage-censer-emphasis="normal"]').count()) === 1,
       "burning full-stage intent should keep its censer at normal emphasis",
     );
+    await assertFullStageActiveCenserHoverUsesSingleCard(page);
     await page.evaluate(() => {
       document.documentElement.dataset.windowMode = "compact";
     });
     await assertCompactCenserStateDifferentiation(page);
+    await assertCompactRemainingTooltip(page);
     await page.waitForTimeout(3200);
     await assertCompactBurningIncenseProgress(page, {
       currentIndex: 1,

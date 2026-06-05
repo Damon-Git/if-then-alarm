@@ -931,8 +931,20 @@ assertTextIncludes(compactWindowDragSession, "createCurrentTauriWindowDragSessio
 assertTextIncludes(compactWindowDragSession, "activationDistance", "Compact drag helper supports thresholded activation");
 assertTextIncludes(tauriWindow, "createCurrentTauriWindowDragSession", "Tauri window adapter owns compact window-position drag sessions");
 assertTextIncludes(tauriWindow, "currentWindow.setPosition", "Tauri window adapter moves the compact window through the native shell");
+assertTextIncludes(tauriWindow, "lastCompactWindowPosition", "Tauri window adapter remembers the last compact window position in-session");
+assertTextIncludes(
+  tauriWindow,
+  'previousMode === "compact" && shell.mode === "full"',
+  "Tauri window adapter snapshots compact position before expanding",
+);
 assertTextIncludes(compactWindowCheck, "assertFullStageUsesStageVisuals", "Compact check verifies full-stage visual family");
 assertTextIncludes(compactWindowCheck, "assertCompactCenserStateDifferentiation", "Compact check verifies compact censer state differentiation");
+assertTextIncludes(compactWindowCheck, "assertCompactRemainingTooltip", "Compact check verifies remaining-time hover and focus tooltip");
+assertTextIncludes(
+  compactWindowCheck,
+  "assertFullStageActiveCenserHoverUsesSingleCard",
+  "Compact check verifies active full-stage censer hover uses a single timer card",
+);
 assertTextIncludes(compactWindowCheck, "assertCompactDragRegionSemantics", "Compact check verifies compact drag region semantics");
 assertTextIncludes(compactWindowCheck, "assertCompactCenserDragClickSuppression", "Compact check verifies censer drag click suppression");
 assertTextIncludes(
@@ -951,6 +963,7 @@ assertTextIncludes(stylesCss, ".compact-censer--idle .censer-visual--compact", "
 assertTextIncludes(stylesCss, ".compact-censer--burning .censer-visual--compact", "CSS differentiates active compact censer visuals");
 assertTextIncludes(stylesCss, ".compact-censer--resting .censer-visual--compact", "CSS differentiates resting compact censer visuals");
 assertTextIncludes(stylesCss, ".compact-censer--completed .censer-visual--compact", "CSS differentiates completed compact censer visuals");
+assertTextIncludes(stylesCss, ".compact-censer__remaining", "CSS renders compact remaining time as a transient tooltip");
 assertTextIncludes(stylesCss, "gap: 6px;", "CSS keeps compact censers close together");
 assertTextIncludes(stylesCss, "opacity: 0.86;", "CSS avoids excessive transparency for idle compact censers");
 assertTextIncludes(stylesCss, ".talisman-visual__template .visual-layer__asset", "CSS renders talisman template image layer");
@@ -964,18 +977,13 @@ assertTextIncludes(stylesCss, 'data-stage-metadata-active="true"', "CSS uses exp
 assertTextIncludes(stylesCss, ".censer-visual__metadata", "CSS treats full-stage metadata as one card");
 assertTextIncludes(
   stylesCss,
-  ".altar-scene .intent-slot:first-child .timer-panel {\n  left: calc(50% + 78px);\n}",
-  "CSS shifts first-slot timer panels away from censer metadata",
+  ":not(.intent-slot--burning):not(",
+  "CSS suppresses duplicate censer metadata while active timer cards are preferred",
 );
 assertTextIncludes(
   stylesCss,
-  ".altar-scene .intent-slot:last-child .timer-panel {\n  left: calc(50% - 78px);\n}",
-  "CSS shifts last-slot timer panels away from censer metadata",
-);
-assertTextIncludes(
-  stylesCss,
-  ".altar-scene--slots-3 .intent-slot:nth-child(2) .timer-panel {\n  left: calc(50% + 78px);\n}",
-  "CSS shifts the middle three-slot timer panel away from censer metadata",
+  ".intent-slot--burning[data-stage-metadata-visibility=\"censer-hover\"][data-stage-metadata-active=\"true\"]",
+  "CSS reveals the active burning timer card through the censer hover target",
 );
 assertTextIncludes(stylesCss, ".review-overview", "CSS supports lightweight review summary cards");
 assertTextIncludes(stylesCss, ".review-optional-fields", "CSS keeps supplemental review fields visually secondary");
@@ -1012,6 +1020,7 @@ assertTextIncludes(stylesCss, "stage-incense-smoke-drift", "CSS defines the slow
 assertTextIncludes(stylesCss, "stage-incense-smoke-wisp-near", "CSS defines a staggered near stage smoke wisp");
 assertTextIncludes(stylesCss, "stage-incense-smoke-wisp-far", "CSS defines a staggered far stage smoke wisp");
 assertTextIncludes(stylesCss, "stage-incense-smoke-wisp-afterglow", "CSS defines a short resting smoke wisp retreat");
+assertTextIncludes(stylesCss, "compact-incense-smoke-drift", "CSS defines a restrained compact smoke drift");
 assertTextIncludes(
   assetPipelineDoc,
   "真实烟雾观感仍需通过 Web 截图和 Tauri 开发版人工验收。",

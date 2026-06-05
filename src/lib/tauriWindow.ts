@@ -9,6 +9,11 @@ type TauriWindowSize = {
   width: number;
 };
 
+type TauriWindowPosition = {
+  x: number;
+  y: number;
+};
+
 export type CurrentTauriWindowDragPoint = {
   x: number;
   y: number;
@@ -32,6 +37,8 @@ const setDocumentWindowMode = (mode: TauriWindowShell["mode"]) => {
   document.documentElement.dataset.windowMode = mode;
 };
 
+let lastCompactWindowPosition: TauriWindowPosition | null = null;
+
 export const isCurrentDocumentWindowCompact = () =>
   typeof document !== "undefined" && document.documentElement.dataset.windowMode === "compact";
 
@@ -54,6 +61,18 @@ const readCurrentTauriWindowDecorationSize = async (
   return {
     height: Math.max(0, logicalOuterSize.height - logicalInnerSize.height),
     width: Math.max(0, logicalOuterSize.width - logicalInnerSize.width),
+  };
+};
+
+const readCurrentTauriWindowPosition = async (
+  currentWindow: Awaited<ReturnType<(typeof import("@tauri-apps/api/window"))["getCurrentWindow"]>>,
+) => {
+  const scaleFactor = await currentWindow.scaleFactor();
+  const position = (await currentWindow.outerPosition()).toLogical(scaleFactor);
+
+  return {
+    x: position.x,
+    y: position.y,
   };
 };
 
@@ -82,12 +101,13 @@ export const createCurrentTauriWindowDragSession = async (startPoint: CurrentTau
     isMoving = true;
 
     try {
-      await currentWindow.setPosition(
-        new LogicalPosition(
-          startWindowPosition.x + point.x - startPoint.x,
-          startWindowPosition.y + point.y - startPoint.y,
-        ),
-      );
+      const nextPosition = {
+        x: startWindowPosition.x + point.x - startPoint.x,
+        y: startWindowPosition.y + point.y - startPoint.y,
+      };
+
+      await currentWindow.setPosition(new LogicalPosition(nextPosition.x, nextPosition.y));
+      lastCompactWindowPosition = nextPosition;
     } catch {
       queuedPoint = null;
     } finally {
@@ -143,20 +163,39 @@ const resizeAndFocusCurrentTauriWindow = async (size: TauriWindowSize, shell: Ta
     return false;
   }
 
+  const previousMode = document.documentElement.dataset.windowMode;
   setDocumentWindowMode(shell.mode);
 
   const { getCurrentWindow, LogicalSize } = await import("@tauri-apps/api/window");
   const currentWindow = getCurrentWindow();
 
+  if (previousMode === "compact" && shell.mode === "full") {
+    lastCompactWindowPosition = await readCurrentTauriWindowPosition(currentWindow);
+  }
+
   await runCompatibleWindowAction(() => currentWindow.setBackgroundColor(shell.backgroundColor));
   await runCompatibleWindowAction(() => currentWindow.setTitleBarStyle(shell.titleBarStyle));
   await runCompatibleWindowAction(() => currentWindow.setDecorations(shell.hasDecorations));
   await runCompatibleWindowAction(() => currentWindow.setShadow(shell.hasShadow));
-  const decorationSize = await readCurrentTauriWindowDecorationSize(currentWindow);
+  const decorationSize =
+    previousMode === "compact" && shell.mode === "full"
+      ? await readCurrentTauriWindowDecorationSize(currentWindow)
+      : { height: 0, width: 0 };
   await currentWindow.setSize(
     new LogicalSize(size.width - decorationSize.width, size.height - decorationSize.height),
   );
-  await currentWindow.center();
+
+  if (shell.mode === "compact" && lastCompactWindowPosition) {
+    const { LogicalPosition } = await import("@tauri-apps/api/window");
+    await currentWindow.setPosition(new LogicalPosition(lastCompactWindowPosition.x, lastCompactWindowPosition.y));
+  } else {
+    await currentWindow.center();
+
+    if (shell.mode === "compact") {
+      lastCompactWindowPosition = await readCurrentTauriWindowPosition(currentWindow);
+    }
+  }
+
   await currentWindow.show();
   await currentWindow.setFocus();
   return true;

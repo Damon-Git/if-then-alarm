@@ -225,6 +225,12 @@ const App = () => {
   );
 
   useEffect(() => {
+    expandCurrentTauriWindow().catch(() => {
+      // Later user actions still retry full-window restoration and surface a toast if needed.
+    });
+  }, []);
+
+  useEffect(() => {
     closeStateRef.current = {
       hasUnsavedSession,
       hasUnsavedSetupDraft,

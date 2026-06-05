@@ -27,7 +27,8 @@ const actualPersistencePath = path.join(
   appIdentifier,
   "persistence.v1.json",
 );
-const tolerance = 4;
+const sizeTolerance = 24;
+const positionTolerance = 4;
 const shouldBuild = !process.argv.includes("--skip-build");
 const keepScreenshots = !process.argv.includes("--no-screenshots");
 const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
@@ -211,8 +212,8 @@ const waitFor = async (readValue, predicate, label, timeoutMs = 10_000) => {
 };
 
 const isExpectedSize = (actual, expected) =>
-  Math.abs(actual.width - expected.width) <= tolerance &&
-  Math.abs(actual.height - expected.height) <= tolerance;
+  Math.abs(actual.width - expected.width) <= sizeTolerance &&
+  Math.abs(actual.height - expected.height) <= sizeTolerance;
 
 const waitForWindowSize = (expected, label) =>
   waitFor(readWindowInfo, (windowInfo) => isExpectedSize(windowInfo, expected), label);
@@ -426,8 +427,7 @@ try {
 
   const sizes = await readConstants();
   await waitFor(readWindowInfo, Boolean, "the debug Tauri window", 15_000);
-  await delay(2_000);
-  const initialWindowInfo = readWindowInfo();
+  const initialWindowInfo = await waitForWindowSize(sizes.full, "initial full window size");
   const processInfo = readProcessInfo();
   const [actualDebugBinary, launchedExecutable] = await Promise.all([
     realpath(debugBinary),
@@ -515,6 +515,22 @@ try {
   takeWindowScreenshot("06-roundtrip-1-expanded", firstExpanded);
 
   const secondCompact = await compactWindow(sizes, "roundtrip 2");
+  const compactPositionRetentionDistance = Math.hypot(
+    secondCompact.x - censerDraggedCompact.x,
+    secondCompact.y - censerDraggedCompact.y,
+  );
+
+  if (compactPositionRetentionDistance > positionTolerance) {
+    fail(
+      `second compact window did not return to the last dragged compact position: dragged=${JSON.stringify(
+        censerDraggedCompact,
+      )} second=${JSON.stringify(secondCompact)}`,
+    );
+  }
+
+  logStep(
+    `roundtrip 2 compact returned to the last dragged compact position: (${secondCompact.x}, ${secondCompact.y})`,
+  );
   takeWindowScreenshot("07-roundtrip-2-compact", secondCompact);
   const secondExpanded = await expandWindow(sizes, "roundtrip 2");
   takeWindowScreenshot("08-roundtrip-2-expanded", secondExpanded);

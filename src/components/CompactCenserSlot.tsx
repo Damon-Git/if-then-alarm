@@ -75,7 +75,10 @@ const CompactCenserSlot = ({
   );
 
   return (
-    <article className={`compact-censer compact-censer--${intentSet.status}`}>
+    <article
+      className={`compact-censer compact-censer--${intentSet.status}`}
+      data-compact-censer-has-remaining={isActive ? "true" : "false"}
+    >
       <button
         aria-label={`第 ${intentSet.currentIncenseIndex} / ${intentSet.incenseCount} 炷，${statusLabels[intentSet.status]}，${statusHint}`}
         className="compact-censer__button"
@@ -124,9 +127,7 @@ const CompactCenserSlot = ({
           status={intentSet.status}
         />
         <span className="compact-censer__status">{statusLabels[intentSet.status]}</span>
-        <strong>
-          {isActive ? formattedRemaining : `第 ${intentSet.currentIncenseIndex} / ${intentSet.incenseCount} 炷`}
-        </strong>
+        {isActive ? <strong className="compact-censer__remaining">{formattedRemaining}</strong> : null}
         <span className="compact-censer__hint">{statusHint}</span>
       </button>
       <p>{intentSet.situationIntent}</p>

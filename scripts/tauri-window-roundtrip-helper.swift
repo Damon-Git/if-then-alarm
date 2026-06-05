@@ -92,6 +92,46 @@ func performPress(_ element: AXUIElement, label: String) {
     }
 }
 
+func postCommandW(_ pid: pid_t) {
+    activate(pid)
+
+    let source = CGEventSource(stateID: .hidSystemState)
+    let keyCodeW = CGKeyCode(13)
+
+    guard let keyDown = CGEvent(keyboardEventSource: source, virtualKey: keyCodeW, keyDown: true),
+          let keyUp = CGEvent(keyboardEventSource: source, virtualKey: keyCodeW, keyDown: false) else {
+        fail("could not create Command-W keyboard events")
+    }
+
+    keyDown.flags = .maskCommand
+    keyUp.flags = .maskCommand
+    keyDown.post(tap: .cghidEventTap)
+    usleep(80_000)
+    keyUp.post(tap: .cghidEventTap)
+}
+
+func clickNativeCloseFallback(_ pid: pid_t) {
+    activate(pid)
+
+    let window = mainWindowInfo(pid)
+    let point = CGPoint(x: Double(window.x) + 16, y: max(0, Double(window.y) - 14))
+    let source = CGEventSource(stateID: .hidSystemState)
+
+    func post(_ type: CGEventType) {
+        guard let event = CGEvent(mouseEventSource: source, mouseType: type, mouseCursorPosition: point, mouseButton: .left) else {
+            fail("could not create native close fallback mouse event \(type.rawValue)")
+        }
+
+        event.post(tap: .cghidEventTap)
+    }
+
+    post(.mouseMoved)
+    usleep(80_000)
+    post(.leftMouseDown)
+    usleep(80_000)
+    post(.leftMouseUp)
+}
+
 func windowsForPid(_ pid: pid_t) -> [[String: Any]] {
     guard let windows = CGWindowListCopyWindowInfo(
         [.optionOnScreenOnly, .excludeDesktopElements],
@@ -130,7 +170,8 @@ func closeMainWindow(_ pid: pid_t) {
     guard let windows = copyAttribute(appElement(pid), kAXWindowsAttribute) as? [AXUIElement],
           let mainWindow = windows.first,
           let closeButton = elementAttribute(mainWindow, kAXCloseButtonAttribute) else {
-        fail("could not find the native close button for PID \(pid)")
+        clickNativeCloseFallback(pid)
+        return
     }
 
     performPress(closeButton, label: "native close button")
