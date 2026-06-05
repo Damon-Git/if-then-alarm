@@ -36,10 +36,10 @@ npm run release:self-use-summary
 
 ## 未升基线的内部验收记录
 
-### 2026-06-05 · v0.2.0 · d78826d + 未提交窗口修复 · 内部 `.app` 完成态恢复复验
+### 2026-06-05 · v0.2.0 · 1a08a27 · 内部 `.app` 完成态恢复复验
 
 - 状态：未升为新的长期自用基线；本轮针对完成态恢复窗口稳定性复验通过。
-- Git 提交：基于 `d78826d docs(self-use): record packaged app smoke blocker`，工作区含未提交修复 `src-tauri/src/main.rs`。
+- Git 提交：`1a08a27 fix(tauri): recreate main window on reopen`。
 - 构建产物：`src-tauri/target/release/bundle/macos/急急如律令.app`。
 - Bundle ID：`com.damon.jijirululing`。
 - Rust crate：`jiji-rululing v0.2.0`。
@@ -52,7 +52,7 @@ npm run release:self-use-summary
 - 是否安装/覆盖 app：否。
 - 是否生成 DMG：否。
 - 是否签名/公证：否。
-- 已知问题：本轮未发现新的阻断问题；未做正式发布，需提交修复后再决定是否升为长期自用基线。
+- 已知问题：本轮未发现新的阻断问题；未做正式发布，仍未升为长期自用基线。
 - 回滚方式：继续使用 2026-05-25 当前基线；如误开本轮包后出现待恢复测试会话，退出应用并确认 `persistence.v1.json` 中 `currentSession` 状态。
 
 ### 2026-06-05 · v0.2.0 · 0971659 · 内部 `.app` 人工冒烟
