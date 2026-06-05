@@ -115,7 +115,7 @@ src/assets/visuals/talisman/situation/template.png
 - 线香继续由 `IncenseVisual` 渲染，用户选择 1 / 2 / 3 炷香时必须分别显示 1 / 2 / 3 根线香。
 - 进入计时状态时，从左侧第一炷香开始显示进度；续香后依次推进到第 2、3 炷。
 - 小窗素材不包含符箓；小窗点击香炉只负责回到完整窗口，不负责启动套组。
-- 小窗素材不应承载文字信息。状态、倒计时、当前香数只保留在按钮可访问性语义中。
+- 小窗素材不应承载文字信息。状态、当前香数和长执行意图不烘焙进图片；倒计时剩余时间由 React/CSS 在 hover/focus 小香炉时临时显示，按钮可访问性语义继续保留完整状态。
 
 代码中的规格锚点见 `VISUAL_ASSET_FAMILY_SPECS` 和 `COMPACT_CENSER_ASSET_REQUIREMENTS`。
 
@@ -166,7 +166,7 @@ src/assets/visuals/talisman/situation/template.png
 - 小窗线香推荐源素材画布为 `192px × 192px`。
 - `stick.png`、`ash.png`、`ember.png`、`smoke.png` 继续保持独立图层。
 - 线香数量由 `IncenseVisual` 按用户选择重复渲染，不为 1 / 2 / 3 炷香分别烘焙整图。
-- 当前香灰高度和火星位置由倒计时进度驱动；烟雾只允许极弱静态显隐，不做动画。
+- 当前香灰高度和火星位置由倒计时进度驱动；小窗烧香中烟雾必须有克制动画，优先复用 `smoke.png` 图层和轻量 CSS，避免高负载粒子、大幅位移或独立 timer。
 - 休息中保留上一炷烧完状态；完成闭盖后隐藏线香。
 
 ## 接入边界
