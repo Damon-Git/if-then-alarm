@@ -36,6 +36,25 @@ npm run release:self-use-summary
 
 ## 未升基线的内部验收记录
 
+### 2026-06-05 · v0.2.0 · d78826d + 未提交窗口修复 · 内部 `.app` 完成态恢复复验
+
+- 状态：未升为新的长期自用基线；本轮针对完成态恢复窗口稳定性复验通过。
+- Git 提交：基于 `d78826d docs(self-use): record packaged app smoke blocker`，工作区含未提交修复 `src-tauri/src/main.rs`。
+- 构建产物：`src-tauri/target/release/bundle/macos/急急如律令.app`。
+- Bundle ID：`com.damon.jijirululing`。
+- Rust crate：`jiji-rululing v0.2.0`。
+- 数据版本：`persistence.v1.json` / `version: 1`。
+- 修复内容：Rust 侧 `show_main_window` / 托盘切换入口改为先获取或重建 `main` WebView 窗口；当恢复提示窗口被关闭导致进程仍在但主窗口不存在时，后续 reopen / 托盘入口不再只对空窗口引用静默失败。
+- 自动检查：`cargo fmt --manifest-path src-tauri/Cargo.toml --check` 通过；`cargo check --manifest-path src-tauri/Cargo.toml` 通过；`npm run check:release-self-use` 通过；`npm run check:tauri-window-roundtrip -- --no-screenshots` 通过；`npm run tauri:build` 通过。
+- 问题复现：使用旧打包产物和临时 HOME 写入“完成态待恢复”fixture 后，关闭恢复窗口可复现“进程仍在但 on-screen layer-0 窗口为 0”；再次 `open` 未能让原进程窗口恢复。
+- 打包版复验：使用新构建 `.app`，临时备份并替换真实路径 `persistence.v1.json` 为含 24 条历史 + 完成态 `currentSession` 的 fixture；启动后关闭恢复窗口，再次打开 `.app` 可稳定看到恢复提示；恢复本轮后进入“本次复盘”；输入 `Packaged smoke review saved` 并点击“保存复盘”后，历史临时增至 25 条且 `currentSession` 清为 `null`；关闭并重新打开 `.app` 后最新历史仍存在。
+- 数据清理：复验结束已杀掉测试进程并恢复原始 `persistence.v1.json`；真实数据回到 `currentSession: null`、历史 24 条。
+- 是否安装/覆盖 app：否。
+- 是否生成 DMG：否。
+- 是否签名/公证：否。
+- 已知问题：本轮未发现新的阻断问题；未做正式发布，需提交修复后再决定是否升为长期自用基线。
+- 回滚方式：继续使用 2026-05-25 当前基线；如误开本轮包后出现待恢复测试会话，退出应用并确认 `persistence.v1.json` 中 `currentSession` 状态。
+
 ### 2026-06-05 · v0.2.0 · 0971659 · 内部 `.app` 人工冒烟
 
 - 状态：未升为新的长期自用基线；本轮打包版人工冒烟未完全通过。

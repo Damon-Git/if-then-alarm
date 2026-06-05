@@ -4,7 +4,7 @@ use std::fs;
 use std::path::PathBuf;
 use std::time::{SystemTime, UNIX_EPOCH};
 use tauri::tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent};
-use tauri::Manager;
+use tauri::{Manager, WebviewWindow, WebviewWindowBuilder};
 
 const DESKTOP_PERSISTENCE_FILENAME: &str = "persistence.v1.json";
 const MENUBAR_ICON: tauri::image::Image<'_> =
@@ -89,15 +89,33 @@ fn write_user_text_file(path: String, contents: String) -> Result<(), String> {
     fs::write(path, contents).map_err(|error| format!("failed to write selected file: {error}"))
 }
 
-fn show_main_window(app_handle: &tauri::AppHandle) {
+fn get_or_create_main_window(app_handle: &tauri::AppHandle) -> tauri::Result<WebviewWindow> {
     if let Some(window) = app_handle.get_webview_window("main") {
+        return Ok(window);
+    }
+
+    let Some(window_config) = app_handle
+        .config()
+        .app
+        .windows
+        .iter()
+        .find(|window| window.label == "main")
+    else {
+        return WebviewWindowBuilder::new(app_handle, "main", tauri::WebviewUrl::default()).build();
+    };
+
+    WebviewWindowBuilder::from_config(app_handle, window_config)?.build()
+}
+
+fn show_main_window(app_handle: &tauri::AppHandle) {
+    if let Ok(window) = get_or_create_main_window(app_handle) {
         let _ = window.show();
         let _ = window.set_focus();
     }
 }
 
 fn toggle_main_window(app_handle: &tauri::AppHandle) {
-    if let Some(window) = app_handle.get_webview_window("main") {
+    if let Ok(window) = get_or_create_main_window(app_handle) {
         match window.is_visible() {
             Ok(true) => {
                 let _ = window.hide();
