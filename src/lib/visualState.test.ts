@@ -18,6 +18,7 @@ describe("visual state", () => {
     expect(getStageIntentVisualSemantics("idle")).toEqual({
       canStart: true,
       censerEmphasis: "normal",
+      hoverCard: "metadata",
       metadataVisibility: "censer-hover",
       preventionTalismanVisibility: "visible",
       shouldRenderTimerPanel: false,
@@ -27,6 +28,7 @@ describe("visual state", () => {
     expect(getStageIntentVisualSemantics("burning")).toEqual({
       canStart: false,
       censerEmphasis: "normal",
+      hoverCard: "timer",
       metadataVisibility: "censer-hover",
       preventionTalismanVisibility: "visible",
       shouldRenderTimerPanel: true,
@@ -36,6 +38,7 @@ describe("visual state", () => {
     expect(getStageIntentVisualSemantics("resting")).toEqual({
       canStart: false,
       censerEmphasis: "normal",
+      hoverCard: "timer",
       metadataVisibility: "censer-hover",
       preventionTalismanVisibility: "visible",
       shouldRenderTimerPanel: true,
@@ -45,6 +48,7 @@ describe("visual state", () => {
     expect(getStageIntentVisualSemantics("completed")).toEqual({
       canStart: false,
       censerEmphasis: "muted",
+      hoverCard: "metadata",
       metadataVisibility: "censer-hover",
       preventionTalismanVisibility: "dismissed",
       shouldRenderTimerPanel: false,

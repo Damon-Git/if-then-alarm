@@ -12,6 +12,8 @@ export type StageCenserEmphasis = "normal" | "muted";
 
 export type StageIntentMetadataVisibility = "censer-hover";
 
+export type StageIntentHoverCard = "metadata" | "timer";
+
 export type StageTalismanVisibility = "visible" | "dismissed";
 
 export type StageTimerIntentStatus = Extract<IntentSetStatus, "burning" | "resting">;
@@ -19,6 +21,7 @@ export type StageTimerIntentStatus = Extract<IntentSetStatus, "burning" | "resti
 export type StageIntentVisualSemantics = {
   canStart: boolean;
   censerEmphasis: StageCenserEmphasis;
+  hoverCard: StageIntentHoverCard;
   metadataVisibility: StageIntentMetadataVisibility;
   preventionTalismanVisibility: StageTalismanVisibility;
   shouldRenderTimerPanel: boolean;
@@ -30,6 +33,7 @@ const STAGE_INTENT_VISUAL_SEMANTICS = {
   idle: {
     canStart: true,
     censerEmphasis: "normal",
+    hoverCard: "metadata",
     metadataVisibility: "censer-hover",
     preventionTalismanVisibility: "visible",
     shouldRenderTimerPanel: false,
@@ -39,6 +43,7 @@ const STAGE_INTENT_VISUAL_SEMANTICS = {
   burning: {
     canStart: false,
     censerEmphasis: "normal",
+    hoverCard: "timer",
     metadataVisibility: "censer-hover",
     preventionTalismanVisibility: "visible",
     shouldRenderTimerPanel: true,
@@ -48,6 +53,7 @@ const STAGE_INTENT_VISUAL_SEMANTICS = {
   resting: {
     canStart: false,
     censerEmphasis: "normal",
+    hoverCard: "timer",
     metadataVisibility: "censer-hover",
     preventionTalismanVisibility: "visible",
     shouldRenderTimerPanel: true,
@@ -57,6 +63,7 @@ const STAGE_INTENT_VISUAL_SEMANTICS = {
   completed: {
     canStart: false,
     censerEmphasis: "muted",
+    hoverCard: "metadata",
     metadataVisibility: "censer-hover",
     preventionTalismanVisibility: "dismissed",
     shouldRenderTimerPanel: false,

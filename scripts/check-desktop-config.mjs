@@ -825,12 +825,15 @@ assertTextIncludes(censerVisual, "censer-visual__hover-target", "CenserVisual ex
 assertTextIncludes(censerVisual, "censer-visual__metadata", "CenserVisual groups full-stage metadata in one hover card");
 assertTextIncludes(censerVisual, "getStageIntentVisualSemantics(status).statusLabel", "CenserVisual derives metadata status copy from central visual semantics");
 assertTextIncludes(censerVisual, 'data-censer-interaction-role={size === "stage" ? "metadata-only" : "presentational"}', "CenserVisual keeps full-stage censers metadata-only");
-assertTextIncludes(censerVisual, 'data-censer-hover-action="show-metadata"', "CenserVisual limits stage hover action to metadata display");
+assertTextIncludes(censerVisual, "hoverAction?: \"show-metadata\" | \"show-timer\"", "CenserVisual distinguishes metadata and timer hover actions");
+assertTextIncludes(censerVisual, "data-censer-hover-action={hoverAction}", "CenserVisual exposes the resolved stage hover action");
 assertTextIncludes(censerVisual, "onMetadataActiveChange", "CenserVisual reports explicit metadata hover state for WebView");
 assertTextIncludes(censerVisual, "getCenserLidState", "CenserVisual derives lid state from central visual state");
 assertTextIncludes(censerVisual, "data-censer-lid-state", "CenserVisual exposes explicit lid state for open and closed censer visuals");
 assertTextIncludes(visualState, "getStageIntentVisualSemantics", "Visual state centralizes full-stage intent semantics");
 assertTextIncludes(visualState, "isStageTimerIntentStatus", "Visual state narrows statuses that can render full-stage timer panels");
+assertTextIncludes(visualState, 'hoverCard: "timer"', "Visual state routes active full-stage hover to the timer card");
+assertTextIncludes(visualState, 'hoverCard: "metadata"', "Visual state routes idle and completed full-stage hover to metadata");
 assertTextIncludes(visualState, "metadataVisibility: \"censer-hover\"", "Full-stage metadata is explicitly triggered by censer hover only");
 assertTextIncludes(visualState, "situationTalismanVisibility", "Visual state controls situation talisman visibility");
 assertTextIncludes(visualState, "preventionTalismanVisibility", "Visual state controls prevention talisman visibility");
@@ -910,6 +913,8 @@ assertTextIncludes(intentSlot, "prevention-list__items", "IntentSlot groups prev
 assertTextIncludes(intentSlot, "getStageIntentVisualSemantics", "IntentSlot derives full-stage UI semantics centrally");
 assertTextIncludes(intentSlot, "data-stage-metadata-visibility", "IntentSlot exposes metadata visibility semantics");
 assertTextIncludes(intentSlot, "data-stage-metadata-active", "IntentSlot exposes explicit metadata hover state");
+assertTextIncludes(intentSlot, "data-stage-hover-card", "IntentSlot exposes which single card censer hover should show");
+assertTextIncludes(intentSlot, 'hoverAction={visualSemantics.hoverCard === "timer" ? "show-timer" : "show-metadata"}', "IntentSlot maps hover-card semantics into the censer hover action");
 assertTextIncludes(intentSlot, "data-stage-situation-visibility", "IntentSlot exposes situation talisman visibility semantics");
 assertTextIncludes(intentSlot, "data-stage-prevention-visibility", "IntentSlot exposes prevention talisman visibility semantics");
 assertTextIncludes(intentSlot, "data-stage-prevention-preview-active", "IntentSlot exposes explicit prevention talisman preview state");
@@ -945,6 +950,16 @@ assertTextIncludes(
   "assertFullStageActiveCenserHoverUsesSingleCard",
   "Compact check verifies active full-stage censer hover uses a single timer card",
 );
+assertTextIncludes(
+  compactWindowCheck,
+  "assertFullStageIdleCenserHoverUsesMetadataCard",
+  "Compact check verifies idle full-stage censer hover uses a single metadata card",
+);
+assertTextIncludes(
+  compactWindowCheck,
+  "assertFullStageTalismanPreviewReadability",
+  "Compact check verifies full-stage talisman hover readability",
+);
 assertTextIncludes(compactWindowCheck, "assertCompactDragRegionSemantics", "Compact check verifies compact drag region semantics");
 assertTextIncludes(compactWindowCheck, "assertCompactCenserDragClickSuppression", "Compact check verifies censer drag click suppression");
 assertTextIncludes(
@@ -972,17 +987,19 @@ assertTextIncludes(stylesCss, "text-orientation: upright", "CSS keeps talisman t
 assertTextIncludes(stylesCss, ".altar-scene", "CSS renders a shared altar background scene");
 assertTextIncludes(stylesCss, ".altar-scene__slots", "CSS lays out full-stage intent slots on one altar");
 assertTextIncludes(stylesCss, "--altar-censer-center-y", "CSS pins full-stage censers to a shared horizontal line");
+assertTextIncludes(stylesCss, 'data-stage-hover-card="metadata"', "CSS reveals metadata cards only from explicit hover-card semantics");
+assertTextIncludes(stylesCss, 'data-stage-hover-card="timer"', "CSS reveals active timer cards only from explicit hover-card semantics");
 assertTextIncludes(stylesCss, 'data-stage-metadata-visibility="censer-hover"', "CSS reveals full-stage metadata only through explicit censer hover semantics");
 assertTextIncludes(stylesCss, 'data-stage-metadata-active="true"', "CSS uses explicit metadata hover state instead of WebView :has hover");
 assertTextIncludes(stylesCss, ".censer-visual__metadata", "CSS treats full-stage metadata as one card");
 assertTextIncludes(
   stylesCss,
-  ":not(.intent-slot--burning):not(",
+  'data-stage-hover-card="metadata"',
   "CSS suppresses duplicate censer metadata while active timer cards are preferred",
 );
 assertTextIncludes(
   stylesCss,
-  ".intent-slot--burning[data-stage-metadata-visibility=\"censer-hover\"][data-stage-metadata-active=\"true\"]",
+  'data-stage-hover-card="timer"',
   "CSS reveals the active burning timer card through the censer hover target",
 );
 assertTextIncludes(stylesCss, ".review-overview", "CSS supports lightweight review summary cards");
@@ -1004,6 +1021,9 @@ assertTextIncludes(
   "Asset pipeline keeps visual burn quality under screenshot and Tauri manual review",
 );
 assertTextIncludes(stylesCss, 'data-talisman-preview-active="true"', "CSS enlarges talismans from explicit preview state");
+assertTextIncludes(stylesCss, "scale(3.05)", "CSS makes situation talisman preview large enough for reading");
+assertTextIncludes(stylesCss, "scale(3.5)", "CSS makes prevention talisman preview large enough for reading");
+assertTextIncludes(stylesCss, ".altar-scene:has(.talisman-visual[data-talisman-preview-active=\"true\"], .talisman-visual:focus-visible)", "CSS allows enlarged talismans to escape altar clipping while previewing");
 assertTextIncludes(stylesCss, "background: transparent;\n  pointer-events: none;", "Full-stage censer transparent areas do not capture talisman or incense hover");
 assertTextIncludes(stylesCss, ".altar-scene .censer-visual--stage .censer-visual__hover-target", "Full-stage censer hover target is scoped to stage censers");
 assertTextIncludes(stylesCss, "cursor: default;\n  pointer-events: auto;", "Full-stage censer hover target remains metadata-only and hoverable");

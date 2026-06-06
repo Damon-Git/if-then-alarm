@@ -34,6 +34,7 @@ const IntentSlot = ({
       className={`intent-slot intent-slot--${intentSet.status}`}
       data-stage-can-start={canStart}
       data-stage-censer-emphasis={visualSemantics.censerEmphasis}
+      data-stage-hover-card={visualSemantics.hoverCard}
       data-stage-intent-status={intentSet.status}
       data-stage-metadata-active={isCenserMetadataActive ? "true" : "false"}
       data-stage-metadata-visibility={visualSemantics.metadataVisibility}
@@ -57,6 +58,7 @@ const IntentSlot = ({
         currentIncenseIndex={intentSet.currentIncenseIndex}
         incenseCount={intentSet.incenseCount}
         incenseProgress={incenseProgress}
+        hoverAction={visualSemantics.hoverCard === "timer" ? "show-timer" : "show-metadata"}
         isMetadataActive={isCenserMetadataActive}
         onMetadataActiveChange={setIsCenserMetadataActive}
         size="stage"

@@ -84,6 +84,10 @@ const assertFullStageUsesStageVisuals = async (page) => {
     "full ritual stage should hide metadata until hovering the censer",
   );
   assert(
+    (await page.locator('.stage-grid--full .intent-slot[data-stage-hover-card="metadata"]').count()) === 3,
+    "idle full ritual stage should route censer hover to metadata cards",
+  );
+  assert(
     (await page.locator('.stage-grid--full .intent-slot[data-stage-situation-visibility="visible"]').count()) === 3,
     "full ritual stage should keep idle situation talismans visible",
   );
@@ -100,12 +104,16 @@ const assertFullStageUsesStageVisuals = async (page) => {
     "full ritual stage should expose a censer-only metadata hover target",
   );
   assert(
+    (await page.locator('.stage-grid--full .censer-visual__hover-target[data-censer-hover-action="show-metadata"]').count()) === 3,
+    "idle full ritual stage should mark censer hover targets as metadata-only",
+  );
+  assert(
     (await page.locator('.stage-grid--full .talisman-visual--situation[data-talisman-click-action="start-confirm"]').count()) === 3,
     "full ritual stage should make idle situation talismans the only start-confirm click targets",
   );
   assert(
-    (await page.locator('.stage-grid--full .talisman-visual--prevention[data-talisman-click-action="none"]').count()) === 0,
-    "full ritual stage should not render prevention click targets when no prevention intents exist",
+    (await page.locator('.stage-grid--full .talisman-visual--prevention[data-talisman-click-action="none"]').count()) === 1,
+    "full ritual stage should render configured prevention talismans as view-only",
   );
   assert(
     (await page.locator('.stage-grid--full .censer-visual[data-censer-interaction-role="metadata-only"]').count()) === 3,
@@ -567,9 +575,141 @@ const assertCompactRemainingTooltip = async (page) => {
   );
 };
 
+const clearFullStageTalismanPreview = async (page) => {
+  await page.locator(".stage-grid--full .talisman-visual").evaluateAll((elements) => {
+    for (const element of elements) {
+      element.dispatchEvent(new MouseEvent("mouseleave", { bubbles: true }));
+      element.dispatchEvent(new MouseEvent("mouseout", { bubbles: true }));
+
+      if (element instanceof HTMLElement) {
+        element.blur();
+      }
+    }
+  });
+  await page.waitForTimeout(120);
+};
+
+const assertFullStageIdleCenserHoverUsesMetadataCard = async (page) => {
+  const idleSlot = page.locator(".stage-grid--full .intent-slot--idle").first();
+  const hoverTarget = idleSlot.locator(".censer-visual__hover-target");
+
+  assert(
+    (await idleSlot.getAttribute("data-stage-hover-card")) === "metadata",
+    "idle full-stage intent should route censer hover to the metadata card",
+  );
+  assert(
+    (await hoverTarget.getAttribute("data-censer-hover-action")) === "show-metadata",
+    "idle full-stage censer hover target should expose metadata action semantics",
+  );
+
+  await hoverTarget.hover();
+  await page.waitForTimeout(220);
+
+  const cardStyles = await idleSlot.evaluate((element) => {
+    const metadata = element.querySelector(".censer-visual__metadata");
+    const timerPanel = element.querySelector(".timer-panel");
+
+    return {
+      metadataOpacity: metadata ? Number.parseFloat(window.getComputedStyle(metadata).opacity) : -1,
+      timerPanelExists: Boolean(timerPanel),
+    };
+  });
+
+  assert(
+    cardStyles.metadataOpacity > 0.8,
+    `idle full-stage censer hover should reveal the metadata card: ${JSON.stringify(cardStyles)}`,
+  );
+  assert(!cardStyles.timerPanelExists, "idle full-stage censer hover should not reveal a timer card");
+
+  await page.mouse.move(1, 1);
+  await page.waitForTimeout(120);
+};
+
+const readTalismanPreviewMetrics = async (locator) =>
+  locator.evaluate((element) => {
+    const style = window.getComputedStyle(element);
+    const matrix = style.transform === "none" ? new DOMMatrixReadOnly() : new DOMMatrixReadOnly(style.transform);
+    const box = element.getBoundingClientRect();
+    const slot = element.closest(".intent-slot");
+    const metadata = slot?.querySelector(".censer-visual__metadata");
+    const timerPanel = slot?.querySelector(".timer-panel");
+
+    return {
+      height: Math.round(box.height),
+      metadataActive: slot?.getAttribute("data-stage-metadata-active") ?? "",
+      metadataOpacity: metadata ? Number.parseFloat(window.getComputedStyle(metadata).opacity) : -1,
+      scaleX: Math.hypot(matrix.a, matrix.b),
+      scaleY: Math.hypot(matrix.c, matrix.d),
+      timerOpacity: timerPanel ? Number.parseFloat(window.getComputedStyle(timerPanel).opacity) : -1,
+      width: Math.round(box.width),
+      zIndex: Number.parseInt(style.zIndex, 10),
+    };
+  });
+
+const assertFullStageTalismanPreviewReadability = async (page) => {
+  const firstSlot = page.locator(".stage-grid--full .intent-slot--idle").first();
+  const situationTalisman = firstSlot.locator(".talisman-visual--situation");
+  const preventionTalisman = firstSlot.locator(".talisman-visual--prevention").first();
+
+  assert((await preventionTalisman.count()) === 1, "full-stage readability check needs one prevention talisman");
+
+  await situationTalisman.hover();
+  await page.waitForTimeout(220);
+
+  const situationMetrics = await readTalismanPreviewMetrics(situationTalisman);
+  assert(
+    situationMetrics.scaleX >= 3 && situationMetrics.scaleY >= 3 && situationMetrics.height >= 300,
+    `situation talisman hover should enlarge enough for reading: ${JSON.stringify(situationMetrics)}`,
+  );
+  assert(
+    situationMetrics.metadataActive === "false" && situationMetrics.metadataOpacity === 0,
+    `situation talisman hover should not reveal censer metadata: ${JSON.stringify(situationMetrics)}`,
+  );
+  assert(
+    situationMetrics.timerOpacity <= 0,
+    `situation talisman hover should not reveal a timer card: ${JSON.stringify(situationMetrics)}`,
+  );
+  assert(situationMetrics.zIndex >= 28, `situation talisman preview should float above altar visuals: ${JSON.stringify(situationMetrics)}`);
+
+  await page.mouse.move(1, 1);
+  await page.waitForTimeout(120);
+  await preventionTalisman.hover();
+  await page.waitForTimeout(220);
+
+  const preventionMetrics = await readTalismanPreviewMetrics(preventionTalisman);
+  assert(
+    preventionMetrics.scaleX >= 3.1 && preventionMetrics.scaleY >= 3.1 && preventionMetrics.height >= 240,
+    `prevention talisman hover should enlarge enough for reading: ${JSON.stringify(preventionMetrics)}`,
+  );
+  assert(
+    preventionMetrics.metadataActive === "false" && preventionMetrics.metadataOpacity === 0,
+    `prevention talisman hover should not reveal censer metadata: ${JSON.stringify(preventionMetrics)}`,
+  );
+  assert(
+    preventionMetrics.timerOpacity <= 0,
+    `prevention talisman hover should not reveal a timer card: ${JSON.stringify(preventionMetrics)}`,
+  );
+  assert(preventionMetrics.zIndex >= 28, `prevention talisman preview should float above altar visuals: ${JSON.stringify(preventionMetrics)}`);
+
+  await page.mouse.move(1, 1);
+  await page.waitForTimeout(120);
+  await clearFullStageTalismanPreview(page);
+};
+
 const assertFullStageActiveCenserHoverUsesSingleCard = async (page) => {
   const burningSlot = page.locator(".stage-grid--full .intent-slot--burning").first();
   const hoverTarget = burningSlot.locator(".censer-visual__hover-target");
+
+  await clearFullStageTalismanPreview(page);
+
+  assert(
+    (await burningSlot.getAttribute("data-stage-hover-card")) === "timer",
+    "active full-stage intent should route censer hover to the timer card",
+  );
+  assert(
+    (await hoverTarget.getAttribute("data-censer-hover-action")) === "show-timer",
+    "active full-stage censer hover target should expose timer action semantics",
+  );
 
   await hoverTarget.hover();
   await page.waitForTimeout(220);
@@ -736,6 +876,11 @@ const run = async () => {
     await situationInputs.nth(0).fill("当我打开电脑坐到书桌前，就开始写今天的第一段文稿。");
     await situationInputs.nth(1).fill("当我打开编辑器，就整理今天最重要的一件事。");
     await situationInputs.nth(2).fill("当我完成第一轮专注，就记录下一步行动。");
+    const firstIntentForm = page.locator(".intent-form").first();
+    await firstIntentForm.getByRole("button", { name: "添加" }).click();
+    await firstIntentForm
+      .locator('textarea[placeholder="如果我想刷短视频，那么我就先闭眼休息 5 分钟。"]')
+      .fill("如果我想刷短视频，那么我就先闭眼休息 5 分钟。");
 
     await page.getByLabel("第 1 项任务香数").getByRole("button", { name: "3 炷" }).click();
     await page.getByLabel("第 2 项任务香数").getByRole("button", { name: "2 炷" }).click();
@@ -745,6 +890,8 @@ const run = async () => {
     await assertVisible(page.getByRole("heading", { name: "仪式台" }), "full ritual title before compact mode");
     await assertVisible(page.locator(".stage-grid--full"), "full ritual stage before compact mode");
     await assertFullStageUsesStageVisuals(page);
+    await assertFullStageIdleCenserHoverUsesMetadataCard(page);
+    await assertFullStageTalismanPreviewReadability(page);
     assert(
       (await page.locator(".intent-slot--idle").count()) === 3,
       "entering ritual should keep all intent slots idle",

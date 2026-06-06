@@ -33,6 +33,10 @@ type CenserVisualProps = {
    */
   isMetadataActive?: boolean;
   /**
+   * Describes what the full-stage censer hit area reveals on hover.
+   */
+  hoverAction?: "show-metadata" | "show-timer";
+  /**
    * Reports hover state for the dedicated censer hit area.
    */
   onMetadataActiveChange?: (isActive: boolean) => void;
@@ -61,6 +65,7 @@ const CenserVisual = ({
   currentIncenseIndex,
   incenseCount,
   incenseProgress,
+  hoverAction = "show-metadata",
   isMetadataActive = false,
   onMetadataActiveChange,
   size,
@@ -103,7 +108,7 @@ const CenserVisual = ({
       </div>
       <span
         className="censer-visual__hover-target"
-        data-censer-hover-action="show-metadata"
+        data-censer-hover-action={hoverAction}
         aria-hidden="true"
         onMouseEnter={() => onMetadataActiveChange?.(true)}
         onMouseLeave={() => onMetadataActiveChange?.(false)}
