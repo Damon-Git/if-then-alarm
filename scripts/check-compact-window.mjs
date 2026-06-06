@@ -848,6 +848,57 @@ const assertCompactCompletionStaysOutOfReviewWhenFullOpenFails = async (page) =>
   );
 };
 
+const assertCompletedSessionReviewSavePersistsHistory = async (page) => {
+  const reviewText = "Compact automated review persisted";
+
+  await page.evaluate(() => {
+    document.documentElement.dataset.windowMode = "full";
+  });
+  await assertVisible(page.getByRole("heading", { name: "本轮香尽" }), "completed full ritual summary");
+  await assertVisible(page.getByRole("button", { name: "进入复盘" }), "full ritual review entry");
+  assert(
+    (await page.locator(".review-panel:visible").count()) === 0,
+    "completed full ritual should still wait for the explicit review entry",
+  );
+
+  await page.getByRole("button", { name: "进入复盘" }).click();
+  await assertVisible(page.getByRole("heading", { name: "本次复盘" }), "review panel after explicit entry");
+  await page.getByLabel("一句复盘").fill(reviewText);
+  await page.getByRole("button", { name: "保存复盘" }).click();
+  await assertVisible(page.getByRole("heading", { name: "急急如律令" }), "setup title after saving review");
+  await assertVisible(page.getByText("复盘已保存。"), "review saved toast");
+
+  const savedStorageState = await page.evaluate(() => {
+    const history = JSON.parse(window.localStorage.getItem("jiji-rululing.history") ?? "[]");
+
+    return {
+      currentSession: window.localStorage.getItem("jiji-rululing.current-session"),
+      historyCount: Array.isArray(history) ? history.length : -1,
+      latestReviewText: Array.isArray(history) ? history[0]?.reviewText ?? "" : "",
+    };
+  });
+  assert(
+    savedStorageState.currentSession === null,
+    `saving review should clear the current session: ${JSON.stringify(savedStorageState)}`,
+  );
+  assert(
+    savedStorageState.historyCount === 1 && savedStorageState.latestReviewText === reviewText,
+    `saving review should write one history record: ${JSON.stringify(savedStorageState)}`,
+  );
+
+  await page.getByRole("button", { name: "历史" }).click();
+  await assertVisible(page.getByRole("heading", { name: "历史记录" }), "history panel after saving review");
+  assert((await page.locator(".history-record").count()) === 1, "history should show one saved record");
+  await assertVisible(page.getByText(reviewText), "saved review text in history");
+
+  await page.reload({ waitUntil: "networkidle" });
+  await page.getByRole("button", { name: "历史" }).click();
+  await assertVisible(page.getByRole("heading", { name: "历史记录" }), "history panel after reload");
+  assert((await page.locator(".history-record").count()) === 1, "history should survive reload");
+  await assertVisible(page.getByText(reviewText), "saved review text after reload");
+  await assertNoHorizontalOverflow(page, "history after review save");
+};
+
 const run = async () => {
   await fetch(targetUrl, { method: "HEAD" }).catch(() => {
     throw new Error(`Cannot reach ${targetUrl}. Start the dev server with npm run dev first.`);
@@ -1105,8 +1156,9 @@ const run = async () => {
 
     await assertCompactCompletionStaysOutOfReviewWhenFullOpenFails(page);
     await assertNoHorizontalOverflow(page, "ritual");
-
     await page.screenshot({ fullPage: true, path: screenshotPath });
+
+    await assertCompletedSessionReviewSavePersistsHistory(page);
     console.log(`Compact window check passed. Screenshot: ${screenshotPath}`);
   } finally {
     await browser.close();
