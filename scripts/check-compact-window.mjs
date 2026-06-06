@@ -380,6 +380,21 @@ const assertCompactBurningIncenseProgress = async (
     `compact incense should burn from left to right: ${JSON.stringify(states)}`,
   );
 
+  const finishedSmokeStyles = await incenseLocator
+    .locator(
+      '.incense-visual__unit[data-incense-state="burned"] .incense-visual__smoke, .incense-visual__unit[data-incense-state="resting"] .incense-visual__smoke',
+    )
+    .evaluateAll((elements) =>
+      elements.map((element) => ({
+        animationName: window.getComputedStyle(element).animationName,
+        opacity: Number.parseFloat(window.getComputedStyle(element).opacity),
+      })),
+    );
+  assert(
+    finishedSmokeStyles.every((style) => style.opacity === 0 && style.animationName === "none"),
+    `compact finished incense sticks should not keep white smoke: ${JSON.stringify(finishedSmokeStyles)}`,
+  );
+
   if (!requireProgress) {
     return;
   }
@@ -394,6 +409,7 @@ const assertCompactBurningIncenseProgress = async (
 
     return {
       ashHeight: ash ? Number.parseFloat(window.getComputedStyle(ash).height) : 0,
+      ashTop: ash ? Number.parseFloat(window.getComputedStyle(ash).top) : 0,
       emberOpacity: ember ? Number.parseFloat(window.getComputedStyle(ember).opacity) : 0,
       emberTop: ember ? Number.parseFloat(window.getComputedStyle(ember).top) : 0,
       smokeAnimationName: smoke ? window.getComputedStyle(smoke).animationName : "",
@@ -402,18 +418,20 @@ const assertCompactBurningIncenseProgress = async (
     };
   });
 
-  assert(layerStyles.ashHeight > 0, `compact burning ash should grow with progress: ${JSON.stringify(layerStyles)}`);
+  assert(layerStyles.ashHeight > 0, `compact burning ash should be visible: ${JSON.stringify(layerStyles)}`);
+  assert(layerStyles.ashHeight <= 9, `compact burning ash should stay as a short cap: ${JSON.stringify(layerStyles)}`);
   assert(layerStyles.emberOpacity > 0, `compact burning ember should be visible: ${JSON.stringify(layerStyles)}`);
   assert(layerStyles.emberTop > 0, `compact burning ember should move with progress: ${JSON.stringify(layerStyles)}`);
-  assert(layerStyles.smokeOpacity > 0, `compact burning smoke should stay extremely weak but visible: ${JSON.stringify(layerStyles)}`);
+  assert(layerStyles.smokeOpacity > 0.2, `compact burning smoke should stay restrained but visible: ${JSON.stringify(layerStyles)}`);
   assert(
     layerStyles.smokeAnimationName.includes("compact-incense-smoke-drift"),
     `compact burning smoke should use the restrained compact drift animation: ${JSON.stringify(layerStyles)}`,
   );
   assert(layerStyles.smokeTop > 0, `compact burning smoke should follow the ember position: ${JSON.stringify(layerStyles)}`);
   assert(
-    Math.abs(layerStyles.ashHeight - layerStyles.emberTop) < 1 && Math.abs(layerStyles.emberTop - layerStyles.smokeTop) < 1,
-    `compact ash, ember, and smoke should advance together: ${JSON.stringify(layerStyles)}`,
+    Math.abs(layerStyles.ashTop + layerStyles.ashHeight - layerStyles.emberTop) < 1 &&
+      Math.abs(layerStyles.emberTop - layerStyles.smokeTop) < 1,
+    `compact ash cap, ember, and smoke should advance together: ${JSON.stringify(layerStyles)}`,
   );
 };
 
@@ -437,6 +455,7 @@ const assertCompactRestingIncense = async (page) => {
 
     return {
       ashHeight: ash ? Number.parseFloat(window.getComputedStyle(ash).height) : 0,
+      ashTop: ash ? Number.parseFloat(window.getComputedStyle(ash).top) : 0,
       emberOpacity: ember ? Number.parseFloat(window.getComputedStyle(ember).opacity) : -1,
       incenseOpacity: Number.parseFloat(window.getComputedStyle(element).opacity),
       smokeOpacity: smoke ? Number.parseFloat(window.getComputedStyle(smoke).opacity) : -1,
@@ -452,7 +471,10 @@ const assertCompactRestingIncense = async (page) => {
       "100",
     "resting compact incense should preserve the finished stick at 100% progress",
   );
-  assert(visualStyles.ashHeight > 0, `resting compact incense should preserve full ash: ${JSON.stringify(visualStyles)}`);
+  assert(
+    visualStyles.ashHeight > 0 && visualStyles.ashHeight <= 7 && visualStyles.ashTop > 0,
+    `resting compact incense should preserve only a short ash cap: ${JSON.stringify(visualStyles)}`,
+  );
   assert(visualStyles.emberOpacity === 0, `resting compact incense should hide ember: ${JSON.stringify(visualStyles)}`);
   assert(visualStyles.smokeOpacity === 0, `resting compact incense should hide smoke: ${JSON.stringify(visualStyles)}`);
   assert(
@@ -572,6 +594,42 @@ const assertFullStageActiveCenserHoverUsesSingleCard = async (page) => {
   );
 
   await page.mouse.move(1, 1);
+};
+
+const assertFullStageSmokeSuppressed = async (page) => {
+  const burningSlot = page.locator(".stage-grid--full .intent-slot--burning").first();
+  const smokeStyles = await burningSlot.evaluate((element) => {
+    const currentUnit = element.querySelector('.incense-visual--stage .incense-visual__unit[data-incense-state="burning"]');
+    const smoke = currentUnit?.querySelector(".incense-visual__smoke");
+    const nearWisp = currentUnit?.querySelector('.incense-visual__smoke-wisp[data-incense-smoke-layer="near"]');
+    const farWisp = currentUnit?.querySelector('.incense-visual__smoke-wisp[data-incense-smoke-layer="far"]');
+
+    return {
+      farWispAnimationName: farWisp ? window.getComputedStyle(farWisp).animationName : "",
+      farWispDisplay: farWisp ? window.getComputedStyle(farWisp).display : "",
+      farWispOpacity: farWisp ? Number.parseFloat(window.getComputedStyle(farWisp).opacity) : 0,
+      nearWispAnimationName: nearWisp ? window.getComputedStyle(nearWisp).animationName : "",
+      nearWispDisplay: nearWisp ? window.getComputedStyle(nearWisp).display : "",
+      nearWispOpacity: nearWisp ? Number.parseFloat(window.getComputedStyle(nearWisp).opacity) : 0,
+      smokeAnimationName: smoke ? window.getComputedStyle(smoke).animationName : "",
+      smokeDisplay: smoke ? window.getComputedStyle(smoke).display : "",
+      smokeOpacity: smoke ? Number.parseFloat(window.getComputedStyle(smoke).opacity) : 0,
+    };
+  });
+
+  assert(
+    smokeStyles.smokeDisplay === "none" && smokeStyles.smokeOpacity === 0 && smokeStyles.smokeAnimationName === "none",
+    `full-stage burning smoke should be completely suppressed on the main altar: ${JSON.stringify(smokeStyles)}`,
+  );
+  assert(
+    smokeStyles.nearWispDisplay === "none" &&
+      smokeStyles.nearWispOpacity === 0 &&
+      smokeStyles.nearWispAnimationName === "none" &&
+      smokeStyles.farWispDisplay === "none" &&
+      smokeStyles.farWispOpacity === 0 &&
+      smokeStyles.farWispAnimationName === "none",
+    `full-stage burning smoke wisps should be completely suppressed on the main altar: ${JSON.stringify(smokeStyles)}`,
+  );
 };
 
 const createSingleIncenseRitual = async (page) => {
@@ -859,6 +917,7 @@ const run = async () => {
       (await page.locator('.stage-grid--full .intent-slot--burning[data-stage-censer-emphasis="normal"]').count()) === 1,
       "burning full-stage intent should keep its censer at normal emphasis",
     );
+    await assertFullStageSmokeSuppressed(page);
     await assertFullStageActiveCenserHoverUsesSingleCard(page);
     await page.evaluate(() => {
       document.documentElement.dataset.windowMode = "compact";
