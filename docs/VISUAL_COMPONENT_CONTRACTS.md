@@ -43,7 +43,7 @@
 
 `IntentSlot` 会输出 `data-stage-intent-status`、`data-stage-can-start`、`data-stage-timer-visible`、`data-stage-metadata-visibility`、`data-stage-metadata-active`、`data-stage-situation-visibility`、`data-stage-prevention-visibility`、`data-stage-prevention-preview-active`、`data-stage-censer-emphasis` 和 `data-stage-start-visual-state`。当前 `data-stage-metadata-visibility` 的值为 `censer-hover`，表示辅助信息只由香炉命中区触发；`data-stage-metadata-active` 和 `data-stage-prevention-preview-active` 由 React 指针事件写入，用于规避打包 WebView 中 CSS hover 选择器不稳定的问题。这些属性只表达视觉语义和回归检查锚点，不反推业务流程。
 
-情境符箓燃烧动画契约：只在该套从 `idle` 确认进入第一次 `burning` 前触发一次，动画目标时长约 2 秒；动画期间不启动专注倒计时，不显示计时面板；动画结束后情境符箓退场并正式进入 `burning`。后续同一个香炉续香时不再播放该动画，也不重新显示符箓。当前分层退场继续复用 `state` 层，并额外暴露 `data-talisman-burn-layer="ignition"`、`char`、`edge` 和 `sparks` 四个纯视觉锚点；模板和文字共同裁切灰化，不能新增业务状态。
+情境符箓燃烧动画契约：只在该套从 `idle` 确认进入第一次 `burning` 前触发一次，动画目标时长约 2 秒；动画期间不启动专注倒计时，不显示计时面板；动画结束后情境符箓退场并正式进入 `burning`。后续同一个香炉续香时不再播放该动画，也不重新显示符箓。当前分层退场继续复用 `state` 层，并暴露 `data-talisman-burn-layer="ignition"`、`char`、`edge` 和 `sparks` 纯视觉锚点；下一轮允许增加 `flames` 纯视觉锚点，用于沿燃烧前缘显示少量、短促、可辨认的小火苗。模板、文字和状态层共同裁切灰化，火苗不能新增业务状态、独立 timer 或改变倒计时启动时点。
 
 主祭台辅助信息不能由符箓 hover、符箓 focus 或线香区域 hover 触发。符箓 hover 只负责符箓自身放大，线香区域保持低干扰。
 

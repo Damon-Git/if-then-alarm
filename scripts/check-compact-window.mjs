@@ -786,6 +786,134 @@ const createSingleIncenseRitual = async (page) => {
   await assertVisible(page.getByRole("heading", { name: "仪式台" }), "single incense full ritual title");
 };
 
+const readPersistenceState = async (page) =>
+  page.evaluate(() => {
+    const history = JSON.parse(window.localStorage.getItem("jiji-rululing.history") ?? "[]");
+    const rawSession = window.localStorage.getItem("jiji-rululing.current-session");
+    const currentSession = rawSession ? JSON.parse(rawSession) : null;
+
+    return {
+      currentSessionIntentCount: Array.isArray(currentSession?.intentSets) ? currentSession.intentSets.length : 0,
+      currentSessionPhase: currentSession?.phase ?? null,
+      currentSessionStatus: currentSession?.intentSets?.[0]?.status ?? null,
+      historyCount: Array.isArray(history) ? history.length : -1,
+    };
+  });
+
+const openAbandonDialog = async (page, sourceLabel) => {
+  await page.getByRole("button", { name: "放弃本轮" }).click();
+  const dialog = page.getByRole("dialog", { name: "确定要放弃本轮吗？" });
+  await assertVisible(dialog, `${sourceLabel} abandon confirmation`);
+  await assertVisible(dialog.getByText("当前仪式进度和未保存复盘不会写入历史记录"), `${sourceLabel} abandon warning copy`);
+  return dialog;
+};
+
+const assertRitualAbandonProtection = async (page) => {
+  await createSingleIncenseRitual(page);
+  await page.waitForFunction(() => window.localStorage.getItem("jiji-rululing.current-session") !== null);
+
+  let dialog = await openAbandonDialog(page, "ritual");
+  await dialog.getByRole("button", { name: "继续当前轮次" }).click();
+  await assertVisible(page.getByRole("heading", { name: "仪式台" }), "ritual after cancelling abandon");
+  assert(
+    (await page.getByRole("dialog", { name: "确定要放弃本轮吗？" }).count()) === 0,
+    "cancelling ritual abandon should close the confirmation dialog",
+  );
+
+  const cancelledState = await readPersistenceState(page);
+  assert(
+    cancelledState.currentSessionPhase === "ritual" &&
+      cancelledState.currentSessionIntentCount === 1 &&
+      cancelledState.historyCount === 0,
+    `cancelling ritual abandon should keep the unsaved session and avoid history writes: ${JSON.stringify(cancelledState)}`,
+  );
+
+  dialog = await openAbandonDialog(page, "ritual");
+  await dialog.getByRole("button", { name: "放弃本轮" }).click();
+  await assertVisible(page.getByRole("heading", { name: "急急如律令" }), "setup after confirming ritual abandon");
+
+  const abandonedState = await readPersistenceState(page);
+  assert(
+    abandonedState.currentSessionPhase === null && abandonedState.historyCount === 0,
+    `confirming ritual abandon should clear the current session without writing history: ${JSON.stringify(abandonedState)}`,
+  );
+};
+
+const restoreCompletedRitualFixture = async (page) => {
+  await page.evaluate(() => {
+    window.localStorage.clear();
+    document.documentElement.dataset.windowMode = "full";
+    window.localStorage.setItem(
+      "jiji-rululing.current-session",
+      JSON.stringify({
+        activeModal: null,
+        activeTimerSegment: null,
+        intentSets: [
+          {
+            currentIncenseIndex: 1,
+            id: "completed-fixture-intent",
+            incenseCount: 1,
+            preventionIntents: ["如果我想跳过复盘，那么我先写一句最小记录。"],
+            situationIntent: "当我完成一轮专注，就进入复盘记录。",
+            status: "completed",
+          },
+        ],
+        phase: "ritual",
+        timerMode: "dev",
+        timerRemaining: 0,
+        updatedAt: "2026-06-08T00:00:00.000Z",
+        version: 1,
+      }),
+    );
+  });
+  await page.reload({ waitUntil: "networkidle" });
+  await assertVisible(page.getByRole("heading", { name: "发现未保存的本轮仪式" }), "completed ritual restore prompt");
+  await page.getByRole("button", { name: "恢复本轮" }).click();
+  await assertVisible(page.getByRole("heading", { name: "本轮香尽" }), "restored completed ritual summary");
+};
+
+const assertReviewAbandonProtection = async (page) => {
+  await restoreCompletedRitualFixture(page);
+  await page.getByRole("button", { name: "进入复盘" }).click();
+  await assertVisible(page.getByRole("heading", { name: "本次复盘" }), "review before abandon protection");
+  await page.waitForFunction(() => {
+    const rawSession = window.localStorage.getItem("jiji-rululing.current-session");
+    return rawSession ? JSON.parse(rawSession).phase === "review" : false;
+  });
+  await page.getByLabel("一句复盘").fill("这句复盘应该在取消放弃后保留。");
+
+  let dialog = await openAbandonDialog(page, "review");
+  await dialog.getByRole("button", { name: "继续当前轮次" }).click();
+  await assertVisible(page.getByRole("heading", { name: "本次复盘" }), "review after cancelling abandon");
+  assert(
+    (await page.getByLabel("一句复盘").inputValue()) === "这句复盘应该在取消放弃后保留。",
+    "cancelling review abandon should keep in-progress review text",
+  );
+
+  const cancelledState = await readPersistenceState(page);
+  assert(
+    cancelledState.currentSessionPhase === "review" &&
+      cancelledState.currentSessionStatus === "completed" &&
+      cancelledState.historyCount === 0,
+    `cancelling review abandon should keep the review session and avoid history writes: ${JSON.stringify(cancelledState)}`,
+  );
+
+  dialog = await openAbandonDialog(page, "review");
+  await dialog.getByRole("button", { name: "放弃本轮" }).click();
+  await assertVisible(page.getByRole("heading", { name: "急急如律令" }), "setup after confirming review abandon");
+
+  const abandonedState = await readPersistenceState(page);
+  assert(
+    abandonedState.currentSessionPhase === null && abandonedState.historyCount === 0,
+    `confirming review abandon should clear the current session without writing history: ${JSON.stringify(abandonedState)}`,
+  );
+};
+
+const assertAbandonSessionProtection = async (page) => {
+  await assertRitualAbandonProtection(page);
+  await assertReviewAbandonProtection(page);
+};
+
 const assertCompactCompletionStaysOutOfReviewWhenFullOpenFails = async (page) => {
   await createSingleIncenseRitual(page);
   await page.locator(".stage-grid--full .talisman-visual--interactive").first().click();
@@ -919,6 +1047,8 @@ const run = async () => {
     await assertVisible(page.getByRole("button", { name: "历史" }), "history button");
     await assertVisible(page.getByRole("button", { name: "设置" }), "settings button");
     await assertNoHorizontalOverflow(page, "setup");
+
+    await assertAbandonSessionProtection(page);
 
     await page.getByRole("button", { name: "创建任务" }).click();
     await page.getByRole("button", { name: "创建任务" }).click();
