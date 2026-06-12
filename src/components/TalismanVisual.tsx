@@ -155,7 +155,7 @@ const TalismanContent = ({ label, text, variant }: Pick<TalismanVisualProps, "la
   const textColumns = splitIntentText(text, variant);
 
   return (
-    <>
+    <span className="talisman-visual__surface" data-talisman-preview-layer="surface">
       {TALISMAN_TEMPLATE_ASSET_LAYERS.map((layer) => (
         <TalismanLayer key={layer} layer={layer} variant={variant} />
       ))}
@@ -168,7 +168,7 @@ const TalismanContent = ({ label, text, variant }: Pick<TalismanVisualProps, "la
         <strong className="talisman-visual__column talisman-visual__column--right">{textColumns.right}</strong>
         <strong className="talisman-visual__column talisman-visual__column--left">{textColumns.left}</strong>
       </span>
-    </>
+    </span>
   );
 };
 
@@ -222,7 +222,6 @@ const TalismanVisual = ({
         data-talisman-interaction-role={interactionRole}
         data-talisman-state={visualState}
         data-talisman-variant={variant}
-        tabIndex={disabled ? -1 : undefined}
         type="button"
         onClick={handleClick}
         {...interactionProps}

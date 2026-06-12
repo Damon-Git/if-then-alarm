@@ -7,6 +7,8 @@ const burningScreenshotPath = "artifacts/compact-window-burning.png";
 const restingScreenshotPath = "artifacts/compact-window-resting.png";
 const talismanBurnScreenshotPath = (intentCount, phase) =>
   `artifacts/talisman-burn-${intentCount}-tasks-${phase}.png`;
+const talismanPreviewScreenshotPath = (intentCount, state) =>
+  `artifacts/talisman-preview-${intentCount}-tasks-${state}.png`;
 
 const readCompactWindowSize = async () => {
   const constantsTs = await readFile("src/constants.ts", "utf8");
@@ -630,72 +632,153 @@ const assertFullStageIdleCenserHoverUsesMetadataCard = async (page) => {
 const readTalismanPreviewMetrics = async (locator) =>
   locator.evaluate((element) => {
     const style = window.getComputedStyle(element);
+    const surface = element.querySelector('[data-talisman-preview-layer="surface"]');
+    const surfaceStyle = surface ? window.getComputedStyle(surface) : null;
+    const surfaceBox = surface?.getBoundingClientRect();
     const matrix = style.transform === "none" ? new DOMMatrixReadOnly() : new DOMMatrixReadOnly(style.transform);
     const box = element.getBoundingClientRect();
+    const scene = element.closest(".altar-scene");
+    const sceneStyle = scene ? window.getComputedStyle(scene) : null;
     const slot = element.closest(".intent-slot");
     const metadata = slot?.querySelector(".censer-visual__metadata");
     const timerPanel = slot?.querySelector(".timer-panel");
 
     return {
+      bottom: Math.round(box.bottom),
+      documentHeight: document.documentElement.scrollHeight,
+      filter: style.filter,
+      focused: document.activeElement === element,
+      focusVisible: element.matches(":focus-visible"),
       height: Math.round(box.height),
       metadataActive: slot?.getAttribute("data-stage-metadata-active") ?? "",
       metadataOpacity: metadata ? Number.parseFloat(window.getComputedStyle(metadata).opacity) : -1,
+      previewActive: element.getAttribute("data-talisman-preview-active"),
+      sceneOverflow: sceneStyle?.overflow ?? "",
       scaleX: Math.hypot(matrix.a, matrix.b),
       scaleY: Math.hypot(matrix.c, matrix.d),
+      styleWidth: Number.parseFloat(style.width),
+      surfaceBottom: surfaceBox ? Math.round(surfaceBox.bottom) : -1,
+      surfaceHeight: surfaceBox ? Math.round(surfaceBox.height) : -1,
+      surfaceFilter: surfaceStyle?.filter ?? "",
+      surfaceOpacity: surfaceStyle ? Number.parseFloat(surfaceStyle.opacity) : -1,
+      surfaceStyleWidth: surfaceStyle ? Number.parseFloat(surfaceStyle.width) : -1,
+      surfaceTop: surfaceBox ? Math.round(surfaceBox.top) : -1,
+      surfaceWidth: surfaceBox ? Math.round(surfaceBox.width) : -1,
       timerOpacity: timerPanel ? Number.parseFloat(window.getComputedStyle(timerPanel).opacity) : -1,
+      top: Math.round(box.top),
       width: Math.round(box.width),
       zIndex: Number.parseInt(style.zIndex, 10),
     };
   });
 
-const assertFullStageTalismanPreviewReadability = async (page) => {
-  const firstSlot = page.locator(".stage-grid--full .intent-slot--idle").first();
-  const situationTalisman = firstSlot.locator(".talisman-visual--situation");
-  const preventionTalisman = firstSlot.locator(".talisman-visual--prevention").first();
-
-  assert((await preventionTalisman.count()) === 1, "full-stage readability check needs one prevention talisman");
-
-  await situationTalisman.hover();
-  await page.waitForTimeout(220);
-
-  const situationMetrics = await readTalismanPreviewMetrics(situationTalisman);
+const assertTalismanWeakState = (metrics, label) => {
+  assert(metrics.filter === "none", `${label} scaled root should not carry an offscreen filter: ${JSON.stringify(metrics)}`);
   assert(
-    situationMetrics.scaleX >= 3 && situationMetrics.scaleY >= 3 && situationMetrics.height >= 300,
-    `situation talisman hover should enlarge enough for reading: ${JSON.stringify(situationMetrics)}`,
+    metrics.surfaceFilter !== "none" && metrics.surfaceFilter.includes("saturate") && metrics.surfaceFilter.includes("brightness"),
+    `${label} should keep weakening on the unscaled inner surface: ${JSON.stringify(metrics)}`,
+  );
+  assert(metrics.scaleX <= 1.05 && metrics.scaleY <= 1.05, `${label} should return to its resting scale: ${JSON.stringify(metrics)}`);
+  assert(metrics.previewActive === "false", `${label} should clear explicit preview state: ${JSON.stringify(metrics)}`);
+};
+
+const assertTalismanClearPreview = (metrics, variant, inputMode) => {
+  const minimumWidth = variant === "situation" ? 137 : 98;
+  const minimumHeight = variant === "situation" ? 300 : 240;
+  const label = `${variant} talisman ${inputMode} preview`;
+
+  assert(
+    metrics.scaleX <= 1.05 && metrics.scaleY <= 1.05,
+    `${label} should avoid transform scaling so WKWebView rerasterizes at preview size: ${JSON.stringify(metrics)}`,
   );
   assert(
-    situationMetrics.metadataActive === "false" && situationMetrics.metadataOpacity === 0,
-    `situation talisman hover should not reveal censer metadata: ${JSON.stringify(situationMetrics)}`,
+    metrics.surfaceStyleWidth >= minimumWidth && metrics.surfaceWidth >= minimumWidth && metrics.surfaceHeight >= minimumHeight,
+    `${label} should use a full-resolution visual surface large enough for reading: ${JSON.stringify(metrics)}`,
   );
+  assert(metrics.filter === "none", `${label} root should remain unfiltered for WKWebView scaling: ${JSON.stringify(metrics)}`);
+  assert(metrics.surfaceFilter === "none", `${label} should remove the weak surface filter: ${JSON.stringify(metrics)}`);
+  assert(metrics.surfaceOpacity === 1, `${label} should restore full opacity: ${JSON.stringify(metrics)}`);
+  assert(metrics.previewActive === "true", `${label} should expose explicit preview state: ${JSON.stringify(metrics)}`);
+  assert(metrics.sceneOverflow === "visible", `${label} should escape altar clipping: ${JSON.stringify(metrics)}`);
   assert(
-    situationMetrics.timerOpacity <= 0,
-    `situation talisman hover should not reveal a timer card: ${JSON.stringify(situationMetrics)}`,
+    metrics.surfaceTop >= 0 && metrics.surfaceBottom <= metrics.documentHeight,
+    `${label} should remain inside the scrollable document bounds: ${JSON.stringify(metrics)}`,
   );
-  assert(situationMetrics.zIndex >= 28, `situation talisman preview should float above altar visuals: ${JSON.stringify(situationMetrics)}`);
+  assert(metrics.zIndex >= 28, `${label} should float above altar visuals: ${JSON.stringify(metrics)}`);
+};
 
-  await page.mouse.move(1, 1);
-  await page.waitForTimeout(120);
-  await preventionTalisman.hover();
-  await page.waitForTimeout(220);
+const assertTalismanLeavesNeighborTargetsUsable = async (page, label) => {
+  const hitState = await page.locator(".stage-grid--full .altar-scene").evaluate((scene) => {
+    const targets = [...scene.querySelectorAll(".censer-visual__hover-target")];
+    return targets.map((target) => {
+      const box = target.getBoundingClientRect();
+      const hit = document.elementFromPoint(box.left + box.width / 2, box.top + box.height / 2);
+      return {
+        hitCenser: Boolean(hit?.closest(".censer-visual__hover-target")),
+        hitTalisman: Boolean(hit?.closest(".talisman-visual")),
+      };
+    });
+  });
 
-  const preventionMetrics = await readTalismanPreviewMetrics(preventionTalisman);
   assert(
-    preventionMetrics.scaleX >= 3.1 && preventionMetrics.scaleY >= 3.1 && preventionMetrics.height >= 240,
-    `prevention talisman hover should enlarge enough for reading: ${JSON.stringify(preventionMetrics)}`,
+    hitState.every((state) => state.hitCenser && !state.hitTalisman),
+    `${label} should not keep covering censer targets after preview: ${JSON.stringify(hitState)}`,
   );
-  assert(
-    preventionMetrics.metadataActive === "false" && preventionMetrics.metadataOpacity === 0,
-    `prevention talisman hover should not reveal censer metadata: ${JSON.stringify(preventionMetrics)}`,
-  );
-  assert(
-    preventionMetrics.timerOpacity <= 0,
-    `prevention talisman hover should not reveal a timer card: ${JSON.stringify(preventionMetrics)}`,
-  );
-  assert(preventionMetrics.zIndex >= 28, `prevention talisman preview should float above altar visuals: ${JSON.stringify(preventionMetrics)}`);
+  await assertVisible(page.getByRole("button", { name: "放弃本轮" }), `${label} abandon action`);
+};
 
-  await page.mouse.move(1, 1);
-  await page.waitForTimeout(120);
-  await clearFullStageTalismanPreview(page);
+const assertTalismanPreviewLifecycle = async (page, intentCount, slotIndex = 0) => {
+  const slot = page.locator(".stage-grid--full .intent-slot").nth(slotIndex);
+  const cases = [
+    { locator: slot.locator(".talisman-visual--situation"), variant: "situation" },
+    { locator: slot.locator(".talisman-visual--prevention").first(), variant: "prevention" },
+  ];
+
+  for (const previewCase of cases) {
+    assert((await previewCase.locator.count()) === 1, `${intentCount}-task layout needs one ${previewCase.variant} talisman`);
+    const initialMetrics = await readTalismanPreviewMetrics(previewCase.locator);
+    assertTalismanWeakState(initialMetrics, `${intentCount}-task ${previewCase.variant} initial state`);
+
+    await previewCase.locator.hover();
+    await page.waitForTimeout(320);
+    const hoverMetrics = await readTalismanPreviewMetrics(previewCase.locator);
+    assertTalismanClearPreview(hoverMetrics, previewCase.variant, "hover");
+    assert(
+      hoverMetrics.metadataActive === "false" && hoverMetrics.metadataOpacity === 0 && hoverMetrics.timerOpacity <= 0,
+      `${previewCase.variant} hover should not reveal censer cards: ${JSON.stringify(hoverMetrics)}`,
+    );
+    if (intentCount === 3) {
+      await page.screenshot({
+        fullPage: true,
+        path: talismanPreviewScreenshotPath(intentCount, `${previewCase.variant}-hover`),
+      });
+    }
+
+    await page.mouse.move(1, 1);
+    await page.waitForTimeout(320);
+    assertTalismanWeakState(
+      await readTalismanPreviewMetrics(previewCase.locator),
+      `${intentCount}-task ${previewCase.variant} after hover`,
+    );
+
+    await page.keyboard.press("Tab");
+    await previewCase.locator.focus();
+    await page.waitForTimeout(320);
+    const focusMetrics = await readTalismanPreviewMetrics(previewCase.locator);
+    assertTalismanClearPreview(focusMetrics, previewCase.variant, "keyboard focus");
+    assert(
+      focusMetrics.focused && focusMetrics.focusVisible,
+      `${previewCase.variant} keyboard preview should be focus-visible: ${JSON.stringify(focusMetrics)}`,
+    );
+
+    await previewCase.locator.blur();
+    await page.waitForTimeout(320);
+    assertTalismanWeakState(
+      await readTalismanPreviewMetrics(previewCase.locator),
+      `${intentCount}-task ${previewCase.variant} after focus`,
+    );
+  }
+
+  await assertTalismanLeavesNeighborTargetsUsable(page, `${intentCount}-task talisman lifecycle`);
 };
 
 const assertFullStageActiveCenserHoverUsesSingleCard = async (page) => {
@@ -802,6 +885,11 @@ const createRitualWithIntentCount = async (page, intentCount) => {
   const situationInputs = page.locator('textarea[placeholder="当我打开电脑坐到书桌前，就开始写今天的第一段文稿。"]');
   for (let index = 0; index < intentCount; index += 1) {
     await situationInputs.nth(index).fill(`当我开始第 ${index + 1} 项任务，就专注完成眼前这一步。`);
+    const intentForm = page.locator(".intent-form").nth(index);
+    await intentForm.getByRole("button", { name: "添加" }).click();
+    await intentForm
+      .locator('textarea[placeholder="如果我想刷短视频，那么我就先闭眼休息 5 分钟。"]')
+      .fill(`如果第 ${index + 1} 项任务受到干扰，那么我就先停下来呼吸三次。`);
     await page.getByLabel(`第 ${index + 1} 项任务香数`).getByRole("button", { name: "1 炷" }).click();
   }
 
@@ -940,6 +1028,25 @@ const startFirstIntentAndAssertTalismanFlames = async (page, screenshotIntentCou
   await page.waitForTimeout(270);
   const earlyFrame = await readTalismanFlameFrame(startSlot);
   assertAnimatedTalismanFlameFrame(earlyFrame, "early talisman burn");
+  if (screenshotIntentCount !== null && screenshotIntentCount > 1) {
+    const neighboringTalisman = page.locator(".stage-grid--full .intent-slot").nth(1).locator(".talisman-visual--situation");
+    await neighboringTalisman.hover();
+    await page.waitForTimeout(80);
+    const suppressedMetrics = await readTalismanPreviewMetrics(neighboringTalisman);
+    assert(
+      suppressedMetrics.scaleX <= 1.05 && suppressedMetrics.scaleY <= 1.05,
+      `start burn should suppress neighboring preview scale: ${JSON.stringify(suppressedMetrics)}`,
+    );
+    assert(
+      suppressedMetrics.styleWidth <= 65,
+      `start burn should suppress neighboring preview layout size: ${JSON.stringify(suppressedMetrics)}`,
+    );
+    assert(
+      suppressedMetrics.surfaceFilter !== "none" && suppressedMetrics.surfaceOpacity < 0.7,
+      `start burn should preserve neighboring weak visuals: ${JSON.stringify(suppressedMetrics)}`,
+    );
+    await page.mouse.move(1, 1);
+  }
   await assertFlamesDoNotInterceptNeighbors(page, startSlot, "early talisman burn");
   if (screenshotIntentCount !== null) {
     await page.screenshot({ fullPage: true, path: talismanBurnScreenshotPath(screenshotIntentCount, "early") });
@@ -975,8 +1082,9 @@ const assertTalismanFlamesDismissed = async (startSlot) => {
 
 const assertReducedMotionTalismanFlames = async (page) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
-  await createSingleIncenseRitual(page);
+  await createRitualWithIntentCount(page, 1);
   await assertTalismanFlameStructure(page, 1);
+  await assertTalismanPreviewLifecycle(page, 1);
 
   await page.locator(".stage-grid--full .talisman-visual--interactive").click();
   await page.getByRole("button", { name: "开始这一套" }).click();
@@ -1044,6 +1152,10 @@ const assertTalismanBurnAcrossLayouts = async (page) => {
   for (const intentCount of [1, 2, 3]) {
     await createRitualWithIntentCount(page, intentCount);
     await assertTalismanFlameStructure(page, intentCount);
+    if (intentCount === 3) {
+      await page.screenshot({ fullPage: true, path: talismanPreviewScreenshotPath(intentCount, "idle") });
+    }
+    await assertTalismanPreviewLifecycle(page, intentCount);
     await page.waitForFunction(
       (expectedCount) => {
         const layers = [...document.querySelectorAll('[data-talisman-burn-layer="flames"]')];
@@ -1056,6 +1168,9 @@ const assertTalismanBurnAcrossLayouts = async (page) => {
     const startSlot = await startFirstIntentAndAssertTalismanFlames(page, intentCount);
     await page.locator(".intent-slot--burning").first().waitFor({ state: "visible", timeout: 5000 });
     await assertTalismanFlamesDismissed(startSlot);
+    if (intentCount > 1) {
+      await assertTalismanPreviewLifecycle(page, intentCount, 1);
+    }
     await page.mouse.move(4, 4);
     await page.waitForTimeout(80);
     await page.screenshot({ fullPage: true, path: talismanBurnScreenshotPath(intentCount, "end") });
@@ -1357,7 +1472,6 @@ const run = async () => {
     await assertFullStageUsesStageVisuals(page);
     await assertTalismanFlameStructure(page, 3);
     await assertFullStageIdleCenserHoverUsesMetadataCard(page);
-    await assertFullStageTalismanPreviewReadability(page);
     assert(
       (await page.locator(".intent-slot--idle").count()) === 3,
       "entering ritual should keep all intent slots idle",

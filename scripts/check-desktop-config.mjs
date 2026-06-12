@@ -931,6 +931,7 @@ assertTextIncludes(talismanVisual, "talisman-visual__column--left", "TalismanVis
 assertTextIncludes(talismanVisual, 'data-talisman-click-action={clickAction}', "TalismanVisual exposes explicit click action semantics");
 assertTextIncludes(talismanVisual, 'data-talisman-interaction-role={interactionRole}', "TalismanVisual distinguishes start entry and view-only talismans");
 assertTextIncludes(talismanVisual, "data-talisman-preview-active", "TalismanVisual exposes explicit preview hover state for WebView");
+assertTextIncludes(talismanVisual, 'data-talisman-preview-layer="surface"', "TalismanVisual isolates the weak visual surface from the scaled preview root");
 assertTextIncludes(talismanVisual, "onPreviewActiveChange", "TalismanVisual reports preview state for parent stacking");
 assertTextIncludes(talismanVisual, 'data-talisman-burn-layer="ignition"', "TalismanVisual exposes a local ignition burn layer");
 assertTextIncludes(talismanVisual, 'data-talisman-burn-layer="char"', "TalismanVisual exposes a progressive char burn layer");
@@ -1004,8 +1005,8 @@ assertTextIncludes(
 );
 assertTextIncludes(
   compactWindowCheck,
-  "assertFullStageTalismanPreviewReadability",
-  "Compact check verifies full-stage talisman hover readability",
+  "assertTalismanPreviewLifecycle",
+  "Compact check verifies full-stage talisman hover and keyboard preview lifecycle",
 );
 assertTextIncludes(compactWindowCheck, "assertTalismanFlameStructure", "Compact check verifies talisman flame structure");
 assertTextIncludes(
@@ -1118,9 +1119,17 @@ assertTextIncludes(
   "Asset pipeline keeps visual burn quality under screenshot and Tauri manual review",
 );
 assertTextIncludes(stylesCss, 'data-talisman-preview-active="true"', "CSS enlarges talismans from explicit preview state");
-assertTextIncludes(stylesCss, "scale(3.05)", "CSS makes situation talisman preview large enough for reading");
-assertTextIncludes(stylesCss, "scale(3.5)", "CSS makes prevention talisman preview large enough for reading");
+assertTextIncludes(stylesCss, ".talisman-visual__surface", "CSS weakens a dedicated inner talisman surface instead of the scaled root");
+assertTextIncludes(stylesCss, "filter: none;\n  opacity: 1;\n  transition: none;", "Talisman preview immediately restores an unfiltered fully opaque surface");
+assertTextExcludes(stylesCss, ".talisman-visual--situation {\n  --talisman-column-edge: 18%;\n  position: absolute;\n  top: var(--altar-situation-top);\n  left: 50%;\n  width: clamp(45px, 4.8vw, 64px);\n  min-height: 0;\n  aspect-ratio: 2 / 5;\n  filter:", "Scaled situation talisman root avoids a WKWebView offscreen filter raster");
+assertTextExcludes(stylesCss, ".talisman-visual--prevention {\n  --talisman-column-edge: 12%;\n  --talisman-text-center-y: 50%;\n  width: clamp(28px, 2.8vw, 38px);\n  min-height: 0;\n  aspect-ratio: 2 / 5;\n  filter:", "Scaled prevention talisman root avoids a WKWebView offscreen filter raster");
+assertTextIncludes(stylesCss, "width: clamp(137.25px, 14.64vw, 195.2px)", "CSS rerenders situation previews at their full layout size");
+assertTextIncludes(stylesCss, "width: clamp(98px, 9.8vw, 133px)", "CSS rerenders prevention previews at their full layout size");
+assertTextIncludes(stylesCss, "pointer-events: none;", "Full-size talisman preview surfaces do not expand the interaction target");
+assertTextExcludes(stylesCss, "translateX(-50%) scale(3.05)", "Situation preview avoids scaling a low-resolution WKWebView raster");
+assertTextExcludes(stylesCss, "translateY(-112%) scale(3.5)", "Prevention preview avoids scaling a low-resolution WKWebView raster");
 assertTextIncludes(stylesCss, ".altar-scene:has(.talisman-visual[data-talisman-preview-active=\"true\"], .talisman-visual:focus-visible)", "CSS allows enlarged talismans to escape altar clipping while previewing");
+assertTextIncludes(stylesCss, ".stage-grid--full:has(.talisman-visual--prevention", "CSS reserves scrollable overflow room for the low prevention preview without moving it");
 assertTextIncludes(stylesCss, "background: transparent;\n  pointer-events: none;", "Full-stage censer transparent areas do not capture talisman or incense hover");
 assertTextIncludes(stylesCss, ".altar-scene .censer-visual--stage .censer-visual__hover-target", "Full-stage censer hover target is scoped to stage censers");
 assertTextIncludes(stylesCss, "cursor: default;\n  pointer-events: auto;", "Full-stage censer hover target remains metadata-only and hoverable");
