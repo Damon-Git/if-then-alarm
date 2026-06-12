@@ -68,6 +68,12 @@ const SituationTalismanBurnEffect = () => (
     <span className="talisman-visual__burn talisman-visual__burn--ignition" data-talisman-burn-layer="ignition" />
     <span className="talisman-visual__burn talisman-visual__burn--char" data-talisman-burn-layer="char" />
     <span className="talisman-visual__burn talisman-visual__burn--edge" data-talisman-burn-layer="edge" />
+    <span className="talisman-visual__burn talisman-visual__burn--flames" data-talisman-burn-layer="flames">
+      <span />
+      <span />
+      <span />
+      <span />
+    </span>
     <span className="talisman-visual__burn talisman-visual__burn--sparks" data-talisman-burn-layer="sparks">
       <span />
       <span />

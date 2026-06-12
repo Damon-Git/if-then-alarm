@@ -883,6 +883,7 @@ select {
 
 .talisman-visual__state {
   border: 1px solid rgb(138 47 37 / 8%);
+  overflow: hidden;
 }
 
 .talisman-visual__burn {
@@ -913,6 +914,59 @@ select {
 
 .talisman-visual__burn--sparks span:nth-child(3) {
   left: 72%;
+}
+
+.talisman-visual__burn--flames span {
+  --talisman-flame-sway: 2px;
+  --talisman-flame-sway-reverse: -1px;
+  position: absolute;
+  bottom: 2%;
+  left: 60%;
+  width: 18%;
+  aspect-ratio: 0.58;
+  clip-path: polygon(50% 0, 66% 21%, 86% 45%, 94% 69%, 77% 92%, 52% 100%, 27% 93%, 8% 71%, 18% 46%, 38% 23%);
+  background: linear-gradient(180deg, #fff1a8 0 18%, #ffbd4f 42%, #ec692e 72%, #9f2f20 100%);
+  filter: drop-shadow(0 0 2px rgb(231 95 38 / 58%));
+  opacity: 0;
+  transform-origin: 50% 92%;
+}
+
+.talisman-visual__burn--flames span::after {
+  position: absolute;
+  inset: 42% 27% 10%;
+  clip-path: polygon(50% 0, 78% 38%, 88% 72%, 62% 100%, 34% 92%, 12% 66%, 27% 35%);
+  background: linear-gradient(180deg, #fffbd5, #ffd66d 68%, #f58a32);
+  content: "";
+}
+
+.talisman-visual__burn--flames span:nth-child(1) {
+  bottom: 1%;
+  left: 58%;
+  width: 19%;
+}
+
+.talisman-visual__burn--flames span:nth-child(2) {
+  --talisman-flame-sway: -2px;
+  --talisman-flame-sway-reverse: 1px;
+  bottom: 20%;
+  left: 26%;
+  width: 16%;
+}
+
+.talisman-visual__burn--flames span:nth-child(3) {
+  --talisman-flame-sway: 3px;
+  --talisman-flame-sway-reverse: -2px;
+  bottom: 43%;
+  left: 47%;
+  width: 17%;
+}
+
+.talisman-visual__burn--flames span:nth-child(4) {
+  --talisman-flame-sway: -2px;
+  --talisman-flame-sway-reverse: 1px;
+  bottom: 66%;
+  left: 38%;
+  width: 14%;
 }
 
 .talisman-visual__template .visual-layer__asset {
@@ -1779,6 +1833,48 @@ select {
 .altar-scene
   .intent-slot[data-stage-start-visual-state="burning"]
   .talisman-visual--situation
+  .talisman-visual__burn--flames {
+  opacity: 1;
+}
+
+.altar-scene
+  .intent-slot[data-stage-start-visual-state="burning"]
+  .talisman-visual--situation
+  .talisman-visual__burn--flames span {
+  animation: situation-talisman-flame-flicker 700ms cubic-bezier(0.3, 0.04, 0.42, 1) forwards;
+}
+
+.altar-scene
+  .intent-slot[data-stage-start-visual-state="burning"]
+  .talisman-visual--situation
+  .talisman-visual__burn--flames span:nth-child(1) {
+  animation-delay: 90ms;
+}
+
+.altar-scene
+  .intent-slot[data-stage-start-visual-state="burning"]
+  .talisman-visual--situation
+  .talisman-visual__burn--flames span:nth-child(2) {
+  animation-delay: 460ms;
+}
+
+.altar-scene
+  .intent-slot[data-stage-start-visual-state="burning"]
+  .talisman-visual--situation
+  .talisman-visual__burn--flames span:nth-child(3) {
+  animation-delay: 840ms;
+}
+
+.altar-scene
+  .intent-slot[data-stage-start-visual-state="burning"]
+  .talisman-visual--situation
+  .talisman-visual__burn--flames span:nth-child(4) {
+  animation-delay: 1210ms;
+}
+
+.altar-scene
+  .intent-slot[data-stage-start-visual-state="burning"]
+  .talisman-visual--situation
   .talisman-visual__burn--sparks {
   opacity: 1;
 }
@@ -2203,6 +2299,45 @@ select {
   }
 }
 
+@keyframes situation-talisman-flame-flicker {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 7px, 0) rotate(-4deg) scale(0.38, 0.58);
+  }
+
+  20% {
+    opacity: 0.94;
+    transform: translate3d(var(--talisman-flame-sway), 1px, 0) rotate(4deg) scale(0.92, 1.08);
+  }
+
+  52% {
+    opacity: 0.82;
+    transform: translate3d(var(--talisman-flame-sway-reverse), -3px, 0) rotate(-5deg) scale(0.84, 1.18);
+  }
+
+  76% {
+    opacity: 0.66;
+    transform: translate3d(var(--talisman-flame-sway), -7px, 0) rotate(3deg) scale(0.72, 0.94);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate3d(var(--talisman-flame-sway-reverse), -12px, 0) rotate(-2deg) scale(0.28, 0.5);
+  }
+}
+
+@keyframes situation-talisman-reduced-flame-glow {
+  0% {
+    background: radial-gradient(ellipse at 62% 92%, rgb(255 232 142 / 72%) 0 8%, rgb(226 100 43 / 42%) 18%, transparent 34%);
+    opacity: 0.86;
+  }
+
+  100% {
+    background: radial-gradient(ellipse at 62% 92%, rgb(255 232 142 / 0%) 0 8%, rgb(226 100 43 / 0%) 18%, transparent 34%);
+    opacity: 0;
+  }
+}
+
 @keyframes situation-talisman-reduced-fade {
   0% {
     filter: grayscale(0.18) sepia(0.22) brightness(0.9);
@@ -2468,13 +2603,41 @@ select {
   .altar-scene
     .intent-slot[data-stage-start-visual-state="burning"]
     .talisman-visual--situation
-    .talisman-visual__burn,
+    .talisman-visual__burn--ignition,
+  .altar-scene
+    .intent-slot[data-stage-start-visual-state="burning"]
+    .talisman-visual--situation
+    .talisman-visual__burn--char,
+  .altar-scene
+    .intent-slot[data-stage-start-visual-state="burning"]
+    .talisman-visual--situation
+    .talisman-visual__burn--edge,
+  .altar-scene
+    .intent-slot[data-stage-start-visual-state="burning"]
+    .talisman-visual--situation
+    .talisman-visual__burn--sparks,
   .altar-scene
     .intent-slot[data-stage-start-visual-state="burning"]
     .talisman-visual--situation
     .talisman-visual__burn--sparks span {
     animation: none !important;
     opacity: 0 !important;
+  }
+
+  .altar-scene
+    .intent-slot[data-stage-start-visual-state="burning"]
+    .talisman-visual--situation
+    .talisman-visual__burn--flames {
+    animation: situation-talisman-reduced-flame-glow 240ms ease-out forwards !important;
+  }
+
+  .altar-scene
+    .intent-slot[data-stage-start-visual-state="burning"]
+    .talisman-visual--situation
+    .talisman-visual__burn--flames span {
+    animation: none !important;
+    opacity: 0 !important;
+    transform: none !important;
   }
 
   .altar-scene,

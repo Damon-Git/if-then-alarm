@@ -896,6 +896,7 @@ assertTextIncludes(talismanVisual, "onPreviewActiveChange", "TalismanVisual repo
 assertTextIncludes(talismanVisual, 'data-talisman-burn-layer="ignition"', "TalismanVisual exposes a local ignition burn layer");
 assertTextIncludes(talismanVisual, 'data-talisman-burn-layer="char"', "TalismanVisual exposes a progressive char burn layer");
 assertTextIncludes(talismanVisual, 'data-talisman-burn-layer="edge"', "TalismanVisual exposes an advancing ember edge burn layer");
+assertTextIncludes(talismanVisual, 'data-talisman-burn-layer="flames"', "TalismanVisual exposes restrained pointed flame shapes");
 assertTextIncludes(talismanVisual, 'data-talisman-burn-layer="sparks"', "TalismanVisual exposes restrained burn sparks");
 assertTextIncludes(ritualStage, "getAltarAssetUrl", "RitualStage uses the altar background asset manifest");
 assertTextIncludes(ritualStage, "altar-scene__slots", "RitualStage renders shared altar scene slots");
@@ -959,6 +960,18 @@ assertTextIncludes(
   compactWindowCheck,
   "assertFullStageTalismanPreviewReadability",
   "Compact check verifies full-stage talisman hover readability",
+);
+assertTextIncludes(compactWindowCheck, "assertTalismanFlameStructure", "Compact check verifies talisman flame structure");
+assertTextIncludes(
+  compactWindowCheck,
+  "startFirstIntentAndAssertTalismanFlames",
+  "Compact check verifies visible staggered flames during the first burn",
+);
+assertTextIncludes(compactWindowCheck, "assertTalismanFlamesDismissed", "Compact check verifies flames disappear after burning");
+assertTextIncludes(
+  compactWindowCheck,
+  "assertReducedMotionTalismanFlames",
+  "Compact check verifies the reduced-motion static flame glow",
 );
 assertTextIncludes(compactWindowCheck, "assertCompactDragRegionSemantics", "Compact check verifies compact drag region semantics");
 assertTextIncludes(compactWindowCheck, "assertCompactCenserDragClickSuppression", "Compact check verifies censer drag click suppression");
@@ -1024,6 +1037,10 @@ assertTextIncludes(stylesCss, "situation-talisman-paper-recede", "CSS recedes th
 assertTextIncludes(stylesCss, "situation-talisman-local-ignition", "CSS defines a local talisman ignition");
 assertTextIncludes(stylesCss, "situation-talisman-char-front", "CSS defines the talisman char front");
 assertTextIncludes(stylesCss, "situation-talisman-edge-advance", "CSS defines the advancing talisman ember edge");
+assertTextIncludes(stylesCss, ".talisman-visual__burn--flames span", "CSS styles individual talisman flame shapes");
+assertTextIncludes(stylesCss, "clip-path: polygon(50% 0", "CSS gives talisman flames a pointed silhouette");
+assertTextIncludes(stylesCss, "situation-talisman-flame-flicker", "CSS staggers short talisman flame flickers along the burn front");
+assertTextIncludes(stylesCss, "situation-talisman-reduced-flame-glow", "CSS defines a static reduced-motion flame glow");
 assertTextIncludes(stylesCss, "situation-talisman-reduced-fade", "CSS defines a reduced-motion talisman burn fallback");
 assertTextIncludes(
   assetPipelineDoc,

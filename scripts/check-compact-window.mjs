@@ -786,6 +786,167 @@ const createSingleIncenseRitual = async (page) => {
   await assertVisible(page.getByRole("heading", { name: "仪式台" }), "single incense full ritual title");
 };
 
+const assertTalismanFlameStructure = async (page, expectedTalismanCount) => {
+  const flameLayers = page.locator('.stage-grid--full [data-talisman-burn-layer="flames"]');
+
+  assert(
+    (await flameLayers.count()) === expectedTalismanCount,
+    `full-stage situation talismans should expose one flames layer each: expected=${expectedTalismanCount}`,
+  );
+  assert(
+    (await flameLayers.locator(":scope > span").count()) === expectedTalismanCount * 4,
+    "each full-stage situation talisman should expose four restrained flame shapes",
+  );
+};
+
+const readTalismanFlameFrame = async (slot) =>
+  slot.locator('[data-talisman-burn-layer="flames"]').evaluate((layer) => {
+    const talisman = layer.closest(".talisman-visual--situation");
+    const talismanBox = talisman?.getBoundingClientRect();
+    const textBoxes = [...(talisman?.querySelectorAll(".talisman-visual__column") ?? [])].map((column) =>
+      column.getBoundingClientRect(),
+    );
+
+    const flames = [...layer.children].map((flame, index) => {
+      const style = window.getComputedStyle(flame);
+      const box = flame.getBoundingClientRect();
+      const overlapArea = textBoxes.reduce((total, textBox) => {
+        const width = Math.max(0, Math.min(box.right, textBox.right) - Math.max(box.left, textBox.left));
+        const height = Math.max(0, Math.min(box.bottom, textBox.bottom) - Math.max(box.top, textBox.top));
+        return total + width * height;
+      }, 0);
+      const area = Math.max(1, box.width * box.height);
+
+      return {
+        animationName: style.animationName,
+        clipPath: style.clipPath,
+        index,
+        insideTalisman:
+          Boolean(talismanBox) &&
+          box.left >= talismanBox.left - 1 &&
+          box.right <= talismanBox.right + 1 &&
+          box.top >= talismanBox.top - 1 &&
+          box.bottom <= talismanBox.bottom + 1,
+        opacity: Number.parseFloat(style.opacity),
+        textOverlapRatio: overlapArea / area,
+        transform: style.transform,
+      };
+    });
+
+    const layerStyle = window.getComputedStyle(layer);
+    return {
+      flames,
+      layerAnimationName: layerStyle.animationName,
+      layerBackgroundImage: layerStyle.backgroundImage,
+      layerOpacity: Number.parseFloat(layerStyle.opacity),
+    };
+  });
+
+const assertAnimatedTalismanFlameFrame = (frame, label) => {
+  const activeFlames = frame.flames.filter((flame) => flame.opacity > 0.08);
+
+  assert(frame.layerOpacity > 0.9, `${label} flames layer should be visible: ${JSON.stringify(frame)}`);
+  assert(activeFlames.length >= 1, `${label} should show at least one distinct flame: ${JSON.stringify(frame)}`);
+  assert(
+    frame.flames.every((flame) => flame.animationName === "situation-talisman-flame-flicker"),
+    `${label} should use the short flame flicker animation: ${JSON.stringify(frame)}`,
+  );
+  assert(
+    frame.flames.every((flame) => flame.clipPath.startsWith("polygon(")),
+    `${label} flames should keep pointed polygon silhouettes: ${JSON.stringify(frame)}`,
+  );
+  assert(
+    activeFlames.every((flame) => flame.insideTalisman),
+    `${label} active flames should stay clipped inside the situation talisman: ${JSON.stringify(frame)}`,
+  );
+  assert(
+    activeFlames.every((flame) => flame.textOverlapRatio < 0.6),
+    `${label} active flames should not cover most of an intent text column: ${JSON.stringify(frame)}`,
+  );
+
+  return activeFlames.map((flame) => flame.index);
+};
+
+const startFirstIntentAndAssertTalismanFlames = async (page) => {
+  await page.locator(".stage-grid--full .talisman-visual--interactive").first().click();
+  await assertVisible(page.getByRole("heading", { name: "确认开始这一套？" }), "start confirmation before flame checks");
+  await page.getByRole("button", { name: "开始这一套" }).click();
+
+  const startSlot = page.locator(".stage-grid--full .intent-slot").first();
+  await page.waitForFunction(
+    () => document.querySelector(".stage-grid--full .intent-slot")?.getAttribute("data-stage-start-visual-state") === "burning",
+  );
+  await assertVisible(startSlot, "start talisman burn animation state with flames");
+  assert(
+    (await page.locator(".stage-grid--full .timer-panel").count()) === 0,
+    "talisman flames should finish before the focus timer appears",
+  );
+
+  await page.waitForTimeout(170);
+  const earlyActiveIndexes = assertAnimatedTalismanFlameFrame(
+    await readTalismanFlameFrame(startSlot),
+    "early talisman burn",
+  );
+  await page.waitForTimeout(760);
+  const middleActiveIndexes = assertAnimatedTalismanFlameFrame(
+    await readTalismanFlameFrame(startSlot),
+    "middle talisman burn",
+  );
+  assert(
+    JSON.stringify(earlyActiveIndexes) !== JSON.stringify(middleActiveIndexes),
+    `talisman flames should advance in staggered positions: early=${JSON.stringify(earlyActiveIndexes)} middle=${JSON.stringify(middleActiveIndexes)}`,
+  );
+
+  return startSlot;
+};
+
+const assertTalismanFlamesDismissed = async (startSlot) => {
+  const dismissedFrame = await readTalismanFlameFrame(startSlot);
+  const talismanOpacity = await startSlot
+    .locator(".talisman-visual--situation")
+    .evaluate((element) => Number.parseFloat(window.getComputedStyle(element).opacity));
+
+  assert(dismissedFrame.layerOpacity === 0, `flames layer should disappear after the burn: ${JSON.stringify(dismissedFrame)}`);
+  assert(talismanOpacity === 0, `situation talisman should remain dismissed after the burn: ${talismanOpacity}`);
+};
+
+const assertReducedMotionTalismanFlames = async (page) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await createSingleIncenseRitual(page);
+  await assertTalismanFlameStructure(page, 1);
+
+  await page.locator(".stage-grid--full .talisman-visual--interactive").click();
+  await page.getByRole("button", { name: "开始这一套" }).click();
+  const startSlot = page.locator(".stage-grid--full .intent-slot");
+  await page.waitForFunction(
+    () => document.querySelector(".stage-grid--full .intent-slot")?.getAttribute("data-stage-start-visual-state") === "burning",
+  );
+  await assertVisible(startSlot, "reduced-motion talisman burn state");
+
+  const reducedFrame = await readTalismanFlameFrame(startSlot);
+  assert(
+    reducedFrame.layerAnimationName === "situation-talisman-reduced-flame-glow" &&
+      reducedFrame.layerBackgroundImage.includes("radial-gradient"),
+    `reduced-motion burn should use a short static warm glow: ${JSON.stringify(reducedFrame)}`,
+  );
+  assert(
+    reducedFrame.flames.every(
+      (flame) => flame.animationName === "none" && flame.opacity === 0 && flame.transform === "none",
+    ),
+    `reduced-motion burn should cancel flame sway and travel: ${JSON.stringify(reducedFrame)}`,
+  );
+
+  await page.waitForTimeout(320);
+  const fadedFrame = await readTalismanFlameFrame(startSlot);
+  assert(fadedFrame.layerOpacity === 0, `reduced-motion warm glow should fade quickly: ${JSON.stringify(fadedFrame)}`);
+  await page.locator(".intent-slot--burning").waitFor({ state: "visible", timeout: 5000 });
+  await assertTalismanFlamesDismissed(startSlot);
+
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.evaluate(() => window.localStorage.clear());
+  await page.reload({ waitUntil: "networkidle" });
+};
+
 const readPersistenceState = async (page) =>
   page.evaluate(() => {
     const history = JSON.parse(window.localStorage.getItem("jiji-rululing.history") ?? "[]");
@@ -874,7 +1035,7 @@ const restoreCompletedRitualFixture = async (page) => {
 
 const assertReviewAbandonProtection = async (page) => {
   await restoreCompletedRitualFixture(page);
-  await page.getByRole("button", { name: "进入复盘" }).click();
+  await page.getByRole("button", { name: "进入复盘", exact: true }).click();
   await assertVisible(page.getByRole("heading", { name: "本次复盘" }), "review before abandon protection");
   await page.waitForFunction(() => {
     const rawSession = window.localStorage.getItem("jiji-rululing.current-session");
@@ -983,13 +1144,13 @@ const assertCompletedSessionReviewSavePersistsHistory = async (page) => {
     document.documentElement.dataset.windowMode = "full";
   });
   await assertVisible(page.getByRole("heading", { name: "本轮香尽" }), "completed full ritual summary");
-  await assertVisible(page.getByRole("button", { name: "进入复盘" }), "full ritual review entry");
+  await assertVisible(page.getByRole("button", { name: "进入复盘", exact: true }), "full ritual review entry");
   assert(
     (await page.locator(".review-panel:visible").count()) === 0,
     "completed full ritual should still wait for the explicit review entry",
   );
 
-  await page.getByRole("button", { name: "进入复盘" }).click();
+  await page.getByRole("button", { name: "进入复盘", exact: true }).click();
   await assertVisible(page.getByRole("heading", { name: "本次复盘" }), "review panel after explicit entry");
   await page.getByLabel("一句复盘").fill(reviewText);
   await page.getByRole("button", { name: "保存复盘" }).click();
@@ -1048,6 +1209,7 @@ const run = async () => {
     await assertVisible(page.getByRole("button", { name: "设置" }), "settings button");
     await assertNoHorizontalOverflow(page, "setup");
 
+    await assertReducedMotionTalismanFlames(page);
     await assertAbandonSessionProtection(page);
 
     await page.getByRole("button", { name: "创建任务" }).click();
@@ -1071,6 +1233,7 @@ const run = async () => {
     await assertVisible(page.getByRole("heading", { name: "仪式台" }), "full ritual title before compact mode");
     await assertVisible(page.locator(".stage-grid--full"), "full ritual stage before compact mode");
     await assertFullStageUsesStageVisuals(page);
+    await assertTalismanFlameStructure(page, 3);
     await assertFullStageIdleCenserHoverUsesMetadataCard(page);
     await assertFullStageTalismanPreviewReadability(page);
     assert(
@@ -1220,19 +1383,10 @@ const run = async () => {
       document.documentElement.dataset.windowMode = "full";
     });
     await assertVisible(page.locator(".stage-grid--full"), "full ritual stage before starting an intent");
-    await page.locator(".stage-grid--full .talisman-visual--interactive").first().click();
-    await assertVisible(page.getByRole("heading", { name: "确认开始这一套？" }), "start confirmation before compact active state");
-    await page.getByRole("button", { name: "开始这一套" }).click();
-    await assertVisible(
-      page.locator('.stage-grid--full .intent-slot[data-stage-start-visual-state="burning"]').first(),
-      "start talisman burn animation state before compact active state",
-    );
-    assert(
-      (await page.locator(".stage-grid--full .timer-panel").count()) === 0,
-      "start talisman burn animation should complete before the focus timer appears",
-    );
+    const startSlot = await startFirstIntentAndAssertTalismanFlames(page);
     await page.locator(".intent-slot--burning").first().waitFor({ state: "visible", timeout: 5000 });
     await assertVisible(page.locator(".intent-slot--burning").first(), "burning intent in full ritual stage");
+    await assertTalismanFlamesDismissed(startSlot);
     assert(
       (await page.locator('.stage-grid--full .intent-slot--burning[data-stage-situation-visibility="dismissed"]').count()) === 1,
       "burning full-stage intent should dismiss its situation talisman",
