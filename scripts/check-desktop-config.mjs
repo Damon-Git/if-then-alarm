@@ -1059,6 +1059,20 @@ assertTextIncludes(stylesCss, "text-orientation: upright", "CSS keeps talisman t
 assertTextIncludes(stylesCss, ".altar-scene", "CSS renders a shared altar background scene");
 assertTextIncludes(stylesCss, ".altar-scene__slots", "CSS lays out full-stage intent slots on one altar");
 assertTextIncludes(stylesCss, "--altar-censer-center-y", "CSS pins full-stage censers to a shared horizontal line");
+const stageCenserAssetCss = stylesCss.slice(
+  stylesCss.indexOf(".altar-scene .censer-visual--stage .censer-visual__asset {"),
+  stylesCss.indexOf('.altar-scene .intent-slot--resting .censer-visual--stage .censer-visual__asset'),
+);
+assertTextExcludes(
+  stageCenserAssetCss,
+  "scale(",
+  "CSS renders stage censer rasters at their final size instead of scaling a composited parent",
+);
+assert(
+  !/\.altar-scene \.intent-slot--burning \.censer-visual--stage \.censer-visual__asset\s*\{/.test(stylesCss),
+  "CSS keeps the active stage censer sharp by reusing the base raster rendering",
+);
+assertTextExcludes(stylesCss, "stage-censer-warm-breathe", "CSS removes the WKWebView raster-filter breathing animation");
 assertTextIncludes(stylesCss, 'data-stage-hover-card="metadata"', "CSS reveals metadata cards only from explicit hover-card semantics");
 assertTextIncludes(stylesCss, 'data-stage-hover-card="timer"', "CSS reveals active timer cards only from explicit hover-card semantics");
 assertTextIncludes(stylesCss, 'data-stage-metadata-visibility="censer-hover"', "CSS reveals full-stage metadata only through explicit censer hover semantics");

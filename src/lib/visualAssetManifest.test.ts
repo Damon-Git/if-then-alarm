@@ -121,7 +121,7 @@ describe("visual asset manifest", () => {
       tone: "formal-ritual",
     });
     expect(VISUAL_ASSET_FAMILY_SPECS.censer.stage.sourceCanvas).toEqual({ height: 320, width: 320 });
-    expect(VISUAL_ASSET_FAMILY_SPECS.censer.stage.renderBox).toEqual({ height: 118, width: 118 });
+    expect(VISUAL_ASSET_FAMILY_SPECS.censer.stage.renderBox).toEqual({ height: 160, width: 160 });
     expect(VISUAL_ASSET_FAMILY_SPECS.incense.stage.sourceCanvas).toEqual({ height: 240, width: 240 });
   });
 
@@ -295,8 +295,8 @@ describe("visual asset manifest", () => {
 
   it("exposes render boxes as CSS custom properties for visual components", () => {
     expect(getVisualAssetRenderVars("censer", "stage")).toEqual({
-      "--censer-render-height": "118px",
-      "--censer-render-width": "118px",
+      "--censer-render-height": "160px",
+      "--censer-render-width": "160px",
     });
     expect(getVisualAssetRenderVars("incense", "compact")).toEqual({
       "--incense-render-height": "50px",

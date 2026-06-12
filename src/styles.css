@@ -1257,8 +1257,8 @@ select {
 }
 
 .censer-visual--stage .censer-visual__asset:has(.visual-layer--with-asset) {
-  width: var(--censer-render-width, 118px);
-  height: var(--censer-render-height, 118px);
+  width: var(--censer-render-width, 160px);
+  height: var(--censer-render-height, 160px);
 }
 
 .censer-visual--stage .censer-visual__lid.visual-layer--with-asset,
@@ -1319,7 +1319,9 @@ select {
 }
 
 .incense-visual--stage:has(.visual-layer--with-asset) {
-  bottom: 46px;
+  bottom: 63px;
+  transform: translateX(-50%) scale(1.36);
+  transform-origin: center bottom;
 }
 
 .incense-visual__unit {
@@ -2094,17 +2096,11 @@ select {
   left: 50%;
   filter: saturate(0.94) contrast(1.04) drop-shadow(0 10px 8px rgb(43 25 14 / 20%));
   margin: 0;
-  transform: translateX(-50%) scale(1.36);
+  transform: translateX(-50%);
   transform-origin: center bottom;
   transition:
     filter 880ms ease,
-    opacity 880ms ease,
-    transform 880ms ease;
-}
-
-.altar-scene .intent-slot--burning .censer-visual--stage .censer-visual__asset {
-  filter: saturate(1.1) contrast(1.08) brightness(1.04) drop-shadow(0 8px 11px rgb(132 65 27 / 34%));
-  animation: stage-censer-warm-breathe 5.6s ease-in-out var(--ritual-animation-offset) infinite;
+    opacity 880ms ease;
 }
 
 .altar-scene .intent-slot--resting .censer-visual--stage .censer-visual__asset {
@@ -2565,19 +2561,6 @@ select {
   100% {
     filter: grayscale(1) sepia(0.18) brightness(0.58);
     opacity: 0;
-  }
-}
-
-@keyframes stage-censer-warm-breathe {
-  0%,
-  100% {
-    filter: saturate(1.06) contrast(1.06) brightness(1.015) drop-shadow(0 8px 10px rgb(132 65 27 / 28%));
-    transform: translateX(-50%) scale(1.36);
-  }
-
-  50% {
-    filter: saturate(1.14) contrast(1.09) brightness(1.055) drop-shadow(0 8px 13px rgb(151 76 32 / 38%));
-    transform: translateX(-50%) scale(1.372);
   }
 }
 
