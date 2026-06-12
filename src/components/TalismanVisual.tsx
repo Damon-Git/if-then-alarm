@@ -1,11 +1,11 @@
-import { useState } from "react";
+import { useRef, useState, type SyntheticEvent } from "react";
 import {
   getTalismanVisualSlot,
   TALISMAN_TEMPLATE_ASSET_LAYERS,
   type TalismanAssetLayer,
   type TalismanAssetVariant,
 } from "../lib/visualAssets";
-import { getTalismanAssetUrl } from "../lib/visualAssetManifest";
+import { getTalismanAssetUrl, getTalismanBurnAssetUrl } from "../lib/visualAssetManifest";
 import { getTalismanVisualState } from "../lib/visualState";
 import type { IntentSetStatus } from "../types";
 
@@ -63,24 +63,70 @@ const splitIntentText = (text: string, variant: TalismanAssetVariant) => {
   };
 };
 
-const SituationTalismanBurnEffect = () => (
-  <>
-    <span className="talisman-visual__burn talisman-visual__burn--ignition" data-talisman-burn-layer="ignition" />
-    <span className="talisman-visual__burn talisman-visual__burn--char" data-talisman-burn-layer="char" />
-    <span className="talisman-visual__burn talisman-visual__burn--edge" data-talisman-burn-layer="edge" />
-    <span className="talisman-visual__burn talisman-visual__burn--flames" data-talisman-burn-layer="flames">
-      <span />
-      <span />
-      <span />
-      <span />
-    </span>
-    <span className="talisman-visual__burn talisman-visual__burn--sparks" data-talisman-burn-layer="sparks">
-      <span />
-      <span />
-      <span />
-    </span>
-  </>
-);
+type BurnAssetState = "loading" | "ready" | "failed";
+
+const SituationTalismanBurnEffect = () => {
+  const flameAssetUrl = getTalismanBurnAssetUrl("flames");
+  const [assetState, setAssetState] = useState<BurnAssetState>(flameAssetUrl ? "loading" : "failed");
+  const assetFailedRef = useRef(!flameAssetUrl);
+
+  const handleFlameAssetLoad = async (event: SyntheticEvent<HTMLImageElement>) => {
+    const image = event.currentTarget;
+
+    try {
+      await image.decode?.();
+      if (!assetFailedRef.current) {
+        setAssetState(image.naturalWidth > 0 ? "ready" : "failed");
+      }
+    } catch {
+      assetFailedRef.current = true;
+      setAssetState("failed");
+    }
+  };
+
+  const handleFlameAssetError = () => {
+    assetFailedRef.current = true;
+    setAssetState("failed");
+  };
+
+  return (
+    <>
+      <span className="talisman-visual__burn talisman-visual__burn--ignition" data-talisman-burn-layer="ignition" />
+      <span className="talisman-visual__burn talisman-visual__burn--char" data-talisman-burn-layer="char" />
+      <span className="talisman-visual__burn talisman-visual__burn--edge" data-talisman-burn-layer="edge" />
+      <span
+        className="talisman-visual__burn talisman-visual__burn--flames"
+        data-talisman-burn-asset-format="png-sprite"
+        data-talisman-burn-asset-state={assetState}
+        data-talisman-burn-fallback={assetState === "ready" ? "inactive" : "active"}
+        data-talisman-burn-layer="flames"
+      >
+        {flameAssetUrl ? (
+          <span className="talisman-visual__burn-flame-asset" data-talisman-burn-asset="flame-sprite">
+            <img
+              alt=""
+              draggable="false"
+              src={flameAssetUrl}
+              onError={handleFlameAssetError}
+              onLoad={(event) => void handleFlameAssetLoad(event)}
+            />
+          </span>
+        ) : null}
+        <span className="talisman-visual__burn-flame-fallback" data-talisman-burn-fallback-layer="css">
+          <span />
+          <span />
+          <span />
+          <span />
+        </span>
+      </span>
+      <span className="talisman-visual__burn talisman-visual__burn--sparks" data-talisman-burn-layer="sparks">
+        <span />
+        <span />
+        <span />
+      </span>
+    </>
+  );
+};
 
 const TalismanLayer = ({
   layer,

@@ -4,6 +4,7 @@ import {
   getCenserAssetUrl,
   getIncenseAssetUrl,
   getTalismanAssetUrl,
+  getTalismanBurnAssetUrl,
   getVisualAssetUrl,
   visualAssetManifest,
   type VisualAssetManifest,
@@ -18,6 +19,7 @@ import {
   getCenserVisualSlot,
   getIncenseVisualSlot,
   getAltarVisualSlot,
+  getTalismanBurnVisualSlot,
   getTalismanVisualSlot,
   getVisualAssetRenderVars,
   STAGE_CENSER_ASSET_REQUIREMENTS,
@@ -52,6 +54,7 @@ describe("visual asset manifest", () => {
       "incense/stage/smoke",
       "incense/stage/stick",
       "talisman/prevention/template",
+      "talisman/situation/burn/flames",
       "talisman/situation/template",
     ]);
     expect(getAltarAssetUrl("background")).toEqual(expect.stringContaining("background"));
@@ -67,6 +70,7 @@ describe("visual asset manifest", () => {
     expect(getIncenseAssetUrl("stage", "ember")).toEqual(expect.stringContaining("ember"));
     expect(getIncenseAssetUrl("stage", "smoke")).toEqual(expect.stringContaining("smoke"));
     expect(getTalismanAssetUrl("situation", "template")).toEqual(expect.stringContaining("template"));
+    expect(getTalismanBurnAssetUrl("flames")).toEqual(expect.stringContaining("flame-sprite"));
     expect(getTalismanAssetUrl("prevention", "template")).toEqual(expect.stringContaining("template"));
     expect(getTalismanAssetUrl("situation", "text")).toBeUndefined();
     expect(getTalismanAssetUrl("prevention", "text")).toBeUndefined();
@@ -77,6 +81,7 @@ describe("visual asset manifest", () => {
       "altar/background": "/visuals/altar/background.png",
       "censer/stage/body": "/visuals/censer/stage/body.png",
       "incense/compact/stick": "/visuals/incense/compact/stick.png",
+      "talisman/situation/burn/flames": "/visuals/talisman/situation/burn/flame-sprite.png",
       "talisman/situation/template": "/visuals/talisman/situation/template.png",
     };
 
@@ -87,6 +92,9 @@ describe("visual asset manifest", () => {
     expect(getIncenseAssetUrl("compact", "stick", manifest)).toBe("/visuals/incense/compact/stick.png");
     expect(getTalismanAssetUrl("situation", "template", manifest)).toBe(
       "/visuals/talisman/situation/template.png",
+    );
+    expect(getTalismanBurnAssetUrl("flames", manifest)).toBe(
+      "/visuals/talisman/situation/burn/flame-sprite.png",
     );
   });
 
@@ -171,6 +179,7 @@ describe("visual asset manifest", () => {
       "talisman/prevention/state",
       "talisman/prevention/text",
     ]);
+    expect(getTalismanBurnVisualSlot("flames")).toBe("talisman/situation/burn/flames");
     expect(TALISMAN_TEXT_SAFE_ZONES).toEqual({
       leftColumn: {
         bottomPercent: 84,

@@ -43,7 +43,13 @@
 
 `IntentSlot` 会输出 `data-stage-intent-status`、`data-stage-can-start`、`data-stage-timer-visible`、`data-stage-metadata-visibility`、`data-stage-metadata-active`、`data-stage-situation-visibility`、`data-stage-prevention-visibility`、`data-stage-prevention-preview-active`、`data-stage-censer-emphasis` 和 `data-stage-start-visual-state`。当前 `data-stage-metadata-visibility` 的值为 `censer-hover`，表示辅助信息只由香炉命中区触发；`data-stage-metadata-active` 和 `data-stage-prevention-preview-active` 由 React 指针事件写入，用于规避打包 WebView 中 CSS hover 选择器不稳定的问题。这些属性只表达视觉语义和回归检查锚点，不反推业务流程。
 
-情境符箓燃烧动画契约：只在该套从 `idle` 确认进入第一次 `burning` 前触发一次，动画目标时长约 2 秒；动画期间不启动专注倒计时，不显示计时面板；动画结束后情境符箓退场并正式进入 `burning`。后续同一个香炉续香时不再播放该动画，也不重新显示符箓。当前分层退场继续复用 `state` 层，并暴露 `data-talisman-burn-layer="ignition"`、`char`、`edge` 和 `sparks` 纯视觉锚点；下一轮允许增加 `flames` 纯视觉锚点，用于沿燃烧前缘显示少量、短促、可辨认的小火苗。模板、文字和状态层共同裁切灰化，火苗不能新增业务状态、独立 timer 或改变倒计时启动时点。
+情境符箓燃烧动画契约：只在该套从 `idle` 确认进入第一次 `burning` 前触发一次，动画目标时长约 2 秒；动画期间不启动专注倒计时，不显示计时面板；动画结束后情境符箓退场并正式进入 `burning`。后续同一个香炉续香时不再播放该动画，也不重新显示符箓。分层退场继续复用 `state` 层，并保留 `data-talisman-burn-layer="ignition"`、`char`、`edge`、`flames` 和 `sparks` 纯视觉锚点。
+
+下一轮真实燃烧效果允许在 `flames` 层内接入一组不含模板和文字的透明预渲染动画素材，并由 CSS `clip-path`、mask 或渐变继续负责纸张侵蚀、焦黑卷边、余烬亮边和最终退场。透明素材格式必须经过 Web 和 macOS Tauri WebView 兼容性验证后选择，不能假定某一种透明视频编码必然可用；加载或解码失败时必须回退到现有 CSS 分层燃烧。
+
+燃烧期间允许情境符箓临时放大约 `1.5-2` 倍并提高层级，火焰也允许越过纸张边界。火焰容器不能被符箓纸张的裁切规则截断；模板和文字的侵蚀遮罩应与外部火焰分离。越界区域必须保持 `pointer-events: none`，不能新增交互命中区、触发相邻组件 hover 或长期遮挡香炉、计时卡和相邻符箓。临时放大、透明素材播放和 CSS 侵蚀都只能由既有 `data-stage-start-visual-state="burning"` 驱动，不能新增业务状态、独立 timer 或改变倒计时启动时点。
+
+`prefers-reduced-motion` 下必须停止透明帧播放、火焰摆动、推进位移和临时放大，仅保留短促静态暖光、局部焦边与灰化淡出，并落到与普通动画相同的最终退场状态。
 
 主祭台辅助信息不能由符箓 hover、符箓 focus 或线香区域 hover 触发。符箓 hover 只负责符箓自身放大，线香区域保持低干扰。
 
@@ -211,12 +217,15 @@ type TalismanVisualProps = {
 - `data-talisman-layer="template"`：符箓背景模板层。
 - `data-talisman-layer="text"`：文字覆盖层。
 - `data-talisman-layer="state"`：状态层，未来可用于燃烧、消失或禁用效果。
+- `data-talisman-burn-layer="flames"`：火焰素材或 CSS 回退容器，只负责火焰、少量火星和烟气，不包含符箓模板或用户文字。
 
 ### 未来素材接入规则
 
 - 真实符箓必须使用上传好的图片模板作为背景。
 - 不允许用 CSS 或 SVG 随便重新画一个假的符箓。
 - 用户文本必须保持为覆盖在模板上的文本层。
+- 透明燃烧素材必须独立于符箓模板和文字，允许复用于不同用户执行意图。
+- 素材必须有 Web 与 macOS Tauri WebView 可验证的透明通道和解码回退方案。
 - 符箓燃烧或消失动画只能改变视觉状态，不应直接推进计时状态。
 
 ## 不允许的耦合

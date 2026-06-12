@@ -2,12 +2,14 @@ import {
   getAltarVisualSlot,
   getCenserVisualSlot,
   getIncenseVisualSlot,
+  getTalismanBurnVisualSlot,
   getTalismanVisualSlot,
   type AltarAssetLayer,
   type CenserAssetLayer,
   type IncenseAssetLayer,
   type TalismanAssetLayer,
   type TalismanAssetVariant,
+  type TalismanBurnAssetLayer,
   type VisualAssetSlot,
   type VisualAssetSize,
 } from "./visualAssets";
@@ -31,6 +33,7 @@ import stageIncenseEmberUrl from "../assets/visuals/incense/stage/ember.png";
 import stageIncenseSmokeUrl from "../assets/visuals/incense/stage/smoke.png";
 import stageIncenseStickUrl from "../assets/visuals/incense/stage/stick.png";
 import preventionTalismanTemplateUrl from "../assets/visuals/talisman/prevention/template.png";
+import situationTalismanBurnFlamesUrl from "../assets/visuals/talisman/situation/burn/flame-sprite.png";
 import situationTalismanTemplateUrl from "../assets/visuals/talisman/situation/template.png";
 
 export type VisualAssetManifest = Partial<Record<VisualAssetSlot, string>>;
@@ -56,6 +59,7 @@ export const visualAssetManifest = {
   "incense/stage/smoke": stageIncenseSmokeUrl,
   "incense/stage/stick": stageIncenseStickUrl,
   "talisman/prevention/template": preventionTalismanTemplateUrl,
+  "talisman/situation/burn/flames": situationTalismanBurnFlamesUrl,
   "talisman/situation/template": situationTalismanTemplateUrl,
 } satisfies VisualAssetManifest;
 
@@ -72,6 +76,11 @@ export const getTalismanAssetUrl = (
   layer: TalismanAssetLayer,
   manifest?: VisualAssetManifest,
 ) => getVisualAssetUrl(getTalismanVisualSlot(variant, layer), manifest);
+
+export const getTalismanBurnAssetUrl = (
+  layer: TalismanBurnAssetLayer,
+  manifest?: VisualAssetManifest,
+) => getVisualAssetUrl(getTalismanBurnVisualSlot(layer), manifest);
 
 export const getCenserAssetUrl = (
   size: VisualAssetSize,

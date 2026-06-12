@@ -190,6 +190,27 @@ function hasOnlyTemplatePixels(image) {
   return hasBlack && hasTransparent;
 }
 
+function hasTransparentAndVisiblePixels(image) {
+  if (!image) {
+    return false;
+  }
+
+  let hasTransparent = false;
+  let hasVisible = false;
+
+  for (let offset = 3; offset < image.pixels.length; offset += 4) {
+    const alpha = image.pixels[offset];
+    hasTransparent ||= alpha === 0;
+    hasVisible ||= alpha > 0;
+
+    if (hasTransparent && hasVisible) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 function isTwoTimesNearestNeighbor(source, retina) {
   if (
     !source ||
@@ -325,6 +346,12 @@ const menubarIconV1 = await readRgbaPngPixels(
 const menubarIconV1Retina = await readRgbaPngPixels(
   "src-tauri/icons/menubar-icon/menubar-icon-v1@2x.png",
 );
+const talismanBurnFlameSpriteDimensions = await readPngDimensions(
+  "src/assets/visuals/talisman/situation/burn/flame-sprite.png",
+);
+const talismanBurnFlameSprite = await readRgbaPngPixels(
+  "src/assets/visuals/talisman/situation/burn/flame-sprite.png",
+);
 
 assertPackageScript(packageJson, "dev:tauri-frontend", "node scripts/start-tauri-frontend.mjs");
 assertPackageScript(packageJson, "check:compact", "node scripts/check-compact-window.mjs");
@@ -416,6 +443,16 @@ assert(
 assert(
   isTwoTimesNearestNeighbor(menubarIconV1, menubarIconV1Retina),
   "Desktop menubar icon v1 Retina source is the 2x outline of the 1x source",
+);
+assert(
+  talismanBurnFlameSpriteDimensions?.width === 2880 &&
+    talismanBurnFlameSpriteDimensions.height === 420 &&
+    talismanBurnFlameSpriteDimensions.colorType === 6,
+  "Situation talisman flame sprite is 2880 x 420 RGBA PNG",
+);
+assert(
+  hasTransparentAndVisiblePixels(talismanBurnFlameSprite),
+  "Situation talisman flame sprite preserves transparent and visible pixels",
 );
 assert(
   tauriConfig.app?.macOSPrivateApi === true,
@@ -785,6 +822,7 @@ assertTextIncludes(
   '"incense/stage/smoke"',
   '"incense/stage/stick"',
   '"talisman/prevention/template"',
+  '"talisman/situation/burn/flames"',
   '"talisman/situation/template"',
 ].forEach((manifestToken) =>
   assertTextIncludes(
@@ -812,6 +850,7 @@ assertTextIncludes(
   "getAltarVisualSlot",
   "getCenserVisualSlot",
   "getIncenseVisualSlot",
+  "getTalismanBurnVisualSlot",
   "getTalismanVisualSlot",
 ].forEach((visualAssetToken) =>
   assertTextIncludes(
@@ -898,12 +937,19 @@ assertTextIncludes(talismanVisual, 'data-talisman-burn-layer="char"', "TalismanV
 assertTextIncludes(talismanVisual, 'data-talisman-burn-layer="edge"', "TalismanVisual exposes an advancing ember edge burn layer");
 assertTextIncludes(talismanVisual, 'data-talisman-burn-layer="flames"', "TalismanVisual exposes restrained pointed flame shapes");
 assertTextIncludes(talismanVisual, 'data-talisman-burn-layer="sparks"', "TalismanVisual exposes restrained burn sparks");
+assertTextIncludes(talismanVisual, 'data-talisman-burn-asset-format="png-sprite"', "TalismanVisual exposes the selected transparent sprite format");
+assertTextIncludes(talismanVisual, 'data-talisman-burn-asset-state={assetState}', "TalismanVisual exposes flame asset load and decode state");
+assertTextIncludes(talismanVisual, 'data-talisman-burn-fallback={assetState === "ready" ? "inactive" : "active"}', "TalismanVisual activates CSS fallback until the flame sprite is ready");
+assertTextIncludes(talismanVisual, "onError={handleFlameAssetError}", "TalismanVisual falls back when the flame sprite fails to load");
+assertTextIncludes(talismanVisual, "assetFailedRef.current", "TalismanVisual prevents late decode completion from overriding asset failure");
+assertTextIncludes(talismanVisual, "await image.decode?.()", "TalismanVisual probes flame sprite decode compatibility");
 assertTextIncludes(ritualStage, "getAltarAssetUrl", "RitualStage uses the altar background asset manifest");
 assertTextIncludes(ritualStage, "altar-scene__slots", "RitualStage renders shared altar scene slots");
 assertTextIncludes(ritualStage, "onRequestReview", "RitualStage exposes an explicit review entry after completion");
 assertTextIncludes(ritualStage, "ritual-completion-card", "RitualStage marks completed ritual without auto-opening review");
 assertTextIncludes(ritualStage, "本轮香尽", "RitualStage uses calm completion copy before review");
 assertTextIncludes(ritualStage, "data-ritual-complete", "RitualStage exposes completed ritual styling state");
+assertTextIncludes(ritualStage, "data-stage-start-animation-active", "RitualStage exposes the transient burn window for preview suppression");
 assertTextIncludes(reviewPanel, "review-overview", "ReviewPanel shows a lightweight session summary");
 assertTextIncludes(reviewPanel, "review-main-field", "ReviewPanel keeps the one-line review as the primary field");
 assertTextIncludes(reviewPanel, "review-optional-fields", "ReviewPanel keeps obstacle and adjustment as supplemental fields");
@@ -968,6 +1014,9 @@ assertTextIncludes(
   "Compact check verifies visible staggered flames during the first burn",
 );
 assertTextIncludes(compactWindowCheck, "assertTalismanFlamesDismissed", "Compact check verifies flames disappear after burning");
+assertTextIncludes(compactWindowCheck, "assertTalismanBurnAcrossLayouts", "Compact check verifies talisman burn across 1, 2, and 3 task layouts");
+assertTextIncludes(compactWindowCheck, "assertTalismanAssetFailureFallback", "Compact check verifies flame asset failure fallback");
+assertTextIncludes(compactWindowCheck, "assertFlamesDoNotInterceptNeighbors", "Compact check verifies overflow flames do not intercept neighboring components");
 assertTextIncludes(
   compactWindowCheck,
   "assertReducedMotionTalismanFlames",
@@ -1037,9 +1086,16 @@ assertTextIncludes(stylesCss, "situation-talisman-paper-recede", "CSS recedes th
 assertTextIncludes(stylesCss, "situation-talisman-local-ignition", "CSS defines a local talisman ignition");
 assertTextIncludes(stylesCss, "situation-talisman-char-front", "CSS defines the talisman char front");
 assertTextIncludes(stylesCss, "situation-talisman-edge-advance", "CSS defines the advancing talisman ember edge");
-assertTextIncludes(stylesCss, ".talisman-visual__burn--flames span", "CSS styles individual talisman flame shapes");
+assertTextIncludes(stylesCss, ".talisman-visual__burn-flame-asset img", "CSS styles the transparent talisman flame sprite");
+assertTextIncludes(stylesCss, ".talisman-visual__burn-flame-fallback > span", "CSS preserves individual fallback flame shapes");
 assertTextIncludes(stylesCss, "clip-path: polygon(50% 0", "CSS gives talisman flames a pointed silhouette");
 assertTextIncludes(stylesCss, "situation-talisman-flame-flicker", "CSS staggers short talisman flame flickers along the burn front");
+assertTextIncludes(stylesCss, "situation-talisman-flame-sprite", "CSS plays transparent PNG sprite frames");
+assertTextIncludes(stylesCss, "situation-talisman-flame-front", "CSS advances the external flame front with paper erosion");
+assertTextIncludes(stylesCss, "scale(1.72)", "CSS temporarily enlarges the burning situation talisman");
+assertTextIncludes(stylesCss, "overflow: visible;", "CSS allows the flame layer to exceed the paper boundary");
+assertTextIncludes(stylesCss, "will-change: clip-path, filter, opacity", "CSS keeps paper erosion on the template and text layers");
+assertTextIncludes(stylesCss, 'data-stage-start-animation-active="true"', "CSS suppresses neighboring talisman previews during the burn window");
 assertTextIncludes(stylesCss, "situation-talisman-reduced-flame-glow", "CSS defines a static reduced-motion flame glow");
 assertTextIncludes(stylesCss, "situation-talisman-reduced-fade", "CSS defines a reduced-motion talisman burn fallback");
 assertTextIncludes(
@@ -1128,6 +1184,7 @@ await Promise.all(
     "src/assets/visuals/altar/README.md",
     "src/assets/visuals/altar/background.png",
     "src/assets/visuals/talisman/situation/README.md",
+    "src/assets/visuals/talisman/situation/burn/flame-sprite.png",
     "src/assets/visuals/talisman/prevention/README.md",
     "src/assets/visuals/talisman/situation/template.png",
     "src/assets/visuals/talisman/prevention/template.png",

@@ -4,6 +4,8 @@ export type TalismanAssetVariant = "situation" | "prevention";
 
 export type TalismanAssetLayer = "template" | "state" | "text";
 
+export type TalismanBurnAssetLayer = "flames";
+
 export type CenserAssetLayer = "lid" | "mouth" | "ash" | "body" | "feet";
 
 export type IncenseAssetLayer = "stick" | "ash" | "ember" | "smoke";
@@ -12,13 +14,20 @@ export type AltarAssetLayer = "background";
 
 export type TalismanVisualSlot = `talisman/${TalismanAssetVariant}/${TalismanAssetLayer}`;
 
+export type TalismanBurnVisualSlot = `talisman/situation/burn/${TalismanBurnAssetLayer}`;
+
 export type CenserVisualSlot = `censer/${VisualAssetSize}/${CenserAssetLayer}`;
 
 export type IncenseVisualSlot = `incense/${VisualAssetSize}/${IncenseAssetLayer}`;
 
 export type AltarVisualSlot = `altar/${AltarAssetLayer}`;
 
-export type VisualAssetSlot = AltarVisualSlot | TalismanVisualSlot | CenserVisualSlot | IncenseVisualSlot;
+export type VisualAssetSlot =
+  | AltarVisualSlot
+  | TalismanVisualSlot
+  | TalismanBurnVisualSlot
+  | CenserVisualSlot
+  | IncenseVisualSlot;
 
 export const TALISMAN_ASSET_LAYERS = ["template", "state", "text"] as const satisfies readonly TalismanAssetLayer[];
 
@@ -337,6 +346,9 @@ export const getTalismanVisualSlot = (
   layer: TalismanAssetLayer,
 ): TalismanVisualSlot =>
   `talisman/${variant}/${layer}`;
+
+export const getTalismanBurnVisualSlot = (layer: TalismanBurnAssetLayer): TalismanBurnVisualSlot =>
+  `talisman/situation/burn/${layer}`;
 
 export const getCenserVisualSlot = (size: VisualAssetSize, layer: CenserAssetLayer): CenserVisualSlot =>
   `censer/${size}/${layer}`;

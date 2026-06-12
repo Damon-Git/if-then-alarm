@@ -5,6 +5,8 @@ const targetUrl = process.env.COMPACT_CHECK_URL ?? "http://127.0.0.1:5173/";
 const screenshotPath = "artifacts/compact-window.png";
 const burningScreenshotPath = "artifacts/compact-window-burning.png";
 const restingScreenshotPath = "artifacts/compact-window-resting.png";
+const talismanBurnScreenshotPath = (intentCount, phase) =>
+  `artifacts/talisman-burn-${intentCount}-tasks-${phase}.png`;
 
 const readCompactWindowSize = async () => {
   const constantsTs = await readFile("src/constants.ts", "utf8");
@@ -786,6 +788,27 @@ const createSingleIncenseRitual = async (page) => {
   await assertVisible(page.getByRole("heading", { name: "仪式台" }), "single incense full ritual title");
 };
 
+const createRitualWithIntentCount = async (page, intentCount) => {
+  await page.evaluate(() => {
+    window.localStorage.clear();
+    document.documentElement.dataset.windowMode = "full";
+  });
+  await page.reload({ waitUntil: "networkidle" });
+
+  for (let index = 1; index < intentCount; index += 1) {
+    await page.getByRole("button", { name: "创建任务" }).click();
+  }
+
+  const situationInputs = page.locator('textarea[placeholder="当我打开电脑坐到书桌前，就开始写今天的第一段文稿。"]');
+  for (let index = 0; index < intentCount; index += 1) {
+    await situationInputs.nth(index).fill(`当我开始第 ${index + 1} 项任务，就专注完成眼前这一步。`);
+    await page.getByLabel(`第 ${index + 1} 项任务香数`).getByRole("button", { name: "1 炷" }).click();
+  }
+
+  await page.getByRole("button", { name: "开始创造" }).click();
+  await assertVisible(page.getByRole("heading", { name: "仪式台" }), `${intentCount}-task ritual title`);
+};
+
 const assertTalismanFlameStructure = async (page, expectedTalismanCount) => {
   const flameLayers = page.locator('.stage-grid--full [data-talisman-burn-layer="flames"]');
 
@@ -793,81 +816,113 @@ const assertTalismanFlameStructure = async (page, expectedTalismanCount) => {
     (await flameLayers.count()) === expectedTalismanCount,
     `full-stage situation talismans should expose one flames layer each: expected=${expectedTalismanCount}`,
   );
-  assert(
-    (await flameLayers.locator(":scope > span").count()) === expectedTalismanCount * 4,
-    "each full-stage situation talisman should expose four restrained flame shapes",
-  );
+  assert((await flameLayers.locator('[data-talisman-burn-asset="flame-sprite"] img').count()) === expectedTalismanCount,
+    "each full-stage situation talisman should expose one transparent flame sprite image");
+  assert((await flameLayers.locator('[data-talisman-burn-fallback-layer="css"]').count()) === expectedTalismanCount,
+    "each full-stage situation talisman should preserve one CSS flame fallback layer");
+  assert((await flameLayers.locator('[data-talisman-burn-fallback-layer="css"] > span').count()) === expectedTalismanCount * 4,
+    "each CSS fallback should preserve four flame shapes");
+  assert((await page.locator('[data-talisman-burn-asset-format="png-sprite"]').count()) === expectedTalismanCount,
+    "each full-stage situation talisman should expose the selected PNG sprite format");
 };
 
 const readTalismanFlameFrame = async (slot) =>
   slot.locator('[data-talisman-burn-layer="flames"]').evaluate((layer) => {
     const talisman = layer.closest(".talisman-visual--situation");
     const talismanBox = talisman?.getBoundingClientRect();
-    const textBoxes = [...(talisman?.querySelectorAll(".talisman-visual__column") ?? [])].map((column) =>
-      column.getBoundingClientRect(),
-    );
-
-    const flames = [...layer.children].map((flame, index) => {
-      const style = window.getComputedStyle(flame);
-      const box = flame.getBoundingClientRect();
-      const overlapArea = textBoxes.reduce((total, textBox) => {
-        const width = Math.max(0, Math.min(box.right, textBox.right) - Math.max(box.left, textBox.left));
-        const height = Math.max(0, Math.min(box.bottom, textBox.bottom) - Math.max(box.top, textBox.top));
-        return total + width * height;
-      }, 0);
-      const area = Math.max(1, box.width * box.height);
-
-      return {
-        animationName: style.animationName,
-        clipPath: style.clipPath,
-        index,
-        insideTalisman:
-          Boolean(talismanBox) &&
-          box.left >= talismanBox.left - 1 &&
-          box.right <= talismanBox.right + 1 &&
-          box.top >= talismanBox.top - 1 &&
-          box.bottom <= talismanBox.bottom + 1,
-        opacity: Number.parseFloat(style.opacity),
-        textOverlapRatio: overlapArea / area,
-        transform: style.transform,
-      };
-    });
-
     const layerStyle = window.getComputedStyle(layer);
+    const asset = layer.querySelector(".talisman-visual__burn-flame-asset");
+    const assetImage = asset?.querySelector("img");
+    const fallback = layer.querySelector(".talisman-visual__burn-flame-fallback");
+    const paper = talisman?.querySelector(".talisman-visual__template");
+    const assetBox = asset?.getBoundingClientRect();
+    const talismanTransform = talisman ? new DOMMatrixReadOnly(window.getComputedStyle(talisman).transform) : null;
+
     return {
-      flames,
+      assetAnimationName: asset ? window.getComputedStyle(asset).animationName : "none",
+      assetBox: assetBox
+        ? { bottom: assetBox.bottom, left: assetBox.left, right: assetBox.right, top: assetBox.top }
+        : null,
+      assetImageAnimationName: assetImage ? window.getComputedStyle(assetImage).animationName : "none",
+      assetImageTransform: assetImage ? window.getComputedStyle(assetImage).transform : "none",
+      assetOpacity: asset ? Number.parseFloat(window.getComputedStyle(asset).opacity) : 0,
+      assetState: layer.getAttribute("data-talisman-burn-asset-state"),
+      fallbackOpacity: fallback ? Number.parseFloat(window.getComputedStyle(fallback).opacity) : 0,
+      fallbackState: layer.getAttribute("data-talisman-burn-fallback"),
       layerAnimationName: layerStyle.animationName,
       layerBackgroundImage: layerStyle.backgroundImage,
       layerOpacity: Number.parseFloat(layerStyle.opacity),
+      layerPointerEvents: layerStyle.pointerEvents,
+      paperClipPath: paper ? window.getComputedStyle(paper).clipPath : "none",
+      scale: talismanTransform ? Math.hypot(talismanTransform.a, talismanTransform.b) : 0,
+      talismanBox: talismanBox
+        ? { bottom: talismanBox.bottom, left: talismanBox.left, right: talismanBox.right, top: talismanBox.top }
+        : null,
     };
   });
 
 const assertAnimatedTalismanFlameFrame = (frame, label) => {
-  const activeFlames = frame.flames.filter((flame) => flame.opacity > 0.08);
-
-  assert(frame.layerOpacity > 0.9, `${label} flames layer should be visible: ${JSON.stringify(frame)}`);
-  assert(activeFlames.length >= 1, `${label} should show at least one distinct flame: ${JSON.stringify(frame)}`);
-  assert(
-    frame.flames.every((flame) => flame.animationName === "situation-talisman-flame-flicker"),
-    `${label} should use the short flame flicker animation: ${JSON.stringify(frame)}`,
-  );
-  assert(
-    frame.flames.every((flame) => flame.clipPath.startsWith("polygon(")),
-    `${label} flames should keep pointed polygon silhouettes: ${JSON.stringify(frame)}`,
-  );
-  assert(
-    activeFlames.every((flame) => flame.insideTalisman),
-    `${label} active flames should stay clipped inside the situation talisman: ${JSON.stringify(frame)}`,
-  );
-  assert(
-    activeFlames.every((flame) => flame.textOverlapRatio < 0.6),
-    `${label} active flames should not cover most of an intent text column: ${JSON.stringify(frame)}`,
-  );
-
-  return activeFlames.map((flame) => flame.index);
+  assert(frame.layerOpacity > 0.45, `${label} flames layer should be visible: ${JSON.stringify(frame)}`);
+  assert(frame.assetState === "ready", `${label} should use the decoded flame sprite: ${JSON.stringify(frame)}`);
+  assert(frame.fallbackState === "inactive" && frame.fallbackOpacity === 0,
+    `${label} should hide the CSS fallback after sprite decode: ${JSON.stringify(frame)}`);
+  assert(frame.assetOpacity > 0.7, `${label} transparent flame sprite should be visible: ${JSON.stringify(frame)}`);
+  assert(frame.assetImageAnimationName === "situation-talisman-flame-sprite",
+    `${label} should animate the PNG sprite frames: ${JSON.stringify(frame)}`);
+  assert(frame.layerAnimationName === "situation-talisman-flame-front",
+    `${label} should move the flame front with the paper erosion: ${JSON.stringify(frame)}`);
+  assert(frame.layerPointerEvents === "none", `${label} flames must not add a hit target: ${JSON.stringify(frame)}`);
+  assert(frame.scale >= 1.5 && frame.scale <= 2,
+    `${label} situation talisman should temporarily scale between 1.5x and 2x: ${JSON.stringify(frame)}`);
+  assert(frame.paperClipPath.startsWith("polygon("),
+    `${label} paper should use an irregular clip-path: ${JSON.stringify(frame)}`);
+  assert(frame.assetBox && frame.talismanBox && (
+    frame.assetBox.left < frame.talismanBox.left ||
+    frame.assetBox.right > frame.talismanBox.right ||
+    frame.assetBox.bottom > frame.talismanBox.bottom
+  ), `${label} flames should extend beyond the paper boundary: ${JSON.stringify(frame)}`);
 };
 
-const startFirstIntentAndAssertTalismanFlames = async (page) => {
+const assertFlamesDoNotInterceptNeighbors = async (page, startSlot, label) => {
+  const result = await startSlot.locator('[data-talisman-burn-layer="flames"]').evaluate((layer) => {
+    const slot = layer.closest(".intent-slot");
+    const scene = layer.closest(".altar-scene");
+    const assetBox = layer.querySelector(".talisman-visual__burn-flame-asset")?.getBoundingClientRect();
+    const points = [...(scene?.querySelectorAll(".talisman-visual--situation, .censer-visual--stage") ?? [])]
+      .filter((element) => !slot?.contains(element))
+      .map((element) => {
+        const box = element.getBoundingClientRect();
+        return { x: box.left + box.width / 2, y: box.top + box.height / 2 };
+      });
+
+    if (assetBox) {
+      points.push({ x: assetBox.left + 2, y: assetBox.bottom - 2 });
+    }
+
+    const hitTargets = points.map((point) => {
+      const hit = document.elementFromPoint(point.x, point.y);
+      return {
+        className: hit instanceof HTMLElement ? hit.className : "",
+        isFlame: Boolean(hit?.closest('[data-talisman-burn-layer="flames"]')),
+      };
+    });
+    const siblingScales = [...(scene?.querySelectorAll(".talisman-visual") ?? [])]
+      .filter((element) => !slot?.contains(element))
+      .map((element) => {
+        const transform = new DOMMatrixReadOnly(window.getComputedStyle(element).transform);
+        return Math.hypot(transform.a, transform.b);
+      });
+
+    return { hitTargets, siblingScales };
+  });
+
+  assert(result.hitTargets.every((target) => !target.isFlame),
+    `${label} overflow flames should not intercept neighboring targets: ${JSON.stringify(result.hitTargets)}`);
+  assert(result.siblingScales.every((scale) => scale <= 1.05),
+    `${label} should suppress neighboring talisman previews: ${JSON.stringify(result.siblingScales)}`);
+};
+
+const startFirstIntentAndAssertTalismanFlames = async (page, screenshotIntentCount = null) => {
   await page.locator(".stage-grid--full .talisman-visual--interactive").first().click();
   await assertVisible(page.getByRole("heading", { name: "确认开始这一套？" }), "start confirmation before flame checks");
   await page.getByRole("button", { name: "开始这一套" }).click();
@@ -882,19 +937,27 @@ const startFirstIntentAndAssertTalismanFlames = async (page) => {
     "talisman flames should finish before the focus timer appears",
   );
 
-  await page.waitForTimeout(170);
-  const earlyActiveIndexes = assertAnimatedTalismanFlameFrame(
-    await readTalismanFlameFrame(startSlot),
-    "early talisman burn",
-  );
-  await page.waitForTimeout(760);
-  const middleActiveIndexes = assertAnimatedTalismanFlameFrame(
-    await readTalismanFlameFrame(startSlot),
-    "middle talisman burn",
+  await page.waitForTimeout(270);
+  const earlyFrame = await readTalismanFlameFrame(startSlot);
+  assertAnimatedTalismanFlameFrame(earlyFrame, "early talisman burn");
+  await assertFlamesDoNotInterceptNeighbors(page, startSlot, "early talisman burn");
+  if (screenshotIntentCount !== null) {
+    await page.screenshot({ fullPage: true, path: talismanBurnScreenshotPath(screenshotIntentCount, "early") });
+  }
+  await page.waitForTimeout(660);
+  const middleFrame = await readTalismanFlameFrame(startSlot);
+  assertAnimatedTalismanFlameFrame(middleFrame, "middle talisman burn");
+  await assertFlamesDoNotInterceptNeighbors(page, startSlot, "middle talisman burn");
+  if (screenshotIntentCount !== null) {
+    await page.screenshot({ fullPage: true, path: talismanBurnScreenshotPath(screenshotIntentCount, "middle") });
+  }
+  assert(
+    earlyFrame.paperClipPath !== middleFrame.paperClipPath,
+    `talisman paper erosion should advance: early=${earlyFrame.paperClipPath} middle=${middleFrame.paperClipPath}`,
   );
   assert(
-    JSON.stringify(earlyActiveIndexes) !== JSON.stringify(middleActiveIndexes),
-    `talisman flames should advance in staggered positions: early=${JSON.stringify(earlyActiveIndexes)} middle=${JSON.stringify(middleActiveIndexes)}`,
+    earlyFrame.assetImageTransform !== middleFrame.assetImageTransform,
+    `talisman PNG sprite frame should change: early=${earlyFrame.assetImageTransform} middle=${middleFrame.assetImageTransform}`,
   );
 
   return startSlot;
@@ -929,12 +992,10 @@ const assertReducedMotionTalismanFlames = async (page) => {
       reducedFrame.layerBackgroundImage.includes("radial-gradient"),
     `reduced-motion burn should use a short static warm glow: ${JSON.stringify(reducedFrame)}`,
   );
-  assert(
-    reducedFrame.flames.every(
-      (flame) => flame.animationName === "none" && flame.opacity === 0 && flame.transform === "none",
-    ),
-    `reduced-motion burn should cancel flame sway and travel: ${JSON.stringify(reducedFrame)}`,
-  );
+  assert(reducedFrame.assetImageAnimationName === "none" && reducedFrame.assetOpacity === 0,
+    `reduced-motion burn should not play transparent flame frames: ${JSON.stringify(reducedFrame)}`);
+  assert(reducedFrame.layerAnimationName === "situation-talisman-reduced-flame-glow" && reducedFrame.scale === 1,
+    `reduced-motion burn should cancel flame travel and temporary scale: ${JSON.stringify(reducedFrame)}`);
 
   await page.waitForTimeout(320);
   const fadedFrame = await readTalismanFlameFrame(startSlot);
@@ -943,6 +1004,65 @@ const assertReducedMotionTalismanFlames = async (page) => {
   await assertTalismanFlamesDismissed(startSlot);
 
   await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.evaluate(() => window.localStorage.clear());
+  await page.reload({ waitUntil: "networkidle" });
+};
+
+const assertTalismanAssetFailureFallback = async (page) => {
+  await createSingleIncenseRitual(page);
+  await page.locator('[data-talisman-burn-asset="flame-sprite"] img').evaluate((image) => {
+    image.dispatchEvent(new Event("error", { bubbles: true }));
+  });
+  const flameLayer = page.locator('[data-talisman-burn-layer="flames"]');
+  await flameLayer.waitFor({ state: "attached" });
+  assert((await flameLayer.getAttribute("data-talisman-burn-asset-state")) === "failed",
+    "flame sprite load/decode failure should expose a failed asset state");
+  assert((await flameLayer.getAttribute("data-talisman-burn-fallback")) === "active",
+    "flame sprite load/decode failure should activate the CSS fallback");
+
+  await page.locator(".stage-grid--full .talisman-visual--interactive").click();
+  await page.getByRole("button", { name: "开始这一套" }).click();
+  await page.waitForTimeout(260);
+  const fallbackFrame = await flameLayer.evaluate((layer) => {
+    const fallback = layer.querySelector(".talisman-visual__burn-flame-fallback");
+    const fallbackFlame = fallback?.querySelector("span");
+    return {
+      fallbackAnimationName: fallbackFlame ? window.getComputedStyle(fallbackFlame).animationName : "none",
+      fallbackOpacity: fallback ? Number.parseFloat(window.getComputedStyle(fallback).opacity) : 0,
+      pointerEvents: window.getComputedStyle(layer).pointerEvents,
+    };
+  });
+  assert(fallbackFrame.fallbackOpacity > 0.8 && fallbackFrame.fallbackAnimationName === "situation-talisman-flame-flicker",
+    `failed sprite should visibly fall back to CSS flames: ${JSON.stringify(fallbackFrame)}`);
+  assert(fallbackFrame.pointerEvents === "none", "failed sprite fallback should remain non-interactive");
+  await page.locator(".intent-slot--burning").waitFor({ state: "visible", timeout: 5000 });
+  await page.evaluate(() => window.localStorage.clear());
+  await page.reload({ waitUntil: "networkidle" });
+};
+
+const assertTalismanBurnAcrossLayouts = async (page) => {
+  for (const intentCount of [1, 2, 3]) {
+    await createRitualWithIntentCount(page, intentCount);
+    await assertTalismanFlameStructure(page, intentCount);
+    await page.waitForFunction(
+      (expectedCount) => {
+        const layers = [...document.querySelectorAll('[data-talisman-burn-layer="flames"]')];
+        return layers.length === expectedCount && layers.every(
+          (layer) => layer.getAttribute("data-talisman-burn-asset-state") === "ready",
+        );
+      },
+      intentCount,
+    );
+    const startSlot = await startFirstIntentAndAssertTalismanFlames(page, intentCount);
+    await page.locator(".intent-slot--burning").first().waitFor({ state: "visible", timeout: 5000 });
+    await assertTalismanFlamesDismissed(startSlot);
+    await page.mouse.move(4, 4);
+    await page.waitForTimeout(80);
+    await page.screenshot({ fullPage: true, path: talismanBurnScreenshotPath(intentCount, "end") });
+    assert(await page.getByRole("button", { name: "放弃本轮" }).isVisible(),
+      `${intentCount}-task burn should not cover or remove the abandon entry`);
+  }
+
   await page.evaluate(() => window.localStorage.clear());
   await page.reload({ waitUntil: "networkidle" });
 };
@@ -1209,6 +1329,8 @@ const run = async () => {
     await assertVisible(page.getByRole("button", { name: "设置" }), "settings button");
     await assertNoHorizontalOverflow(page, "setup");
 
+    await assertTalismanBurnAcrossLayouts(page);
+    await assertTalismanAssetFailureFallback(page);
     await assertReducedMotionTalismanFlames(page);
     await assertAbandonSessionProtection(page);
 

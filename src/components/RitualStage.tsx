@@ -79,6 +79,7 @@ const RitualStage = ({
         <div
           className={`altar-scene altar-scene--slots-${intentSets.length}`}
           data-ritual-complete={isSessionComplete}
+          data-stage-start-animation-active={startingIntentId ? "true" : "false"}
           style={altarSceneStyle}
         >
           <div className="altar-scene__slots">
