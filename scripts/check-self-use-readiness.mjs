@@ -51,11 +51,13 @@ const cargoToml = await readText("src-tauri/Cargo.toml");
 const releaseSelfUseCheck = await readText("scripts/check-release-self-use.mjs");
 const releaseSummaryScript = await readText("scripts/print-self-use-release-summary.mjs");
 const desktopPersistenceAdapter = await readText("src/lib/desktopPersistenceAdapter.ts");
+const developmentPlan = await readText("docs/DEVELOPMENT_PLAN.md");
 const fullBackup = await readText("src/lib/fullBackup.ts");
 const desktopRegression = await readText("docs/DESKTOP_BEHAVIOR_REGRESSION.md");
 const interactionModel = await readText("docs/INTERACTION_MODEL.md");
 const macosInternalBuild = await readText("docs/MACOS_INTERNAL_BUILD.md");
 const macosSelfUseInstall = await readText("docs/MACOS_SELF_USE_INSTALL.md");
+const openSourceStrategy = await readText("docs/OPEN_SOURCE_STRATEGY.md");
 const releaseLog = await readText("docs/SELF_USE_RELEASE_LOG.md");
 const selfUseReadiness = await readText("docs/SELF_USE_READINESS.md");
 const selfUseRegressionRunbook = await readText("docs/SELF_USE_REGRESSION_RUNBOOK.md");
@@ -81,9 +83,11 @@ for (const relativePath of [
   "docs/ACCEPTANCE_CHECKLIST.md",
   "docs/COMPACT_WINDOW_SPEC.md",
   "docs/DESKTOP_BEHAVIOR_REGRESSION.md",
+  "docs/DEVELOPMENT_PLAN.md",
   "docs/INTERACTION_MODEL.md",
   "docs/MACOS_INTERNAL_BUILD.md",
   "docs/MACOS_SELF_USE_INSTALL.md",
+  "docs/OPEN_SOURCE_STRATEGY.md",
   "docs/SELF_USE_RELEASE_LOG.md",
   "docs/SELF_USE_READINESS.md",
   "docs/SELF_USE_REGRESSION_RUNBOOK.md",
@@ -148,6 +152,25 @@ for (const relativePath of [
   "完整备份",
   "版本信息",
 ].forEach((token) => assertIncludes(selfUseReadiness, token, `self-use readiness documents ${token}`));
+
+[
+  "自用优先的开源路线",
+  "不购买 Apple Developer Program 会员",
+  "当前不上架 Mac App Store",
+  "源码仓库",
+  "未签名测试产物",
+  "开源前必须完成",
+  "许可证待决策",
+  "不建议引导用户关闭 Gatekeeper",
+].forEach((token) => assertIncludes(openSourceStrategy, token, `open-source strategy documents ${token}`));
+
+[
+  "OPEN_SOURCE_STRATEGY.md",
+  "当前不购买 Apple Developer Program 会员",
+  "当前不上架",
+  "开源许可证",
+  "保留现有 `macOSPrivateApi` 透明小窗方案",
+].forEach((token) => assertIncludes(developmentPlan, token, `development plan preserves ${token}`));
 
 [
   "安装方式",
