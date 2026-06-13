@@ -453,8 +453,17 @@ try {
   assertSize(initialWindowInfo, sizes.full, "initial full outer size");
   takeWindowScreenshot("01-initial-full", initialWindowInfo);
 
+  const persistenceBeforeRestore = await snapshotFile(tempPersistencePath);
+  await delay(1_000);
   await clickWindowLocal(localCoordinates.fullRestoreModalPrimary);
-  await delay(800);
+  await waitFor(
+    () => snapshotFile(tempPersistencePath),
+    (snapshot) => snapshot.sha256 !== persistenceBeforeRestore.sha256,
+    "the restored session to be persisted by the debug WebView",
+  );
+  // The Tauri close-request listener is registered through an async frontend import.
+  // Leave enough time after hydration/restoration before exercising the native close button.
+  await delay(2_000);
   await waitForWindowSize(sizes.full, "full ritual window before compact");
   logStep("restored one isolated ritual session in the debug WebView");
   takeWindowScreenshot("02-restored-full-ritual", readWindowInfo());

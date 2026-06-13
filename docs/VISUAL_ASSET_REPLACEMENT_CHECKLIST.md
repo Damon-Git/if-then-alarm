@@ -19,9 +19,10 @@
 2. 主祭台香炉：`censer/stage/*`
 3. 小窗 Q 版香炉：`censer/compact/*`
 4. 情境性符箓：`talisman/situation/template`
-5. 预防性符箓：`talisman/prevention/template`
-6. 主祭台线香：`incense/stage/*`
-7. 小窗线香：`incense/compact/*`
+5. 情境性符箓燃烧：`talisman/situation/burn/flames`
+6. 预防性符箓：`talisman/prevention/template`
+7. 主祭台线香：`incense/stage/*`
+8. 小窗线香：`incense/compact/*`
 
 每替换一组，先跑一次视觉状态路径，不要等全部替换后再排查。
 
@@ -56,6 +57,7 @@ npm run check:visual-assets
 | `censerStage` | 主祭台香炉 v1 | `src/assets/visuals/censer/stage` | 香炉底部中心点和盖子闭合位置 |
 | `censerCompact` | 小窗 Q 版香炉 v1 | `src/assets/visuals/censer/compact` | 小窗香炉底部中心点和并排槽位中心 |
 | `talismanSituation` | 情境符箓 v1 | `src/assets/visuals/talisman/situation` | 左右竖排文字栏和中央符文分区 |
+| `talismanSituationBurn` | 情境符箓首次燃烧火焰 | `src/assets/visuals/talisman/situation/burn` | 符箓底部燃烧边缘 |
 | `talismanPrevention` | 预防符箓 v1 | `src/assets/visuals/talisman/prevention` | 左右竖排文字栏和中央符文分区 |
 | `incenseStage` | 主祭台线香 v1 | `src/assets/visuals/incense/stage` | 香炉炉口中心线和左到右燃烧顺序 |
 | `incenseCompact` | 小窗线香 v1 | `src/assets/visuals/incense/compact` | 小窗香炉炉口中心线和左到右燃烧顺序 |

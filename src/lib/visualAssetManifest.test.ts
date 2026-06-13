@@ -223,6 +223,7 @@ describe("visual asset manifest", () => {
       "censerStage",
       "censerCompact",
       "talismanSituation",
+      "talismanSituationBurn",
       "talismanPrevention",
       "incenseStage",
       "incenseCompact",
@@ -259,6 +260,13 @@ describe("visual asset manifest", () => {
       transparentBackground: false,
     });
     expect(VISUAL_ASSET_REPLACEMENT_REGISTRY.talismanSituation.doNotBake).toContain("用户执行意图文本");
+    expect(VISUAL_ASSET_REPLACEMENT_REGISTRY.talismanSituationBurn).toMatchObject({
+      dimensionPolicy: "exact-source-canvas",
+      manifestSlots: ["talisman/situation/burn/flames"],
+      sourceCanvas: { height: 420, width: 2880 },
+      status: "final",
+      transparentBackground: true,
+    });
     expect(VISUAL_ASSET_REPLACEMENT_REGISTRY.talismanPrevention).toMatchObject({
       dimensionPolicy: "exact-source-canvas",
       sourceCanvas: { height: 1280, width: 512 },

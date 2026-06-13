@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { formatSeconds } from "../lib/timer";
 import type { IntentSet } from "../types";
 import CenserVisual from "./CenserVisual";
@@ -48,6 +48,7 @@ const CompactCenserSlot = ({
   onOpenFullView,
   timerRemaining,
 }: CompactCenserSlotProps) => {
+  const [isRemainingVisible, setIsRemainingVisible] = useState(false);
   const suppressionResetTimeoutRef = useRef<number | null>(null);
   const suppressClickRef = useRef(false);
   const isActive = intentSet.status === "burning" || intentSet.status === "resting";
@@ -78,6 +79,7 @@ const CompactCenserSlot = ({
     <article
       className={`compact-censer compact-censer--${intentSet.status}`}
       data-compact-censer-has-remaining={isActive ? "true" : "false"}
+      data-compact-censer-remaining-visible={isActive && isRemainingVisible ? "true" : "false"}
     >
       <button
         aria-label={`第 ${intentSet.currentIncenseIndex} / ${intentSet.incenseCount} 炷，${statusLabels[intentSet.status]}，${statusHint}`}
@@ -86,6 +88,7 @@ const CompactCenserSlot = ({
         data-compact-censer-drag-action="move-window-after-threshold"
         data-compact-censer-drag-click-suppression={`${CENSER_DRAG_CLICK_SUPPRESSION_PX}px-threshold`}
         type="button"
+        onBlur={() => setIsRemainingVisible(false)}
         onClick={(event) => {
           clearScheduledSuppressionReset();
 
@@ -99,6 +102,7 @@ const CompactCenserSlot = ({
         }}
         onPointerCancel={(event) => {
           clearScheduledSuppressionReset();
+          setIsRemainingVisible(false);
           suppressClickRef.current = false;
           windowDragSession.onPointerCancel(event);
         }}
@@ -108,6 +112,8 @@ const CompactCenserSlot = ({
           windowDragSession.onPointerDown(event);
         }}
         onPointerMove={windowDragSession.onPointerMove}
+        onPointerEnter={() => setIsRemainingVisible(true)}
+        onPointerLeave={() => setIsRemainingVisible(false)}
         onPointerUp={(event) => {
           windowDragSession.onPointerUp(event);
 
@@ -118,6 +124,7 @@ const CompactCenserSlot = ({
             });
           }
         }}
+        onFocus={() => setIsRemainingVisible(true)}
       >
         <CenserVisual
           currentIncenseIndex={intentSet.currentIncenseIndex}
@@ -127,9 +134,9 @@ const CompactCenserSlot = ({
           status={intentSet.status}
         />
         <span className="compact-censer__status">{statusLabels[intentSet.status]}</span>
-        {isActive ? <strong className="compact-censer__remaining">{formattedRemaining}</strong> : null}
         <span className="compact-censer__hint">{statusHint}</span>
       </button>
+      {isActive ? <strong className="compact-censer__remaining">{formattedRemaining}</strong> : null}
       <p>{intentSet.situationIntent}</p>
     </article>
   );

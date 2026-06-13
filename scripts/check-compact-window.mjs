@@ -556,9 +556,40 @@ const assertCompactRemainingTooltip = async (page) => {
 
   await activeButton.hover();
   await page.waitForTimeout(180);
+  assert(
+    (await activeCenser.getAttribute("data-compact-censer-remaining-visible")) === "true",
+    "compact censer should explicitly expose remaining time on pointer hover",
+  );
   await assertVisible(remainingTooltip, "compact remaining time on censer hover");
+  const tooltipBounds = await remainingTooltip.boundingBox();
+  const buttonBounds = await activeButton.boundingBox();
+  const viewportSize = page.viewportSize();
+  assert(
+    Boolean(
+      tooltipBounds &&
+        viewportSize &&
+        tooltipBounds.x >= 0 &&
+        tooltipBounds.y >= 0 &&
+        tooltipBounds.x + tooltipBounds.width <= viewportSize.width &&
+        tooltipBounds.y + tooltipBounds.height <= viewportSize.height,
+    ),
+    `compact remaining tooltip should stay inside the viewport: bounds=${JSON.stringify(tooltipBounds)} viewport=${JSON.stringify(viewportSize)}`,
+  );
+  assert(
+    Boolean(
+      tooltipBounds &&
+        buttonBounds &&
+        tooltipBounds.y >= buttonBounds.y &&
+        tooltipBounds.y + tooltipBounds.height <= buttonBounds.y + buttonBounds.height,
+    ),
+    `compact remaining tooltip should stay inside the censer button vertical range: tooltip=${JSON.stringify(tooltipBounds)} button=${JSON.stringify(buttonBounds)}`,
+  );
   await page.mouse.move(1, 1);
   await page.waitForTimeout(180);
+  assert(
+    (await activeCenser.getAttribute("data-compact-censer-remaining-visible")) === "false",
+    "compact censer should clear its explicit remaining-time state after pointer leave",
+  );
   assert(
     (await page.locator(".compact-censer__remaining:visible").count()) === 0,
     "compact remaining time should hide after leaving the censer",
@@ -566,6 +597,10 @@ const assertCompactRemainingTooltip = async (page) => {
 
   await activeButton.focus();
   await page.waitForTimeout(180);
+  assert(
+    (await activeCenser.getAttribute("data-compact-censer-remaining-visible")) === "true",
+    "compact censer should explicitly expose remaining time on keyboard focus",
+  );
   await assertVisible(remainingTooltip, "compact remaining time on censer focus");
   await page.evaluate(() => {
     if (document.activeElement instanceof HTMLElement) {
@@ -573,6 +608,10 @@ const assertCompactRemainingTooltip = async (page) => {
     }
   });
   await page.waitForTimeout(180);
+  assert(
+    (await activeCenser.getAttribute("data-compact-censer-remaining-visible")) === "false",
+    "compact censer should clear its explicit remaining-time state after focus leaves",
+  );
   assert(
     (await page.locator(".compact-censer__remaining:visible").count()) === 0,
     "compact remaining time should hide after censer focus leaves",

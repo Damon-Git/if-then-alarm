@@ -36,6 +36,27 @@ npm run release:self-use-summary
 
 ## 未升基线的内部验收记录
 
+### 2026-06-13 · v0.2.0 · 0d1d951 + 未提交验收修复 · 长期自用基线候选验收
+
+- 状态：长期自用基线候选验收通过，但尚未安装或覆盖日常 `.app`；“当前基线”继续保持 2026-05-25 版本。
+- Git 提交：基准提交 `0d1d951 docs: define development and open-source strategy`；候选同时包含当前工作区未提交验收修复，未自动创建分支、暂存或提交。
+- 构建产物：`src-tauri/target/release/bundle/macos/急急如律令.app`。
+- Bundle ID：`com.damon.jijirululing`。
+- Rust crate：`jiji-rululing v0.2.0`。
+- 数据版本：`persistence.v1.json` / `version: 1`。
+- 自动检查：`git diff --check` 通过；`npm run check:release-self-use` 通过（14 个测试文件、83 个测试用例，并通过前端构建、声音资源、8 组视觉资源、桌面配置和自用就绪检查）；`npm run check:compact` 通过；`npm run check:tauri-window-roundtrip -- --no-screenshots` 最终连续通过，验证恢复操作已实际写回隔离 JSON、两次 `390x620 -> 960x760` 往返、独立拖拽区与香炉炉身拖拽、位置保持，并确认真实桌面 JSON 逐字节不变；`npm run tauri:build` 通过。
+- Web 验收：覆盖首次符箓燃烧早期/中期/结束三阶段、减少动态效果下的静态火焰与烟雾、目标性与预防性符箓 hover/focus 预览、烧香中与休息中的单信息框、完成态进入复盘、保存历史及重载后历史存在；小窗剩余时间同时验证 hover/focus 显示、离开/失焦隐藏、完整位于视口和香炉按钮垂直范围内。
+- 打包版验收：使用生成的 `.app` 内部可执行文件和临时 `HOME`，未安装应用；首次燃烧、目标性符箓预览、烧香中单计时卡、小窗烟雾和位置保持均可见；完成态恢复后只有在完整窗口点击“进入复盘”才进入复盘，保存 `Packaged isolated acceptance 0d1d951` 后历史写入隔离 JSON，退出并以同一临时 `HOME` 重开后历史仍存在。
+- 小窗剩余时间复验：真实 Tauri WKWebView 最初发现时间卡落到可见内容区外；修复为显式 React hover/focus 状态并把时间卡固定在香炉按钮内部区域，补充自动边界断言。2026-06-13 用户已在隔离打包版中人工确认 `MM:SS` 完整显示、没有裁剪。
+- 数据安全：所有自动与打包版验收均使用临时 `HOME`；真实桌面 JSON 最终 sha256 为 `64b0ec6e0681031c7e33e4fcac4875a034424208645a94d0830a771bad8f01ba`，955 字节，修改时间未变化。
+- 打包范围：bundle 目录只生成 `急急如律令.app`，未生成 DMG/PKG；未做 Developer ID 签名或公证，`codesign` 显示 `Signature=adhoc`、`TeamIdentifier=not set`；未配置自动更新。
+- 完整备份：本轮未替换日常 `.app`，真实数据未变化；原生往返审计目录保留启动前真实 JSON 副本和哈希记录。
+- 已知问题：无阻断问题。macOS“减少动态效果”系统开关未在真实 WKWebView 中单独切换，等价 CSS 媒体查询路径已由 Web 自动检查覆盖；后续安装候选前可作为非阻断视觉抽查。
+- 是否安装/覆盖 app：否。
+- 是否生成 DMG：否。
+- 是否签名/公证：否。
+- 回滚方式：继续使用 2026-05-25 当前基线；若后续决定替换日常 `.app`，先按安装文档备份真实 `persistence.v1.json` 和完整备份 JSON。
+
 ### 2026-06-05 · v0.2.0 · d22ea70 · 长期自用基线候选验收
 
 - 状态：长期自用基线候选验收通过但尚未安装/覆盖；未改“当前基线”，后续是否替换日常 `.app` 仍需单独决策。

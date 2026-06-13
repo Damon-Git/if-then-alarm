@@ -37,6 +37,7 @@ src/assets/visuals/
 - `talisman/situation/template`
 - `talisman/situation/state`
 - `talisman/situation/text`
+- `talisman/situation/burn/flames`
 - `talisman/prevention/template`
 - `talisman/prevention/state`
 - `talisman/prevention/text`
@@ -181,7 +182,7 @@ src/assets/visuals/talisman/situation/template.png
 
 ## Manifest 接入
 
-当前 `src/lib/visualAssetManifest.ts` 已登记七组正式 v1 素材。视觉组件会先查询对应 `data-visual-slot`：
+当前 `src/lib/visualAssetManifest.ts` 已登记八组正式 v1 素材。视觉组件会先查询对应 `data-visual-slot`：
 
 - 如果 manifest 中存在 URL，则在该图层渲染 `<img>`。
 - 如果 manifest 中没有 URL，则保留现有 CSS 占位图层。

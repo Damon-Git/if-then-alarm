@@ -4002,6 +4002,7 @@ html[data-window-mode="compact"] .app-shell--ritual .compact-stage__censers {
 }
 
 html[data-window-mode="compact"] .app-shell--ritual .compact-censer {
+  position: relative;
   place-items: center;
 }
 
@@ -4030,7 +4031,7 @@ html[data-window-mode="compact"] .app-shell--ritual .compact-censer p {
 
 html[data-window-mode="compact"] .app-shell--ritual .compact-censer__remaining {
   position: absolute;
-  bottom: calc(100% - 6px);
+  top: 62px;
   left: 50%;
   z-index: 22;
   min-width: 66px;
@@ -4046,7 +4047,7 @@ html[data-window-mode="compact"] .app-shell--ritual .compact-censer__remaining {
   line-height: 1;
   text-align: center;
   pointer-events: none;
-  transform: translate(-50%, 6px);
+  transform: translate(-50%, 4px);
   transition:
     opacity 140ms ease,
     transform 140ms ease,
@@ -4055,8 +4056,7 @@ html[data-window-mode="compact"] .app-shell--ritual .compact-censer__remaining {
 
 html[data-window-mode="compact"]
   .app-shell--ritual
-  .compact-censer[data-compact-censer-has-remaining="true"]
-  .compact-censer__button:is(:hover, :focus, :focus-visible)
+  .compact-censer[data-compact-censer-has-remaining="true"][data-compact-censer-remaining-visible="true"]
   .compact-censer__remaining {
   opacity: 1;
   visibility: visible;

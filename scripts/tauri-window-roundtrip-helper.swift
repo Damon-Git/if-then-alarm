@@ -199,6 +199,44 @@ func clickWindowLocal(_ pid: pid_t, x: Double, y: Double) {
     post(.leftMouseUp)
 }
 
+func moveWindowLocal(_ pid: pid_t, x: Double, y: Double) {
+    activate(pid)
+
+    let window = mainWindowInfo(pid)
+    let point = CGPoint(x: Double(window.x) + x, y: Double(window.y) + y)
+    let source = CGEventSource(stateID: .hidSystemState)
+
+    guard let event = CGEvent(
+        mouseEventSource: source,
+        mouseType: .mouseMoved,
+        mouseCursorPosition: point,
+        mouseButton: .left
+    ) else {
+        fail("could not create mouse move event")
+    }
+
+    event.post(tap: .cghidEventTap)
+}
+
+func postMouseButtonWindowLocal(_ pid: pid_t, x: Double, y: Double, type: CGEventType) {
+    activate(pid)
+
+    let window = mainWindowInfo(pid)
+    let point = CGPoint(x: Double(window.x) + x, y: Double(window.y) + y)
+    let source = CGEventSource(stateID: .hidSystemState)
+
+    guard let event = CGEvent(
+        mouseEventSource: source,
+        mouseType: type,
+        mouseCursorPosition: point,
+        mouseButton: .left
+    ) else {
+        fail("could not create mouse button event \(type.rawValue)")
+    }
+
+    event.post(tap: .cghidEventTap)
+}
+
 func dragWindowLocal(_ pid: pid_t, startX: Double, startY: Double, deltaX: Double, deltaY: Double) {
     let window = mainWindowInfo(pid)
     let start = CGPoint(x: Double(window.x) + startX, y: Double(window.y) + startY)
@@ -255,6 +293,25 @@ case "click-window-local":
         pid,
         x: parseDouble(CommandLine.arguments[3], label: "x"),
         y: parseDouble(CommandLine.arguments[4], label: "y")
+    )
+case "move-window-local":
+    guard CommandLine.arguments.count == 5 else {
+        fail("move-window-local expects x y")
+    }
+    moveWindowLocal(
+        pid,
+        x: parseDouble(CommandLine.arguments[3], label: "x"),
+        y: parseDouble(CommandLine.arguments[4], label: "y")
+    )
+case "mouse-down-window-local", "mouse-up-window-local":
+    guard CommandLine.arguments.count == 5 else {
+        fail("\(command) expects x y")
+    }
+    postMouseButtonWindowLocal(
+        pid,
+        x: parseDouble(CommandLine.arguments[3], label: "x"),
+        y: parseDouble(CommandLine.arguments[4], label: "y"),
+        type: command == "mouse-down-window-local" ? .leftMouseDown : .leftMouseUp
     )
 case "drag-window-local":
     guard CommandLine.arguments.count == 7 else {

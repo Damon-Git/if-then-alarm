@@ -209,6 +209,7 @@ export const VISUAL_ASSET_DIRECTORIES = {
   incenseStage: `${VISUAL_ASSET_ROOT}/incense/stage`,
   talismanPrevention: `${VISUAL_ASSET_ROOT}/talisman/prevention`,
   talismanSituation: `${VISUAL_ASSET_ROOT}/talisman/situation`,
+  talismanSituationBurn: `${VISUAL_ASSET_ROOT}/talisman/situation/burn`,
 } as const;
 
 export const VISUAL_ASSET_REPLACEMENT_REGISTRY = {
@@ -233,6 +234,17 @@ export const VISUAL_ASSET_REPLACEMENT_REGISTRY = {
     sourceCanvas: { height: 1280, width: 512 },
     status: "final",
     transparentBackground: false,
+  },
+  talismanSituationBurn: {
+    alignmentAnchor: "情境符箓底部燃烧边缘",
+    dimensionPolicy: "exact-source-canvas",
+    directory: VISUAL_ASSET_DIRECTORIES.talismanSituationBurn,
+    doNotBake: ["符箓模板", "用户执行意图文本", "业务状态"],
+    manifestSlots: ["talisman/situation/burn/flames"],
+    notes: "情境符箓首次启动使用 6 帧透明火焰精灵图；素材失败时保留 CSS 火焰回退。",
+    sourceCanvas: { height: 420, width: 2880 },
+    status: "final",
+    transparentBackground: true,
   },
   talismanPrevention: {
     alignmentAnchor: "左右竖排文字栏和中央符文分区",
@@ -322,6 +334,7 @@ export const VISUAL_ASSET_REPLACEMENT_ORDER = [
   "censerStage",
   "censerCompact",
   "talismanSituation",
+  "talismanSituationBurn",
   "talismanPrevention",
   "incenseStage",
   "incenseCompact",
