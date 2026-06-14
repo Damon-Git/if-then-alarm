@@ -153,11 +153,11 @@ src-tauri/target/release/bundle/macos/急急如律令.app
 
 - `/Users/damon/Desktop/急急如律令.app` 仍存在。包内 `急急如律令.icns` 为 `128px × 128px`、`17,900` bytes，SHA-256 为 `f3005664f4da601c6e7e0bde915053ee8c877b899a17df4ff610c7048b9107c0`，可视化检查仍是旧红色圆形占位图。
 - 工作区 `src-tauri/target/release/bundle/macos/急急如律令.app` 仍存在。包内 `急急如律令.icns` 为 `1024px × 1024px`、`2,047,977` bytes，SHA-256 为 `1732212ad209c6ec761ab0a46ff965480e713e5be7a4102f232b8e81ef14ee9c`，是正式应用图标 v1。
-- `/Users/damon/Applications/急急如律令.app` 和 `/Applications/急急如律令.app` 当前均不存在。
+- 2026-06-01 复查时，`/Users/damon/Applications/急急如律令.app` 和 `/Applications/急急如律令.app` 当时均不存在。
 - LaunchServices 当前同时索引 Desktop 旧副本、工作区 release bundle 和 `/Users/damon/.Trash/急急如律令.app`。废纸篓副本仍实际存在，其 ICNS 与工作区 release bundle 的 SHA-256 一致，是正式应用图标 v1，不是旧占位图。
 - `src/lib/notificationAdapter.ts` 发送通知时仍只传入 `id`、`title` 和 `body`，没有单独通知图标配置。
 
-当前仍不能把通知应用识别图标标记为通过。日常安装路径仍是旧 bundle 已可排除；最强的本地证据是 Desktop 旧副本仍存在且仍被 LaunchServices 索引。通知中心缓存仍是次要可能，需在用户明确授权后按最小影响顺序处理并重新实测。
+该次复查当时仍不能把通知应用识别图标标记为通过。日常安装路径是旧 bundle 当时已可排除；最强的本地证据是 Desktop 旧副本当时仍存在且仍被 LaunchServices 索引。通知中心缓存是当时的次要可能，需在用户明确授权后按最小影响顺序处理并重新实测。
 
 ### 2026-06-01 局部 LaunchServices 处理
 

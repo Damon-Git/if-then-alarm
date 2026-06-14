@@ -240,13 +240,21 @@ persistence.v1.json
 - 自动更新。
 - 面向他人的安装引导。
 
-## 2026-06-01 自用安装恢复准备
+## 2026-06-14 当前自用安装状态
+
+- 当前长期自用基线为 `6c09f11`，安装于 `~/Applications/急急如律令.app`。
+- 安装后已核对版本 `0.2.0`、Bundle ID `com.damon.jijirululing`、桌面数据版本 `1`、历史数量和待恢复轮次。
+- 2026-06-14 已完成真实短核心路径：历史由 1 条增至 2 条，复盘成功落盘，`currentSession` 为 `null`。
+- 安装前备份位于 `~/Desktop/jiji-rululing-backup-v0.2.0-6c09f11-20260613-203647/`，包含原始 app data 目录、单独 `persistence.v1.json` 和完整备份 JSON。
+- `aa102a2` 旧包保留在 `~/个人应用/bundle/macos/急急如律令.app`，用于程序回滚。完整证据和数据回滚步骤见 `SELF_USE_RELEASE_LOG.md`。
+
+## 2026-06-01 自用安装恢复准备（历史记录）
 
 - `npm run check:release-self-use` 已通过。
 - `npm run release:self-use-summary` 已输出当前 `3a0df1c` 摘要。
 - 已重新执行 `npm run tauri:build`，工作区 bundle 为 `src-tauri/target/release/bundle/macos/急急如律令.app`。
 - 工作区 bundle 的 `CFBundleIdentifier` 为 `com.damon.jijirululing`，`CFBundleVersion` 和 `CFBundleShortVersionString` 均为 `0.2.0`，`CFBundleIconFile` 为 `急急如律令.icns`。
 - 包内 ICNS 为 `1024px × 1024px`，SHA-256 为 `1732212ad209c6ec761ab0a46ff965480e713e5be7a4102f232b8e81ef14ee9c`；包内 `Contents/MacOS/jiji-rululing` 存在且可执行。
-- `/Users/damon/Applications/急急如律令.app` 当前不存在。
-- 本轮尚未复制、覆盖、移动或删除任何日常自用 `.app`。安装仍需用户明确授权。
+- 截至 2026-06-01，`/Users/damon/Applications/急急如律令.app` 当时不存在。
+- 该轮当时未复制、覆盖、移动或删除任何日常自用 `.app`，安装仍需用户明确授权。
 - 通知横幅仍可能显示旧红色圆形占位图。本问题没有标记为解决，当前仅按最低优先级已知问题保留。

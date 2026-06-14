@@ -18,7 +18,7 @@ npm run release:self-use-summary
 - 如果只是开发过程中的临时验证，不需要新增记录。
 - 如果替换 `.app` 后发现阻断问题，在同一条记录里追加“问题与回滚”。
 
-## 当前基线
+## 上一基线（回滚保留）
 
 ### 2026-05-25 · v0.2.0 · 内部自用版
 
@@ -34,11 +34,11 @@ npm run release:self-use-summary
 - 已知问题：无阻断问题。
 - 回滚方式：退出应用，换回上一版 `.app`；如数据异常，恢复替换前备份的 `persistence.v1.json` 或完整备份 JSON。
 
-## 未升基线的内部验收记录
+## 当前基线
 
-### 2026-06-13 · v0.2.0 · 6c09f11 · 长期自用基线候选验收
+### 2026-06-14 · v0.2.0 · 6c09f11 · 长期自用基线
 
-- 状态：长期自用基线候选验收通过，但尚未安装或覆盖日常 `.app`；“当前基线”继续保持 2026-05-25 版本。
+- 状态：长期自用基线；候选验收、安装后核对和真实短核心路径均已通过。
 - Git 提交：`6c09f11 fix: prepare long-term self-use candidate`。
 - 构建产物：`src-tauri/target/release/bundle/macos/急急如律令.app`。
 - Bundle ID：`com.damon.jijirululing`。
@@ -50,13 +50,17 @@ npm run release:self-use-summary
 - 小窗剩余时间复验：真实 Tauri WKWebView 最初发现时间卡落到可见内容区外；修复为显式 React hover/focus 状态并把时间卡固定在香炉按钮内部区域，补充自动边界断言。2026-06-13 用户已在隔离打包版中人工确认 `MM:SS` 完整显示、没有裁剪。
 - 数据安全：所有自动与打包版验收均使用临时 `HOME`；真实桌面 JSON 最终 sha256 为 `64b0ec6e0681031c7e33e4fcac4875a034424208645a94d0830a771bad8f01ba`，955 字节，修改时间未变化。
 - 打包范围：bundle 目录只生成 `急急如律令.app`，未生成 DMG/PKG；未做 Developer ID 签名或公证，`codesign` 显示 `Signature=adhoc`、`TeamIdentifier=not set`；未配置自动更新。
-- 完整备份：本轮未替换日常 `.app`，真实数据未变化；原生往返审计目录保留启动前真实 JSON 副本和哈希记录。
+- 安装与数据备份：2026-06-13 安装到 `~/Applications/急急如律令.app`；安装前将 app data 目录、单独 `persistence.v1.json` 和标准完整备份 JSON 保存到 `~/Desktop/jiji-rululing-backup-v0.2.0-6c09f11-20260613-203647/`。三份原始 `persistence.v1.json` 的 SHA-256 均为 `0a0a583e7efa74546e8f18f48af395ac537570e565e6c809c32ea519100640ef`。
+- 安装后核对：新进程从 `~/Applications/急急如律令.app/Contents/MacOS/jiji-rululing` 启动；版本 `0.2.0`，Bundle ID `com.damon.jijirululing`，数据版本 `1`，历史 1 条，无待恢复轮次。启动后真实 JSON 哈希不变。
+- 真实短核心路径：2026-06-14 用户完成并确认通过。真实历史由 1 条增至 2 条，最新记录写入时间为 `2026-06-14T00:17:36.607Z`，`currentSession` 为 `null`；完成后数据 SHA-256 为 `88780daf5592ce8f51df8764fd0437c7cf380d74ebaf1d5beda4ef01f5c84b8c`。
 - 已知问题：无阻断问题。macOS“减少动态效果”系统开关未在真实 WKWebView 中单独切换，等价 CSS 媒体查询路径已由 Web 自动检查覆盖；后续安装候选前可作为非阻断视觉抽查。
 - 声音复核：2026-06-13 使用临时 `HOME` 启动 `npm run tauri:dev`，确认“声音提醒”默认关闭；在设置中开启后，开发模式倒计时结束可正常听到钟声，无需代码修复，真实桌面 JSON 未接触。
-- 是否安装/覆盖 app：否。
+- 是否安装/覆盖 app：已安装到 `~/Applications/急急如律令.app`；原 `aa102a2` 日常包仍保留在 `~/个人应用/bundle/macos/急急如律令.app`，未覆盖。
 - 是否生成 DMG：否。
 - 是否签名/公证：否。
-- 回滚方式：继续使用 2026-05-25 当前基线；若后续决定替换日常 `.app`，先按安装文档备份真实 `persistence.v1.json` 和完整备份 JSON。
+- 回滚方式：退出新安装应用，移走 `~/Applications/急急如律令.app`，再从 `~/个人应用/bundle/macos/急急如律令.app` 启动 `aa102a2` 旧基线；如数据异常，恢复上述备份目录中的 `persistence.v1.json` 或导入完整备份 JSON。
+
+## 未升基线的内部验收记录
 
 ### 2026-06-05 · v0.2.0 · d22ea70 · 长期自用基线候选验收
 
@@ -74,7 +78,7 @@ npm run release:self-use-summary
 - 是否生成 DMG：否。
 - 是否签名/公证：否。
 - 已知问题：本轮未发现阻断问题；本机通过 LaunchServices 关闭恢复提示后重新打开表现为新 PID 启动而非同 PID 重建窗口，但用户路径上恢复提示可稳定重新出现。
-- 回滚方式：继续使用 2026-05-25 当前基线；如误开本轮包后出现待恢复测试会话，退出应用并确认 `persistence.v1.json` 中 `currentSession` 状态。
+- 当时的回滚方式：继续使用 2026-05-25 基线；如误开该轮包后出现待恢复测试会话，退出应用并确认 `persistence.v1.json` 中 `currentSession` 状态。
 
 ### 2026-06-05 · v0.2.0 · 1a08a27 · 内部 `.app` 完成态恢复复验
 
@@ -93,7 +97,7 @@ npm run release:self-use-summary
 - 是否生成 DMG：否。
 - 是否签名/公证：否。
 - 已知问题：本轮未发现新的阻断问题；未做正式发布，仍未升为长期自用基线。
-- 回滚方式：继续使用 2026-05-25 当前基线；如误开本轮包后出现待恢复测试会话，退出应用并确认 `persistence.v1.json` 中 `currentSession` 状态。
+- 当时的回滚方式：继续使用 2026-05-25 基线；如误开该轮包后出现待恢复测试会话，退出应用并确认 `persistence.v1.json` 中 `currentSession` 状态。
 
 ### 2026-06-05 · v0.2.0 · 0971659 · 内部 `.app` 人工冒烟
 
@@ -111,7 +115,7 @@ npm run release:self-use-summary
 - 是否生成 DMG：否。
 - 是否签名/公证：否。
 - 已知问题：完成态恢复后的窗口稳定性需要后续复查；本轮不建议把 `0971659` 打包产物替换为新的长期自用基线。
-- 回滚方式：继续使用 2026-05-25 当前基线；如误开本轮包后出现待恢复测试会话，退出应用并确认 `persistence.v1.json` 中 `currentSession` 状态。
+- 当时的回滚方式：继续使用 2026-05-25 基线；如误开该轮包后出现待恢复测试会话，退出应用并确认 `persistence.v1.json` 中 `currentSession` 状态。
 
 ### 2026-05-25 · v0.1.0 · 内部自用版
 
