@@ -105,9 +105,12 @@ const IncenseVisual = ({ currentIncenseIndex, incenseCount, progress, size, stat
             key={incenseNumber}
             style={{ "--incense-stick-progress": `${stickProgressPercent}%` } as CSSProperties}
           >
-            {INCENSE_ASSET_LAYERS.map((layer) => (
-              <IncenseLayer key={layer} layer={layer} size={size} />
-            ))}
+            <span className="incense-visual__support" aria-hidden="true" />
+            <span className="incense-visual__burnable" aria-hidden="true">
+              {INCENSE_ASSET_LAYERS.map((layer) => (
+                <IncenseLayer key={layer} layer={layer} size={size} />
+              ))}
+            </span>
           </span>
         );
       })}

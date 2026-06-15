@@ -172,6 +172,40 @@ const assertCompactCenserUsesAssetLayers = async (page) => {
       `compact ${layer} asset image sources should reference ${layer}: ${JSON.stringify(imageSources)}`,
     );
   }
+
+  const mouthFronts = page.locator(".compact-censer .censer-visual__mouth-front.visual-layer--with-asset");
+  assert((await mouthFronts.count()) === 3, "compact censers should render a front mouth rim above the incense");
+  assert(
+    (await mouthFronts.locator("img.visual-layer__asset").count()) === 3,
+    "compact front mouth rims should reuse the mouth artwork",
+  );
+
+  const layerOrders = await page.locator(".compact-censer .censer-visual--compact").evaluateAll((elements) =>
+    elements.map((element) => {
+      const zIndex = (selector) => Number.parseInt(window.getComputedStyle(element.querySelector(selector)).zIndex, 10);
+      const frontMouth = element.querySelector(".censer-visual__mouth-front");
+
+      return {
+        ash: zIndex(".censer-visual__ash"),
+        body: zIndex(".censer-visual__body"),
+        frontMouth: zIndex(".censer-visual__mouth-front"),
+        frontMouthClipPath: frontMouth ? window.getComputedStyle(frontMouth).clipPath : "",
+        incense: zIndex(".incense-visual"),
+        rearMouth: zIndex(".censer-visual__mouth"),
+      };
+    }),
+  );
+  assert(
+    layerOrders.every(
+      (order) =>
+        order.rearMouth < order.ash &&
+        order.ash < order.incense &&
+        order.incense < order.body &&
+        order.body < order.frontMouth &&
+        order.frontMouthClipPath.startsWith("inset(42.4%"),
+    ),
+    `compact incense should sit between the rear and front mouth rims: ${JSON.stringify(layerOrders)}`,
+  );
 };
 
 const assertCompactIncenseUsesAssetLayers = async (page) => {
@@ -182,6 +216,47 @@ const assertCompactIncenseUsesAssetLayers = async (page) => {
   assert(
     (await page.locator('.compact-censer [data-visual-slot^="incense/stage/"]').count()) === 0,
     "compact ritual scene should not expose stage incense visual slots",
+  );
+
+  const supports = page.locator(".compact-censer .incense-visual__support");
+  assert((await supports.count()) === 6, "compact incense should render one uncoated support for each stick");
+  const supportStyles = await supports.evaluateAll((elements) =>
+    elements.map((element) => {
+      const style = window.getComputedStyle(element);
+      return {
+        bottom: Number.parseFloat(style.bottom),
+        clipPath: style.clipPath,
+        height: Number.parseFloat(style.height),
+        width: Number.parseFloat(style.width),
+      };
+    }),
+  );
+  assert(
+    supportStyles.every(
+      (style) =>
+        style.bottom >= 16 &&
+        style.bottom <= 18 &&
+        style.clipPath === "none" &&
+        style.height >= 10 &&
+        style.height <= 14 &&
+        style.width <= 2,
+    ),
+    `compact incense supports should stay thin, extend into the censer, and avoid burn clipping: ${JSON.stringify(supportStyles)}`,
+  );
+
+  const incenseConnections = await page.locator(".compact-censer .incense-visual__unit").evaluateAll((elements) =>
+    elements.map((element) => {
+      const stickBounds = element.querySelector(".incense-visual__stick")?.getBoundingClientRect();
+      const supportBounds = element.querySelector(".incense-visual__support")?.getBoundingClientRect();
+
+      return {
+        overlap: stickBounds && supportBounds ? stickBounds.bottom - supportBounds.top : Number.NaN,
+      };
+    }),
+  );
+  assert(
+    incenseConnections.every((connection) => connection.overlap >= 0 && connection.overlap <= 2),
+    `compact coated sticks should meet support tops with only a slight overlap: ${JSON.stringify(incenseConnections)}`,
   );
 
   for (const layer of compactIncenseAssetLayers) {
@@ -405,6 +480,40 @@ const assertCompactBurningIncenseProgress = async (
   assert(
     finishedSmokeStyles.every((style) => style.opacity === 0 && style.animationName === "none"),
     `compact finished incense sticks should not keep white smoke: ${JSON.stringify(finishedSmokeStyles)}`,
+  );
+
+  const placement = await incenseLocator.evaluate((element) => {
+    const asset = element.closest(".censer-visual__asset");
+    const assetBounds = asset?.getBoundingClientRect();
+    const unitBounds = [...element.querySelectorAll(".incense-visual__unit")].map((unit) => {
+      const bounds = unit.getBoundingClientRect();
+      return bounds.left + bounds.width / 2;
+    });
+    const burnedSupportBounds = [...element.querySelectorAll('.incense-visual__unit[data-incense-state="burned"]')]
+      .map((unit) => unit.querySelector(".incense-visual__support")?.getBoundingClientRect() ?? null)
+      .filter(Boolean);
+
+    return {
+      assetCenterX: assetBounds ? assetBounds.left + assetBounds.width / 2 : 0,
+      mouthCenterY: assetBounds ? assetBounds.top + assetBounds.height * 0.424 : 0,
+      burnedSupportBottoms: burnedSupportBounds.map((bounds) => bounds.bottom),
+      burnedSupportTops: burnedSupportBounds.map((bounds) => bounds.top),
+      unitCenterX: unitBounds.reduce((sum, center) => sum + center, 0) / unitBounds.length,
+    };
+  });
+  assert(
+    Math.abs(placement.unitCenterX - placement.assetCenterX) < 1,
+    `compact incense positions should remain centered as earlier sticks finish: ${JSON.stringify(placement)}`,
+  );
+  assert(
+    placement.burnedSupportTops.every((top) => top <= placement.mouthCenterY - 8),
+    `compact burned supports should remain visible above the mouth center: ${JSON.stringify(placement)}`,
+  );
+  assert(
+    placement.burnedSupportBottoms.every(
+      (bottom) => bottom >= placement.mouthCenterY - 5 && bottom <= placement.mouthCenterY,
+    ),
+    `compact burned supports should end inside the ash instead of on the front rim: ${JSON.stringify(placement)}`,
   );
 
   if (!requireProgress) {

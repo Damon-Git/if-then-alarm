@@ -51,13 +51,24 @@ const CenserLayer = ({ layer, size }: { layer: CenserAssetLayer; size: VisualAss
   const assetUrl = getCenserAssetUrl(size, layer);
 
   return (
-    <span
-      className={`censer-visual__${layer}${assetUrl ? " visual-layer--with-asset" : ""}`}
-      data-censer-layer={layer}
-      data-visual-slot={visualSlot}
-    >
-      {assetUrl ? <img alt="" className="visual-layer__asset" draggable="false" src={assetUrl} /> : null}
-    </span>
+    <>
+      <span
+        className={`censer-visual__${layer}${assetUrl ? " visual-layer--with-asset" : ""}`}
+        data-censer-layer={layer}
+        data-visual-slot={visualSlot}
+      >
+        {assetUrl ? <img alt="" className="visual-layer__asset" draggable="false" src={assetUrl} /> : null}
+      </span>
+      {layer === "mouth" && size === "compact" && assetUrl ? (
+        <span
+          className="censer-visual__mouth-front visual-layer--with-asset"
+          data-censer-layer="mouth-front"
+          aria-hidden="true"
+        >
+          <img alt="" className="visual-layer__asset" draggable="false" src={assetUrl} />
+        </span>
+      ) : null}
+    </>
   );
 };
 

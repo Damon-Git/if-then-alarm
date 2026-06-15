@@ -113,6 +113,8 @@ type CenserVisualProps = {
 - `data-censer-layer="ash"`：香灰层。
 - `data-censer-layer="feet"`：底足。
 
+compact 模式还会由组件生成 `data-censer-layer="mouth-front"`。它复用 `censer/compact/mouth` 图片并只显示炉口下半弧，用于形成前沿遮挡；这不是新的 manifest 素材插槽。小窗层级必须保持 `mouth` 后沿 < `ash` < `IncenseVisual` < `body` < `mouth-front` 前沿，使线香从白色香灰中间伸出，而不是整体位于香炉后方或压在炉口前沿。
+
 ### 未来素材接入规则
 
 - 主祭台香炉和小窗 Q 版香炉可以使用两套素材。
@@ -153,6 +155,15 @@ type IncenseVisualProps = {
 - `data-incense-click-action="none"`：线香是进度视觉，不承担点击交互。
 - 每根线香会输出 `data-incense-state` 和 `data-incense-stick-progress`。`pending` 进度为 0，`burning` 使用当前倒计时进度，`burned/resting` 进度为 100。
 - 当前最小视觉进度继续由状态和 `progress` 决定：当前线香的深色香体随进度缩短并露出灰色香灰，已烧完线香保持灰色，未烧线香保持完整深色。主祭台 CSS 额外为 `burning` 增加低频火星呼吸和可辨认但克制的烟雾漂移，为 `resting` 增加短暂余烟；这些动画不另起 timer。
+
+### 香体与香脚结构
+
+- 每个 `.incense-visual__unit` 包含固定 `.incense-visual__support` 香脚和 `.incense-visual__burnable` 可燃区。
+- `stick/ash/ember/smoke` 四个正式素材层全部位于可燃区，仍使用原有 `data-visual-slot`，不新增香脚素材插槽。
+- 燃烧进度和 `clip-path` 只作用于可燃区。香脚不参与燃烧裁切，因此香体接近或达到 100% 时仍可保留插在香灰里的短段。
+- compact 香脚必须短而细，底端位于白色香灰区域内，不能延伸到棕色炉口前沿。可燃香体下端与香脚上端齐平，最多保留约 `0-2px` 重叠以避免透明接缝。
+- stage 与 compact 可以使用不同香脚尺寸和定位；本轮精确落点只属于 compact，不得用 compact 修正值改变主祭台线香布局。
+- 1 / 2 / 3 炷香的 unit 继续由 flex 居中排列。已烧完香体消失后，固定香脚仍占据并显示原香位，不能让当前第 2、3 炷产生视觉偏心。
 
 ### 预留图层
 

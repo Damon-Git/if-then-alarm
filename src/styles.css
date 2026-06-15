@@ -1252,6 +1252,7 @@ select {
 
 .censer-visual--compact .censer-visual__lid.visual-layer--with-asset,
 .censer-visual--compact .censer-visual__mouth.visual-layer--with-asset,
+.censer-visual--compact .censer-visual__mouth-front.visual-layer--with-asset,
 .censer-visual--compact .censer-visual__ash.visual-layer--with-asset,
 .censer-visual--compact .censer-visual__body.visual-layer--with-asset,
 .censer-visual--compact .censer-visual__feet.visual-layer--with-asset {
@@ -1270,7 +1271,7 @@ select {
 }
 
 .censer-visual--compact .incense-visual {
-  z-index: 1;
+  z-index: 5;
 }
 
 .censer-visual--compact .censer-visual__feet.visual-layer--with-asset {
@@ -1278,19 +1279,24 @@ select {
 }
 
 .censer-visual--compact .censer-visual__body.visual-layer--with-asset {
-  z-index: 3;
+  z-index: 6;
 }
 
 .censer-visual--compact .censer-visual__mouth.visual-layer--with-asset {
-  z-index: 4;
+  z-index: 3;
 }
 
 .censer-visual--compact .censer-visual__ash.visual-layer--with-asset {
-  z-index: 5;
+  z-index: 4;
+}
+
+.censer-visual--compact .censer-visual__mouth-front.visual-layer--with-asset {
+  z-index: 7;
+  clip-path: inset(42.4% 0 0);
 }
 
 .censer-visual--compact .censer-visual__lid.visual-layer--with-asset {
-  z-index: 6;
+  z-index: 8;
 }
 
 .censer-visual--stage .censer-visual__asset:has(.visual-layer--with-asset) {
@@ -1369,6 +1375,38 @@ select {
 
 .incense-visual--compact .incense-visual__unit {
   flex-basis: 7px;
+}
+
+.incense-visual__burnable {
+  position: absolute;
+  inset: 0;
+}
+
+.incense-visual--compact .incense-visual__burnable {
+  bottom: 28px;
+}
+
+.incense-visual__support {
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  width: 2px;
+  height: 24px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #8b5a2f 0%, #c99655 48%, #80502c 100%);
+  box-shadow: 0 0 1px rgb(76 45 24 / 42%);
+  transform: translateX(-50%);
+}
+
+.incense-visual--compact .incense-visual__support {
+  bottom: 17px;
+  height: 12px;
+}
+
+.incense-visual--stage .incense-visual__support {
+  bottom: -12px;
+  width: 2.5px;
+  height: 29px;
 }
 
 .incense-visual__stick,
