@@ -742,6 +742,11 @@ select {
   color: #5d211a;
 }
 
+.setup-add-button,
+.review-abandon-button {
+  background: #fffdf9;
+}
+
 .primary-button:disabled,
 .secondary-button:disabled,
 .danger-button:disabled,
@@ -3182,9 +3187,23 @@ select {
   gap: 10px;
 }
 
+.review-layout {
+  display: grid;
+  gap: 16px;
+}
+
+.review-form {
+  border: 1px solid rgb(138 47 37 / 22%);
+  border-radius: 8px;
+  padding: 14px;
+  background: #fffdf9;
+}
+
 .review-session-detail {
   display: grid;
   gap: 12px;
+  border-top: 1px solid #eadfd5;
+  padding-top: 14px;
 }
 
 .review-overview {
@@ -3627,6 +3646,10 @@ select {
 
   .settings-panel {
     grid-template-columns: 1fr;
+  }
+
+  .review-abandon-button {
+    align-self: flex-start;
   }
 
   .settings-action {

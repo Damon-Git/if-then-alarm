@@ -117,7 +117,9 @@ const IntentSetForm = ({
           </ul>
         ) : null}
 
-        {draft.preventionIntents.length === 0 ? <p className="muted-text">暂无预防性执行意图</p> : null}
+        {draft.preventionIntents.length === 0 ? (
+          <p className="muted-text">可以不写，遇到容易分心的诱因时再添加。</p>
+        ) : null}
 
         {draft.preventionIntents.map((preventionIntent, preventionIndex) => {
           const preventionErrorId = `${draft.id}-prevention-${preventionIndex}-error`;

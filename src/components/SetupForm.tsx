@@ -54,9 +54,13 @@ const SetupForm = ({ onDraftStateChange, onSubmit }: SetupFormProps) => {
   }, [hasUnsavedDraft, onDraftStateChange]);
 
   const updateDraft = (updatedDraft: IntentSetDraft) => {
-    setDrafts((currentDrafts) =>
-      currentDrafts.map((draft) => (draft.id === updatedDraft.id ? updatedDraft : draft)),
-    );
+    const nextDrafts = drafts.map((draft) => (draft.id === updatedDraft.id ? updatedDraft : draft));
+
+    setDrafts(nextDrafts);
+
+    if (hasValidationErrors(errors)) {
+      setErrors(validateIntentDrafts(nextDrafts));
+    }
   };
 
   const addDraft = () => {
@@ -68,13 +72,17 @@ const SetupForm = ({ onDraftStateChange, onSubmit }: SetupFormProps) => {
   };
 
   const removeDraft = (draftId: string) => {
-    setDrafts((currentDrafts) => {
-      if (currentDrafts.length <= 1) {
-        return currentDrafts;
-      }
+    if (drafts.length <= 1) {
+      return;
+    }
 
-      return currentDrafts.filter((draft) => draft.id !== draftId);
-    });
+    const nextDrafts = drafts.filter((draft) => draft.id !== draftId);
+
+    setDrafts(nextDrafts);
+
+    if (hasValidationErrors(errors)) {
+      setErrors(validateIntentDrafts(nextDrafts));
+    }
   };
 
   const submitForm = (event: FormEvent<HTMLFormElement>) => {
@@ -107,7 +115,7 @@ const SetupForm = ({ onDraftStateChange, onSubmit }: SetupFormProps) => {
           <h2 id="setup-title">积土成山，积水成渊</h2>
         </div>
         {drafts.length < MAX_INTENT_SETS ? (
-          <button className="secondary-button" type="button" onClick={addDraft}>
+          <button className="ghost-button setup-add-button" type="button" onClick={addDraft}>
             创建任务
           </button>
         ) : null}
