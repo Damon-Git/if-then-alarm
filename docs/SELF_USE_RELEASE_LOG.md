@@ -30,13 +30,37 @@ npm run release:self-use-summary
 - 数据版本：`persistence.v1.json` / `version: 1`。
 - 自动检查：`npm run check:release-self-use` 已通过；`npm run tauri:build` 已通过；Info.plist 版本为 `0.2.0`。
 - 手动验收：2026-05-26 已按核心路径验收通过；修复并复验 Tauri hover 交互差异。
-- 完整备份：`~/Desktop/jiji-rululing-backup-v0.2.0`。
+- 完整备份：`/Users/damon/backups/jiji-rululing-backup-v0.2.0`。
 - 已知问题：无阻断问题。
 - 回滚方式：退出应用，换回上一版 `.app`；如数据异常，恢复替换前备份的 `persistence.v1.json` 或完整备份 JSON。
 
 ## 当前基线
 
-### 2026-06-14 · v0.2.0 · 6c09f11 · 长期自用基线
+### 2026-06-15 · v0.2.0 · 60f41ad · 长期自用基线
+
+- 状态：已替换日常自用应用；自动检查、小窗视觉回归、构建和安装后启动核对通过。
+- Git 提交：`60f41ad fix(compact): refine incense support and censer layering`；安装时工作区干净。
+- 构建产物：`src-tauri/target/release/bundle/macos/急急如律令.app`。
+- Bundle ID：`com.damon.jijirululing`。
+- Rust crate：`jiji-rululing v0.2.0`。
+- 数据版本：`persistence.v1.json` / `version: 1`。
+- 本轮内容：小窗线香拆分为固定香脚和独立可燃区；香脚不再随燃烧裁切消失，底端落在白色香灰区域；香体下端与香脚上端只轻微重叠。compact 炉口增加复用 `mouth.png` 下半弧的前沿组合层，使线香位于炉口后沿和前沿之间，并保持 1 / 2 / 3 炷及续香场景居中。
+- 自动检查：`npm run check:release-self-use` 通过（14 个测试文件、83 个测试用例，并通过前端构建、声音资源、8 组视觉资源、桌面配置和自用就绪检查）；`npm run check:compact` 通过；`npm run tauri:build` 通过；`git diff --check` 通过。
+- 安装前备份：`/Users/damon/backups/jiji-rululing-backup-v0.2.0-60f41ad-20260615-153456/`，包含旧 `.app`、完整 app data 目录、单独 `persistence.v1.json` 和数据 SHA-256；旧 bundle 另保留为 `/Users/damon/backups/急急如律令.app.backup-20260615-153456`。
+- 安装结果：新 bundle 已复制到 `~/Applications/急急如律令.app` 并成功启动；运行进程路径为 `/Users/damon/Applications/急急如律令.app/Contents/MacOS/jiji-rululing`。安装 bundle 二进制 SHA-256 与工作区构建产物一致，均为 `188f604d3e066f8832a40ad44f445147261657114fe81d252abf9681bd174e3e`；旧应用二进制 SHA-256 为 `45a144e6c3468809bd4b077b3a74488823a11fd40ae4c116a2a9f494e3d18bef`。
+- 数据核对：安装前后及启动后真实 `persistence.v1.json` SHA-256 均为 `53eed70ff790eb950948daa639d812b2ff42d2948a7859d5b6f29c27e4212b93`，修改时间保持 `2026-06-15T15:25:04+0800`；数据版本 `1`，历史 2 条，`currentSession: null`。
+- 签名与分发：bundle 继续使用 linker-signed ad-hoc 签名，`TeamIdentifier=not set`；工作区新 bundle、安装后的新 bundle和上一版备份 bundle 在 `codesign --verify --deep --strict` 下都会报告相同的“code has no resources but signature indicates they must be present”，属于当前未做 Developer ID 重签名和公证的既有内部包状态，不是本次复制差异。未生成 DMG/PKG，未公证，未配置自动更新。
+- 手动验收：用户已在开发版小窗中通过多轮截图确认香脚长度、香灰落点、炉口前后遮挡和香体/香脚连接关系；安装后已确认应用可启动、实际进程来自日常路径且数据未变化。未在本轮安装后重新跑完整业务闭环。
+- 已知问题：无新增运行阻断问题；严格资源封印校验仍不通过，但新旧内部包行为一致且新包已从日常路径成功启动。安装后完整业务路径沿用 2026-06-14 长期自用基线的既有验收结果。
+- 回滚方式：退出应用，移走当前 `~/Applications/急急如律令.app`，将 `/Users/damon/backups/急急如律令.app.backup-20260615-153456` 移回原路径；如数据异常，恢复上述 `/Users/damon/backups` 备份目录中的 `app-data/` 或 `persistence.v1.json`。
+
+#### 2026-06-16 · 备份迁移记录
+
+- 已将本轮相关备份统一迁移到 `/Users/damon/backups/`：`jiji-rululing-backup-v0.2.0-60f41ad-20260615-153456/`、`jiji-rululing-backup-v0.2.0-6c09f11-20260613-203647/` 和 `急急如律令.app.backup-20260615-153456`。
+- Desktop 和 `~/Applications/*.backup-*` 下不再保留本应用备份；迁移后数据备份哈希未变化。
+- 此前历史记录提到的 `~/个人应用/bundle/macos/急急如律令.app` 旧包路径在 2026-06-16 盘点时已不存在，当前程序回滚以 `/Users/damon/backups/急急如律令.app.backup-20260615-153456` 为准。
+
+### 2026-06-14 · v0.2.0 · 6c09f11 · 上一长期自用基线（回滚保留）
 
 - 状态：长期自用基线；候选验收、安装后核对和真实短核心路径均已通过。
 - Git 提交：`6c09f11 fix: prepare long-term self-use candidate`。
@@ -50,15 +74,15 @@ npm run release:self-use-summary
 - 小窗剩余时间复验：真实 Tauri WKWebView 最初发现时间卡落到可见内容区外；修复为显式 React hover/focus 状态并把时间卡固定在香炉按钮内部区域，补充自动边界断言。2026-06-13 用户已在隔离打包版中人工确认 `MM:SS` 完整显示、没有裁剪。
 - 数据安全：所有自动与打包版验收均使用临时 `HOME`；真实桌面 JSON 最终 sha256 为 `64b0ec6e0681031c7e33e4fcac4875a034424208645a94d0830a771bad8f01ba`，955 字节，修改时间未变化。
 - 打包范围：bundle 目录只生成 `急急如律令.app`，未生成 DMG/PKG；未做 Developer ID 签名或公证，`codesign` 显示 `Signature=adhoc`、`TeamIdentifier=not set`；未配置自动更新。
-- 安装与数据备份：2026-06-13 安装到 `~/Applications/急急如律令.app`；安装前将 app data 目录、单独 `persistence.v1.json` 和标准完整备份 JSON 保存到 `~/Desktop/jiji-rululing-backup-v0.2.0-6c09f11-20260613-203647/`。三份原始 `persistence.v1.json` 的 SHA-256 均为 `0a0a583e7efa74546e8f18f48af395ac537570e565e6c809c32ea519100640ef`。
+- 安装与数据备份：2026-06-13 安装到 `~/Applications/急急如律令.app`；安装前将 app data 目录、单独 `persistence.v1.json` 和标准完整备份 JSON 保存到 `/Users/damon/backups/jiji-rululing-backup-v0.2.0-6c09f11-20260613-203647/`。三份原始 `persistence.v1.json` 的 SHA-256 均为 `0a0a583e7efa74546e8f18f48af395ac537570e565e6c809c32ea519100640ef`。
 - 安装后核对：新进程从 `~/Applications/急急如律令.app/Contents/MacOS/jiji-rululing` 启动；版本 `0.2.0`，Bundle ID `com.damon.jijirululing`，数据版本 `1`，历史 1 条，无待恢复轮次。启动后真实 JSON 哈希不变。
 - 真实短核心路径：2026-06-14 用户完成并确认通过。真实历史由 1 条增至 2 条，最新记录写入时间为 `2026-06-14T00:17:36.607Z`，`currentSession` 为 `null`；完成后数据 SHA-256 为 `88780daf5592ce8f51df8764fd0437c7cf380d74ebaf1d5beda4ef01f5c84b8c`。
 - 已知问题：无阻断问题。macOS“减少动态效果”系统开关未在真实 WKWebView 中单独切换，等价 CSS 媒体查询路径已由 Web 自动检查覆盖；后续安装候选前可作为非阻断视觉抽查。
 - 声音复核：2026-06-13 使用临时 `HOME` 启动 `npm run tauri:dev`，确认“声音提醒”默认关闭；在设置中开启后，开发模式倒计时结束可正常听到钟声，无需代码修复，真实桌面 JSON 未接触。
-- 是否安装/覆盖 app：已安装到 `~/Applications/急急如律令.app`；原 `aa102a2` 日常包仍保留在 `~/个人应用/bundle/macos/急急如律令.app`，未覆盖。
+- 是否安装/覆盖 app：已安装到 `~/Applications/急急如律令.app`；当时记录的原 `aa102a2` 日常包路径为 `~/个人应用/bundle/macos/急急如律令.app`，2026-06-16 盘点时该路径已不存在。
 - 是否生成 DMG：否。
 - 是否签名/公证：否。
-- 回滚方式：退出新安装应用，移走 `~/Applications/急急如律令.app`，再从 `~/个人应用/bundle/macos/急急如律令.app` 启动 `aa102a2` 旧基线；如数据异常，恢复上述备份目录中的 `persistence.v1.json` 或导入完整备份 JSON。
+- 回滚方式：退出新安装应用，移走 `~/Applications/急急如律令.app`；2026-06-16 之后程序回滚优先使用 `/Users/damon/backups/急急如律令.app.backup-20260615-153456`。如数据异常，恢复上述备份目录中的 `persistence.v1.json` 或导入完整备份 JSON。
 
 ## 未升基线的内部验收记录
 

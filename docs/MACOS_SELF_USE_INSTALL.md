@@ -96,11 +96,13 @@ ditto "$source_app" "$target_app"
 ```bash
 source_app="$PWD/src-tauri/target/release/bundle/macos/急急如律令.app"
 target_app="$HOME/Applications/急急如律令.app"
-backup_app="$HOME/Applications/急急如律令.app.backup-$(date +%Y%m%d-%H%M%S)"
+backup_root="/Users/damon/backups"
+backup_app="$backup_root/急急如律令.app.backup-$(date +%Y%m%d-%H%M%S)"
 
 test -d "$source_app" || { printf '工作区 bundle 不存在：%s\n' "$source_app" >&2; exit 1; }
 test -e "$target_app" || { printf '目标不存在，不需要覆盖：%s\n' "$target_app" >&2; exit 1; }
 
+mkdir -p "$backup_root"
 mv "$target_app" "$backup_app"
 ditto "$source_app" "$target_app"
 printf '旧 bundle 已备份到：%s\n' "$backup_app"
@@ -110,9 +112,11 @@ printf '旧 bundle 已备份到：%s\n' "$backup_app"
 
 ```bash
 target_app="$HOME/Applications/急急如律令.app"
-rollback_app="$HOME/Applications/急急如律令.app.rollback-$(date +%Y%m%d-%H%M%S)"
-backup_app="$HOME/Applications/急急如律令.app.backup-YYYYMMDD-HHMMSS"
+backup_root="/Users/damon/backups"
+rollback_app="$backup_root/急急如律令.app.rollback-$(date +%Y%m%d-%H%M%S)"
+backup_app="$backup_root/急急如律令.app.backup-YYYYMMDD-HHMMSS"
 
+mkdir -p "$backup_root"
 mv "$target_app" "$rollback_app"
 mv "$backup_app" "$target_app"
 ```
@@ -240,13 +244,25 @@ persistence.v1.json
 - 自动更新。
 - 面向他人的安装引导。
 
-## 2026-06-14 当前自用安装状态
+## 2026-06-15 当前自用安装状态
+
+- 当前长期自用基线为 `60f41ad`，安装于 `~/Applications/急急如律令.app`。
+- 本轮更新小窗线香香脚、可燃区与炉口前后遮挡关系；`npm run check:release-self-use`、`npm run check:compact`、`npm run tauri:build` 和 `git diff --check` 均通过。
+- 安装后实际进程从 `~/Applications/急急如律令.app/Contents/MacOS/jiji-rululing` 启动；版本 `0.2.0`，Bundle ID `com.damon.jijirululing`，数据版本 `1`。
+- 新安装二进制 SHA-256 为 `188f604d3e066f8832a40ad44f445147261657114fe81d252abf9681bd174e3e`，与工作区构建产物一致。
+- bundle 仍为 linker-signed ad-hoc 内部包；工作区、新安装包和上一版备份包执行严格资源封印校验时都会得到相同提示，不影响当前本机启动，但不能视为 Developer ID 签名或公证通过。
+- 安装前后及启动后真实 `persistence.v1.json` SHA-256 均为 `53eed70ff790eb950948daa639d812b2ff42d2948a7859d5b6f29c27e4212b93`；历史 2 条，无待恢复轮次。
+- 安装前备份位于 `/Users/damon/backups/jiji-rululing-backup-v0.2.0-60f41ad-20260615-153456/`；旧 bundle 另保留为 `/Users/damon/backups/急急如律令.app.backup-20260615-153456`。
+- 回滚时先退出当前应用，移走新 bundle，再把上述时间戳旧 bundle 移回 `~/Applications/急急如律令.app`；数据异常时恢复 `/Users/damon/backups` 中对应备份的 `app-data/` 或 `persistence.v1.json`。
+- 2026-06-16 已将现有备份集中迁移到 `/Users/damon/backups`；Desktop 和 `~/Applications/*.backup-*` 下不再保留本应用备份。此前记录的 `~/个人应用/bundle/macos/急急如律令.app` 旧包路径已不存在，当前程序回滚以 `/Users/damon/backups/急急如律令.app.backup-20260615-153456` 为准。
+
+## 2026-06-14 自用安装状态（历史记录）
 
 - 当前长期自用基线为 `6c09f11`，安装于 `~/Applications/急急如律令.app`。
 - 安装后已核对版本 `0.2.0`、Bundle ID `com.damon.jijirululing`、桌面数据版本 `1`、历史数量和待恢复轮次。
 - 2026-06-14 已完成真实短核心路径：历史由 1 条增至 2 条，复盘成功落盘，`currentSession` 为 `null`。
-- 安装前备份位于 `~/Desktop/jiji-rululing-backup-v0.2.0-6c09f11-20260613-203647/`，包含原始 app data 目录、单独 `persistence.v1.json` 和完整备份 JSON。
-- `aa102a2` 旧包保留在 `~/个人应用/bundle/macos/急急如律令.app`，用于程序回滚。完整证据和数据回滚步骤见 `SELF_USE_RELEASE_LOG.md`。
+- 安装前备份位于 `/Users/damon/backups/jiji-rululing-backup-v0.2.0-6c09f11-20260613-203647/`，包含原始 app data 目录、单独 `persistence.v1.json` 和完整备份 JSON。
+- 2026-06-14 当时曾记录 `aa102a2` 旧包位于 `~/个人应用/bundle/macos/急急如律令.app`；2026-06-16 盘点时该路径已不存在。当前程序回滚以 `/Users/damon/backups/急急如律令.app.backup-20260615-153456` 为准，完整证据和数据回滚步骤见 `SELF_USE_RELEASE_LOG.md`。
 
 ## 2026-06-01 自用安装恢复准备（历史记录）
 
