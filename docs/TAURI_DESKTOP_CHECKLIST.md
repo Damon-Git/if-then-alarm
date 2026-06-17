@@ -90,6 +90,7 @@ npm run tauri:dev
 
 - [ ] `src-tauri/icons/app-icon/app-icon-v1.png` 是 `1024px × 1024px` RGBA 应用图标 v1 源图。
 - [ ] `src-tauri/icons/app-icon/app-icon-v1@2x.png` 与源图内容一致，用于 Tauri Retina ICNS 打包。
+- [ ] 应用图标保持米纸底、淡墨山水、月形和亮金聚焦符箓线稿的视觉基准；`64px` 和 `160px` 预览中符箓仍是一眼可见的主识别点。
 - [ ] `bundle.icon` 只接入 `icons/app-icon/app-icon-v1@2x.png`。
 - [ ] `src-tauri/icons/app-icon/placeholder-icon.png` 仍保留，但不再接入 bundle。
 - [ ] 应用图标、菜单栏图标和通知图标的职责已在 `src-tauri/icons/README.md` 和各子目录 README 中分开记录。

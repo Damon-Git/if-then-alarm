@@ -15,7 +15,7 @@
 - 主祭台单信息框、小窗 hover 剩余时间、小窗位置会话保持。
 - 目标性与预防性符箓 hover/focus 清晰预览，以及 WKWebView 最终尺寸直接渲染。
 
-当前长期自用基线为 `6c09f11`，安装于 `~/Applications/急急如律令.app`。2026-06-14 已完成真实短核心路径：历史由 1 条增至 2 条，最新复盘成功落盘，且无待恢复轮次。`aa102a2` 旧包继续保留为程序回滚基线；详细证据见 `docs/SELF_USE_RELEASE_LOG.md`。
+当前长期自用基线为 `b97c1da`，安装于 `~/Applications/急急如律令.app`。2026-06-16 已完成填写页和复盘页体验整改，并通过 `npm run check:release-self-use`、`npm run check:compact`、`npm run tauri:build`、启动核对和真实数据哈希核对；当前真实历史 5 条，无待恢复轮次。上一版 `60f41ad` 旧包继续保留为程序回滚基线；详细证据见 `docs/SELF_USE_RELEASE_LOG.md`。
 
 ## 开发原则
 

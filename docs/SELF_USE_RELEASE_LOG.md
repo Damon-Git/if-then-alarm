@@ -36,6 +36,25 @@ npm run release:self-use-summary
 
 ## 当前基线
 
+### 2026-06-16 · v0.2.0 · b97c1da · 长期自用基线
+
+- 状态：已替换日常自用应用；自动检查、小窗回归、构建、安装后启动核对和真实数据哈希核对通过。
+- Git 提交：`b97c1da fix: refine setup and review form UX`；安装前工作区干净。
+- 构建产物：`src-tauri/target/release/bundle/macos/急急如律令.app`。
+- Bundle ID：`com.damon.jijirululing`。
+- Rust crate：`jiji-rululing v0.2.0`。
+- 数据版本：`persistence.v1.json` / `version: 1`。
+- 本轮内容：填写页在用户修正目标性或预防性执行意图后清理旧错误，避免已修正字段继续显示误导性错误；复盘页把“本次完成度 / 一句复盘 / 保存复盘”前置为主路径，摘要和任务详情下移；一句复盘空值错误绑定到 textarea，包含 `aria-invalid`、`aria-describedby` 和错误边框；“创建任务”“放弃本轮”和预防性执行意图空态文案按整改计划降噪。
+- 自动检查：`npm run check:release-self-use` 通过（14 个测试文件、83 个测试用例，并通过前端构建、声音资源、8 组视觉资源、桌面配置和自用就绪检查）；`npm run check:compact` 通过；`npm run tauri:build` 通过；`git diff --check` 通过。
+- 前端验收：Playwright 覆盖填写页目标性/预防性错误修正后清理、复盘页桌面与 `390px` 移动宽度主输入位于摘要前、空复盘错误绑定和输入后清理；截图保存在 `artifacts/frontend-review-after/`。
+- 安装前备份：`/Users/damon/backups/jiji-rululing-backup-v0.2.0-b97c1da-20260616-205933/`，包含旧 `.app` 副本、完整 app data 目录、单独 `persistence.v1.json` 和数据 SHA-256；旧 bundle 另保留为 `/Users/damon/backups/急急如律令.app.backup-20260616-205933`。
+- 安装结果：新 bundle 已复制到 `~/Applications/急急如律令.app` 并成功启动；运行进程路径为 `/Users/damon/Applications/急急如律令.app/Contents/MacOS/jiji-rululing`。安装 bundle 二进制 SHA-256 与工作区构建产物一致，均为 `06814023f218b47501afc17e8e7010b88f284cf7904ac5bed273f0c2b26ab50a`；旧应用二进制 SHA-256 为 `188f604d3e066f8832a40ad44f445147261657114fe81d252abf9681bd174e3e`。
+- 数据核对：安装前后及启动后真实 `persistence.v1.json` SHA-256 均为 `be8a5f5b2e261a9322631ab713a8f1241f022ebeae3bdd293fdc41b9d1283a24`；数据版本 `1`，历史 5 条，`currentSession: null`，`updatedAt: 2026-06-16T09:43:47.567Z`。
+- 签名与分发：bundle 继续使用 linker-signed ad-hoc 签名，`TeamIdentifier=not set`；严格资源封印校验仍报告 `code has no resources but signature indicates they must be present`，与上一版内部包状态一致。未生成 DMG/PKG，未公证，未配置自动更新。
+- 手动验收：安装后已确认应用可启动、实际进程来自日常路径、版本 `0.2.0`、Bundle ID 正确且真实数据未变化。未在安装后重新跑完整业务闭环；功能路径由本轮 Playwright 前端验收、`check:compact` 和 2026-06-15/14 既有自用基线验收共同覆盖。
+- 已知问题：无新增运行阻断问题；严格资源封印校验仍不通过，但新旧内部包行为一致且新包已从日常路径成功启动。
+- 回滚方式：退出应用，移走当前 `~/Applications/急急如律令.app`，将 `/Users/damon/backups/急急如律令.app.backup-20260616-205933` 移回原路径；如数据异常，恢复上述 `/Users/damon/backups` 备份目录中的 `app-data/` 或 `persistence.v1.json`。
+
 ### 2026-06-15 · v0.2.0 · 60f41ad · 长期自用基线
 
 - 状态：已替换日常自用应用；自动检查、小窗视觉回归、构建和安装后启动核对通过。

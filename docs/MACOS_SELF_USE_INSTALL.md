@@ -244,7 +244,19 @@ persistence.v1.json
 - 自动更新。
 - 面向他人的安装引导。
 
-## 2026-06-15 当前自用安装状态
+## 2026-06-16 当前自用安装状态
+
+- 当前长期自用基线为 `b97c1da`，安装于 `~/Applications/急急如律令.app`。
+- 本轮更新填写页和复盘页体验：填写页会在用户修正执行意图后清理旧错误；复盘页主路径前置“本次完成度 / 一句复盘 / 保存复盘”，空复盘错误绑定到主 textarea；“创建任务”和“放弃本轮”降为次要操作。
+- `npm run check:release-self-use`、`npm run check:compact`、`npm run tauri:build` 和 `git diff --check` 均通过；`artifacts/frontend-review-after/` 保留了本轮前端整改复查截图，`artifacts/compact-window.png` 为小窗回归截图。
+- 安装后实际进程从 `~/Applications/急急如律令.app/Contents/MacOS/jiji-rululing` 启动；版本 `0.2.0`，Bundle ID `com.damon.jijirululing`，数据版本 `1`。
+- 新安装二进制 SHA-256 为 `06814023f218b47501afc17e8e7010b88f284cf7904ac5bed273f0c2b26ab50a`，与工作区构建产物一致。
+- bundle 仍为 linker-signed ad-hoc 内部包；严格资源封印校验仍报告 `code has no resources but signature indicates they must be present`，与上一版内部包状态一致，不视为 Developer ID 签名或公证通过。
+- 安装前、安装后及启动后真实 `persistence.v1.json` SHA-256 均为 `be8a5f5b2e261a9322631ab713a8f1241f022ebeae3bdd293fdc41b9d1283a24`；历史 5 条，无待恢复轮次。
+- 安装前备份位于 `/Users/damon/backups/jiji-rululing-backup-v0.2.0-b97c1da-20260616-205933/`；旧 bundle 另保留为 `/Users/damon/backups/急急如律令.app.backup-20260616-205933`。
+- 回滚时先退出当前应用，移走新 bundle，再把上述时间戳旧 bundle 移回 `~/Applications/急急如律令.app`；数据异常时恢复 `/Users/damon/backups` 中对应备份的 `app-data/` 或 `persistence.v1.json`。
+
+## 2026-06-15 自用安装状态（历史记录）
 
 - 当前长期自用基线为 `60f41ad`，安装于 `~/Applications/急急如律令.app`。
 - 本轮更新小窗线香香脚、可燃区与炉口前后遮挡关系；`npm run check:release-self-use`、`npm run check:compact`、`npm run tauri:build` 和 `git diff --check` 均通过。
