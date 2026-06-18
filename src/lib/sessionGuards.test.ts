@@ -160,8 +160,43 @@ describe("session guards", () => {
   });
 
   it("allows timer setting changes only outside unsaved or pending sessions", () => {
-    expect(canChangeTimerSettings({ pendingSession: null, phase: "setup" })).toBe(true);
-    expect(canChangeTimerSettings({ pendingSession: null, phase: "ritual" })).toBe(false);
-    expect(canChangeTimerSettings({ pendingSession: createSession(), phase: "setup" })).toBe(false);
+    expect(canChangeTimerSettings({ intentSets: [], pendingSession: null, phase: "setup" })).toBe(true);
+    expect(
+      canChangeTimerSettings({
+        intentSets: [createIntentSet("idle")],
+        pendingSession: null,
+        phase: "ritual",
+      }),
+    ).toBe(true);
+    expect(
+      canChangeTimerSettings({
+        intentSets: [createIntentSet("idle")],
+        isStartingIntent: true,
+        pendingSession: null,
+        phase: "ritual",
+      }),
+    ).toBe(false);
+    expect(
+      canChangeTimerSettings({
+        intentSets: [createIntentSet("burning")],
+        pendingSession: null,
+        phase: "ritual",
+      }),
+    ).toBe(false);
+    expect(
+      canChangeTimerSettings({
+        intentSets: [{ ...createIntentSet("idle"), currentIncenseIndex: 2 }],
+        pendingSession: null,
+        phase: "ritual",
+      }),
+    ).toBe(false);
+    expect(
+      canChangeTimerSettings({
+        intentSets: [createIntentSet("completed")],
+        pendingSession: null,
+        phase: "review",
+      }),
+    ).toBe(false);
+    expect(canChangeTimerSettings({ intentSets: [], pendingSession: createSession(), phase: "setup" })).toBe(false);
   });
 });

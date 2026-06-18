@@ -954,7 +954,7 @@ const App = () => {
   };
 
   const importFullBackup = async (file?: File) => {
-    if (!canChangeTimerSettings({ pendingSession, phase })) {
+    if (hasUnsavedSession || pendingSession) {
       showToast("error", "当前轮次进行中，暂不能导入完整备份。");
       return;
     }
@@ -981,7 +981,14 @@ const App = () => {
   };
 
   const updateTimerMode = (timerMode: TimerMode) => {
-    if (!canChangeTimerSettings({ pendingSession, phase })) {
+    if (
+      !canChangeTimerSettings({
+        intentSets,
+        isStartingIntent: Boolean(startingIntentId),
+        pendingSession,
+        phase,
+      })
+    ) {
       return;
     }
 
@@ -1016,7 +1023,18 @@ const App = () => {
     intentSets,
     pendingStartIntentId,
   }) || Boolean(startingIntentId);
-  const isSettingsDisabled = !canChangeTimerSettings({ pendingSession, phase });
+  const isTimerModeDisabled = !canChangeTimerSettings({
+    intentSets,
+    isStartingIntent: Boolean(startingIntentId),
+    pendingSession,
+    phase,
+  });
+  const isSessionDataActionDisabled = hasUnsavedSession || Boolean(pendingSession);
+  const timerModeDisabledMessage = pendingSession
+    ? "有待恢复轮次，恢复或丢弃后可切换"
+    : isTimerModeDisabled
+      ? "第一张符箓开始燃烧后，完成或放弃后可切换"
+      : undefined;
   const confirmationDialog = confirmationRequest
     ? confirmationRequest.type === "delete-history-record"
       ? {
@@ -1121,7 +1139,8 @@ const App = () => {
 
         {activeUtilityPanel === "settings" ? (
           <SettingsPanel
-            disabled={isSettingsDisabled}
+            isSessionDataActionDisabled={isSessionDataActionDisabled}
+            isTimerModeDisabled={isTimerModeDisabled}
             isAlwaysOnTop={settings.isAlwaysOnTop}
             isDockVisible={settings.isDockVisible}
             isSoundReminderEnabled={settings.isSoundReminderEnabled}
@@ -1131,6 +1150,7 @@ const App = () => {
             onImportFullBackup={importFullBackup}
             onSoundReminderChange={updateSoundReminder}
             timerMode={settings.timerMode}
+            timerModeDisabledMessage={timerModeDisabledMessage}
             onDevSessionFixtureSaved={(message) => showToast("info", message)}
             onTimerModeChange={updateTimerMode}
             supportsWindowAlwaysOnTop={isTauriRuntime()}

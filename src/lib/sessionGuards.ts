@@ -15,6 +15,9 @@ export const hasUnsavedSetupDraft = (drafts: IntentSetDraft[]) =>
 
 export const hasUnsavedRitualSession = (phase: AppPhase) => phase === "ritual" || phase === "review";
 
+const hasStartedAnyIntentSet = (intentSets: IntentSet[]) =>
+  intentSets.some((intentSet) => intentSet.status !== "idle" || intentSet.currentIncenseIndex > 1);
+
 export const areAllIntentSetsCompleted = (intentSets: IntentSet[]) =>
   intentSets.length > 0 && intentSets.every((intentSet) => intentSet.status === "completed");
 
@@ -65,9 +68,27 @@ export const hasBlockingRitualAction = ({
 }) => Boolean(getActiveIntentSet(intentSets) || activeModal || pendingStartIntentId || isAbandonConfirmOpen);
 
 export const canChangeTimerSettings = ({
+  intentSets,
+  isStartingIntent,
   pendingSession,
   phase,
 }: {
+  intentSets: IntentSet[];
+  isStartingIntent?: boolean;
   pendingSession: PersistedSession | null;
   phase: AppPhase;
-}) => !hasUnsavedRitualSession(phase) && !pendingSession;
+}) => {
+  if (pendingSession) {
+    return false;
+  }
+
+  if (phase === "setup") {
+    return true;
+  }
+
+  if (phase !== "ritual") {
+    return false;
+  }
+
+  return !isStartingIntent && !hasStartedAnyIntentSet(intentSets);
+};

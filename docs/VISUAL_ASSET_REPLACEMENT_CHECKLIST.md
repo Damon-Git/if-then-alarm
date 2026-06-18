@@ -2,7 +2,7 @@
 
 本文记录七组正式 v1 素材基线和后续替换步骤。迭代素材时按本清单逐项检查，避免把业务交互、计时状态或布局规则混进图片文件。
 
-替换前先阅读 `docs/VISUAL_ASSET_BOUNDARIES.md`，确认这组图片应该负责什么、不应该负责什么。本文只记录执行步骤和验收项。
+替换前先阅读 `docs/VISUAL_ASSET_BOUNDARIES.md`，确认这组图片应该负责什么、不应该负责什么。涉及页面色彩、背景、按钮、表单、弹窗或整体观感时，还必须阅读 `docs/APP_VISUAL_STYLE_GUIDE.md`，保持米纸、淡墨青灰和亮金识别点的一致性。本文只记录执行步骤和验收项。
 
 代码层单一入口：
 
@@ -46,6 +46,7 @@ npm run check:visual-assets
 - 不为 1 / 2 / 3 炷香分别烘焙整张香炉图；线香数量由组件重复渲染。
 - 不在组件里直接硬编码图片路径，只改 `visualAssetManifest.ts`。
 - 如果素材尺寸变化，优先更新 `visualAssets.ts` 的 registry 和 render box，再调整 CSS。
+- 素材不能把页面带回大红背景、闪光香炉、模糊圆团或厚重拟物风格；亮金只作为主识别和关键焦点使用。
 
 ## 三、当前 registry
 

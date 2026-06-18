@@ -6,7 +6,8 @@ import type { TimerMode } from "../types";
 import DevSessionFixturesPanel from "./DevSessionFixturesPanel";
 
 type SettingsPanelProps = {
-  disabled: boolean;
+  isSessionDataActionDisabled: boolean;
+  isTimerModeDisabled: boolean;
   isAlwaysOnTop: boolean;
   isDockVisible: boolean;
   isSoundReminderEnabled: boolean;
@@ -16,6 +17,7 @@ type SettingsPanelProps = {
   onExportFullBackup: () => void;
   onImportFullBackup: (file?: File) => void;
   onSoundReminderChange: (isSoundReminderEnabled: boolean) => void;
+  timerModeDisabledMessage?: string;
   timerMode: TimerMode;
   onTimerModeChange: (timerMode: TimerMode) => void;
   supportsWindowAlwaysOnTop: boolean;
@@ -25,7 +27,8 @@ type SettingsPanelProps = {
 const timerModes: TimerMode[] = ["dev", "prod"];
 
 const SettingsPanel = ({
-  disabled,
+  isSessionDataActionDisabled,
+  isTimerModeDisabled,
   isAlwaysOnTop,
   isDockVisible,
   isSoundReminderEnabled,
@@ -37,6 +40,7 @@ const SettingsPanel = ({
   onSoundReminderChange,
   onTimerModeChange,
   supportsWindowAlwaysOnTop,
+  timerModeDisabledMessage,
   timerMode,
   useNativeFileDialog,
 }: SettingsPanelProps) => {
@@ -44,7 +48,7 @@ const SettingsPanel = ({
   const fullBackupInputRef = useRef<HTMLInputElement>(null);
 
   const selectFullBackupFile = () => {
-    if (disabled) {
+    if (isSessionDataActionDisabled) {
       return;
     }
 
@@ -79,7 +83,7 @@ const SettingsPanel = ({
           {timerModes.map((mode) => (
             <button
               className={timerMode === mode ? "is-selected" : ""}
-              disabled={disabled}
+              disabled={isTimerModeDisabled}
               key={mode}
               type="button"
               onClick={() => onTimerModeChange(mode)}
@@ -93,7 +97,7 @@ const SettingsPanel = ({
       <p className="settings-summary">
         当前：专注 {formatDurationLabel(currentConfig.focusSeconds)} / 休息{" "}
         {formatDurationLabel(currentConfig.breakSeconds)}
-        {disabled ? "。当前轮次进行中，完成或放弃后可切换。" : ""}
+        {timerModeDisabledMessage ? `。${timerModeDisabledMessage}` : ""}
       </p>
 
       <div className="settings-toggle-list" aria-label="提醒设置">
@@ -148,7 +152,12 @@ const SettingsPanel = ({
             <button className="ghost-button" type="button" onClick={onExportFullBackup}>
               导出完整备份
             </button>
-            <button className="ghost-button" disabled={disabled} type="button" onClick={selectFullBackupFile}>
+            <button
+              className="ghost-button"
+              disabled={isSessionDataActionDisabled}
+              type="button"
+              onClick={selectFullBackupFile}
+            >
               导入完整备份
             </button>
           </div>
@@ -192,7 +201,7 @@ const SettingsPanel = ({
       </div>
 
       {import.meta.env.DEV && onDevSessionFixtureSaved ? (
-        <DevSessionFixturesPanel disabled={disabled} onFixtureSaved={onDevSessionFixtureSaved} />
+        <DevSessionFixturesPanel disabled={isSessionDataActionDisabled} onFixtureSaved={onDevSessionFixtureSaved} />
       ) : null}
     </section>
   );
