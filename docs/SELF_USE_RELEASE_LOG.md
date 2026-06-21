@@ -36,6 +36,24 @@ npm run release:self-use-summary
 
 ## 当前基线
 
+### 2026-06-21 · v0.2.0 · 2640e47 · 当前安装版本
+
+- 状态：已安装到 Damon 用户目录下的应用程序目录；自动检查、小窗回归、构建和文件哈希核对通过。
+- Git 提交：`2640e47 feat: allow timer settings before first talisman burn`；安装前工作区干净。
+- 构建产物：`src-tauri/target/release/bundle/macos/急急如律令.app`。
+- Bundle ID：`com.damon.jijirululing`。
+- Rust crate：`jiji-rululing v0.2.0`。
+- 数据版本：`persistence.v1.json` / `version: 1`。
+- 本轮内容：允许用户进入仪式台后、第一张符箓真正开始燃烧前继续修改计时设置；开始燃烧后本轮计时模式仍会锁定。
+- 自动检查：`npm run check:release-self-use` 通过（14 个测试文件、83 个测试用例，并通过前端构建、声音资源、视觉资源、桌面配置和自用就绪检查）；`npm run check:compact` 在临时启动 Vite dev server 后通过；`npm run tauri:build` 通过。
+- 安装前备份：本次安装前 `/Users/damon/Applications/急急如律令.app` 不存在，因此没有旧 `.app` 需要备份；真实 app data 只读备份到 `/Users/damon/backups/jiji-rululing-backup-v0.2.0-2640e47-20260621-150057/`。
+- 安装结果：新 bundle 已复制到 `/Users/damon/Applications/急急如律令.app`；安装 bundle 二进制 SHA-256 与工作区构建产物一致，均为 `a5a36eab92fe2f5206d135bf4c236628cde7270c35288fd81a576806e17348b2`。
+- 数据核对：安装后未启动应用，只对真实 `persistence.v1.json` 做只读核对；SHA-256 为 `42f3cd7060a0569e08bee6ba9836d5d609cfe95b24cc8210f36911bab3768d1a`，数据版本 `1`，历史 24 条，`currentSession: null`，`updatedAt: 2026-06-06T07:37:37.858Z`。
+- 签名与分发：仍是内部自用 `.app`；未生成 DMG/PKG，未做 Developer ID 签名或公证，未配置自动更新。
+- 手动验收：未启动安装后的 `.app`，也未重新跑真实业务闭环；本次只完成自动检查、小窗回归、构建和安装文件核对。
+- 已知问题：无自动检查层面的阻断问题；安装前目标路径不存在，所以没有可直接移回的旧日常 `.app`。
+- 回滚方式：退出应用，移走当前 `/Users/damon/Applications/急急如律令.app`；如数据异常，恢复 `/Users/damon/backups/jiji-rululing-backup-v0.2.0-2640e47-20260621-150057/` 中的 `app-data/` 或 `persistence.v1.json`。如需回到旧程序版本，需要从对应旧提交重新构建，或使用另行保存的旧 bundle。
+
 ### 2026-06-16 · v0.2.0 · b97c1da · 长期自用基线
 
 - 状态：已替换日常自用应用；自动检查、小窗回归、构建、安装后启动核对和真实数据哈希核对通过。

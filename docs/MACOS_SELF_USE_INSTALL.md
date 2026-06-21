@@ -244,6 +244,15 @@ persistence.v1.json
 - 自动更新。
 - 面向他人的安装引导。
 
+## 2026-06-21 当前自用安装状态
+
+- 当前安装于 `~/Applications/急急如律令.app` 的版本为 `2640e47`，版本号 `0.2.0`，Bundle ID `com.damon.jijirululing`。
+- 本轮内容是允许用户在第一张符箓开始燃烧前继续调整计时设置；符箓燃烧开始后，本轮计时模式仍锁定。
+- `npm run check:release-self-use`、`npm run check:compact` 和 `npm run tauri:build` 均通过；安装 bundle 二进制 SHA-256 与工作区构建产物一致，均为 `a5a36eab92fe2f5206d135bf4c236628cde7270c35288fd81a576806e17348b2`。
+- 本次安装前 `/Users/damon/Applications/急急如律令.app` 不存在，因此没有旧 `.app` 需要备份；真实 app data 已只读备份到 `/Users/damon/backups/jiji-rululing-backup-v0.2.0-2640e47-20260621-150057/`。
+- 安装后未启动 `.app` 走真实业务闭环；真实 `persistence.v1.json` 只读核对显示数据版本 `1`，历史 24 条，无待恢复轮次。
+- 回滚时先退出应用，再移走当前 `~/Applications/急急如律令.app`；如数据异常，恢复上述 `/Users/damon/backups` 备份目录中的 `app-data/` 或 `persistence.v1.json`。如需回到旧程序版本，需要从对应旧提交重新构建，或使用另行保存的旧 bundle。
+
 ## 2026-06-16 当前自用安装状态
 
 - 当前长期自用基线为 `b97c1da`，安装于 `~/Applications/急急如律令.app`。

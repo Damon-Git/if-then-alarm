@@ -1,6 +1,6 @@
 # 当前开发计划
 
-更新日期：2026-06-16。
+更新日期：2026-06-21。
 
 本文是《急急如律令》当前唯一的开发路线图和决策登记表。历史范围、页面视觉原则和迁移记录继续保留在其他文档中；如果旧文档中的“下一步”与本文冲突，以本文为准。页面级视觉风格以 `docs/APP_VISUAL_STYLE_GUIDE.md` 为准。
 
@@ -15,7 +15,7 @@
 - 主祭台单信息框、小窗 hover 剩余时间、小窗位置会话保持。
 - 目标性与预防性符箓 hover/focus 清晰预览，以及 WKWebView 最终尺寸直接渲染。
 
-当前长期自用基线为 `b97c1da`，安装于 `~/Applications/急急如律令.app`。2026-06-16 已完成填写页和复盘页体验整改，并通过 `npm run check:release-self-use`、`npm run check:compact`、`npm run tauri:build`、启动核对和真实数据哈希核对；当前真实历史 5 条，无待恢复轮次。上一版 `60f41ad` 旧包继续保留为程序回滚基线；详细证据见 `docs/SELF_USE_RELEASE_LOG.md`。
+当前安装于 `~/Applications/急急如律令.app` 的版本为 `2640e47`。2026-06-21 已通过 `npm run check:release-self-use`、`npm run check:compact` 和 `npm run tauri:build`，并确认安装包二进制哈希与工作区构建产物一致；本次未启动安装后的 `.app` 走真实业务闭环。上一条完成安装后启动核对和真实数据哈希核对的长期自用基线为 `b97c1da`；详细证据见 `docs/SELF_USE_RELEASE_LOG.md`。
 
 ## 开发原则
 
