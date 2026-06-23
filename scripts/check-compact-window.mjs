@@ -1803,11 +1803,13 @@ const run = async () => {
     await page.waitForTimeout(180);
     await assertCompactRestingIncense(page);
     await page.screenshot({ fullPage: true, path: restingScreenshotPath });
-    await page.getByRole("heading", { name: "休息结束，是否继续下一炷香？" }).waitFor({
-      state: "visible",
-      timeout: 7000,
+    await page.evaluate(() => {
+      document.documentElement.dataset.windowMode = "full";
     });
     await page.getByRole("button", { name: "开始下一炷香" }).click();
+    await page.evaluate(() => {
+      document.documentElement.dataset.windowMode = "compact";
+    });
     await page.locator(".compact-censer--burning").waitFor({ state: "visible", timeout: 1000 });
     await assertCompactBurningIncenseProgress(page, {
       currentIndex: 2,

@@ -308,6 +308,22 @@ const App = () => {
     scheduleTimerSoundReminder({ delaySeconds: durationSeconds, kind: notificationKind });
   };
 
+  const compactAfterTimerStarts = () => {
+    if (!isTauriRuntime()) {
+      return;
+    }
+
+    compactCurrentTauriWindow()
+      .then((didCompact) => {
+        if (!didCompact) {
+          showToast("error", "小窗未能收起，计时仍在继续。");
+        }
+      })
+      .catch(() => {
+        showToast("error", "小窗未能收起，计时仍在继续。");
+      });
+  };
+
   useEffect(() => {
     if (
       !activeIntentSet ||
@@ -551,6 +567,7 @@ const App = () => {
         ),
       );
       beginTimer(timerConfig.focusSeconds, notificationKind);
+      compactAfterTimerStarts();
       setStartingIntentId(null);
     }, START_TALISMAN_BURN_MS);
   };
@@ -562,6 +579,7 @@ const App = () => {
       ),
     );
     beginTimer(timerConfig.breakSeconds, "rest-finished");
+    compactAfterTimerStarts();
     setActiveModal(null);
   };
 
@@ -601,6 +619,7 @@ const App = () => {
       }),
     );
     beginTimer(timerConfig.focusSeconds, notificationKind);
+    compactAfterTimerStarts();
     setActiveModal(null);
   };
 
@@ -846,6 +865,21 @@ const App = () => {
     if (!didCompact) {
       window.close();
     }
+  };
+
+  const requestCompactWindow = () => {
+    setActiveUtilityPanel(null);
+    saveCurrentSessionForWindowModeChange();
+
+    compactCurrentTauriWindow()
+      .then((didCompact) => {
+        if (!didCompact) {
+          showToast("error", "小窗只在桌面版可用。");
+        }
+      })
+      .catch(() => {
+        showToast("error", "小窗未能收起，请稍后重试。");
+      });
   };
 
   const abandonAndCloseTauriSession = async () => {
@@ -1116,10 +1150,13 @@ const App = () => {
 
         {phase === "ritual" ? (
           <RitualStage
+            canCompactWindow={isTauriRuntime()}
             focusSeconds={timerConfig.focusSeconds}
             hasBlockingAction={hasBlockingAction}
             intentSets={intentSets}
             startingIntentId={startingIntentId}
+            onCompactWindow={requestCompactWindow}
+            onContinueRest={continueNextIncense}
             onOpenFullView={requestFullRitualView}
             onRequestAbandon={requestAbandonSession}
             onRequestReview={requestReview}
@@ -1204,14 +1241,14 @@ const App = () => {
         <ConfirmModal
           cancelLabel={tauriCloseRequest.type === "setup-draft" ? "继续填写" : "放弃并退出"}
           cancelVariant={tauriCloseRequest.type === "setup-draft" ? "default" : "danger"}
-          confirmLabel={tauriCloseRequest.type === "setup-draft" ? "关闭窗口" : "保留并收起"}
+          confirmLabel={tauriCloseRequest.type === "setup-draft" ? "关闭窗口" : "收起到小窗继续"}
           description={
             tauriCloseRequest.type === "setup-draft"
               ? "当前填写内容还没有开始创造，关闭后不会保存这份草稿。"
-              : "放弃并退出会结束本轮且不写入历史；保留并收起会切回小窗继续计时，并在本段结束时发送系统通知。"
+              : "放弃并退出会结束本轮且不写入历史；如果只是想变小窗，下次可以直接点击仪式台里的“收起到小窗”。"
           }
           eyebrow="Desktop"
-          title={tauriCloseRequest.type === "setup-draft" ? "确定要关闭窗口吗？" : "要关闭当前轮次吗？"}
+          title={tauriCloseRequest.type === "setup-draft" ? "确定要关闭窗口吗？" : "关闭会影响当前轮次"}
           variant={tauriCloseRequest.type === "setup-draft" ? "danger" : "default"}
           onCancel={tauriCloseRequest.type === "setup-draft" ? cancelTauriCloseRequest : abandonAndCloseTauriSession}
           onConfirm={tauriCloseRequest.type === "setup-draft" ? confirmTauriCloseRequest : compactTauriWindowWithCurrentSession}

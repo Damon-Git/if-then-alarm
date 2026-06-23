@@ -951,6 +951,10 @@ assertTextIncludes(ritualStage, "ritual-completion-card", "RitualStage marks com
 assertTextIncludes(ritualStage, "本轮香尽", "RitualStage uses calm completion copy before review");
 assertTextIncludes(ritualStage, "data-ritual-complete", "RitualStage exposes completed ritual styling state");
 assertTextIncludes(ritualStage, "data-stage-start-animation-active", "RitualStage exposes the transient burn window for preview suppression");
+assertTextIncludes(ritualStage, "收起到小窗", "RitualStage exposes an explicit compact-window action");
+assertTextIncludes(ritualStage, "onContinueRest", "RitualStage exposes an early rest completion action");
+assertTextIncludes(appTsx, "compactAfterTimerStarts", "App auto-compacts the desktop window after a new timer segment starts");
+assertTextIncludes(appTsx, "onContinueRest={continueNextIncense}", "App reuses the normal continue flow for early rest completion");
 assertTextIncludes(reviewPanel, "review-overview", "ReviewPanel shows a lightweight session summary");
 assertTextIncludes(reviewPanel, "review-main-field", "ReviewPanel keeps the one-line review as the primary field");
 assertTextIncludes(reviewPanel, "review-optional-fields", "ReviewPanel keeps obstacle and adjustment as supplemental fields");

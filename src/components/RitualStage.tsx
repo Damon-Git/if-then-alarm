@@ -6,11 +6,14 @@ import CompactWindowDragRegion from "./CompactWindowDragRegion";
 import IntentSlot from "./IntentSlot";
 
 type RitualStageProps = {
+  canCompactWindow: boolean;
   intentSets: IntentSet[];
   focusSeconds: number;
   timerRemaining: number;
   hasBlockingAction: boolean;
   startingIntentId: string | null;
+  onCompactWindow: () => void;
+  onContinueRest: (intentSetId: string) => void;
   onStartIntent: (intentSetId: string) => void;
   onOpenFullView: () => void;
   onRequestAbandon: () => void;
@@ -32,17 +35,21 @@ const getIncenseProgress = (intentSet: IntentSet, focusSeconds: number, timerRem
 };
 
 const RitualStage = ({
+  canCompactWindow,
   intentSets,
   focusSeconds,
   timerRemaining,
   hasBlockingAction,
   startingIntentId,
+  onCompactWindow,
+  onContinueRest,
   onStartIntent,
   onOpenFullView,
   onRequestAbandon,
   onRequestReview,
 }: RitualStageProps) => {
   const isSessionComplete = intentSets.length > 0 && intentSets.every((intentSet) => intentSet.status === "completed");
+  const restingIntentSet = intentSets.find((intentSet) => intentSet.status === "resting") ?? null;
   const altarBackgroundUrl = getAltarAssetUrl("background");
   const altarSceneStyle = {
     "--altar-background-image": `url(${altarBackgroundUrl})`,
@@ -56,6 +63,16 @@ const RitualStage = ({
           <h2 id="ritual-title">仪式台</h2>
         </div>
         <div className="ritual-actions">
+          {restingIntentSet ? (
+            <button className="primary-button" type="button" onClick={() => onContinueRest(restingIntentSet.id)}>
+              开始下一炷香
+            </button>
+          ) : null}
+          {canCompactWindow ? (
+            <button className="secondary-button" type="button" onClick={onCompactWindow}>
+              收起到小窗
+            </button>
+          ) : null}
           <button className="ghost-button ritual-abandon-button" type="button" onClick={onRequestAbandon}>
             放弃本轮
           </button>
